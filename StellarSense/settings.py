@@ -83,7 +83,7 @@ DATABASES = {
         'NAME': 'stellar_db_d0rf',
         'USER': 'stellar_db_d0rf_user',
         'PASSWORD': '6NbQh81nqiwmuxyuR8hE0evTWgUc3B8X',
-        'HOST': 'dpg-d1d9se6r433s73f1c8jg-a',
+        'HOST': 'dpg-d1d9se6r433s73f1c8jg-a.pg.render.com',
         'PORT': '5432',
     }
 }
