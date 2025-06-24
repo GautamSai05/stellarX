@@ -87,8 +87,9 @@
     const chatInput = document.getElementById('chat-message-input');
     const chatForm = document.getElementById('chat-form');
 
-    const socket = new WebSocket('ws://' + window.location.host + '/ws/comments/');
 
+    const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
+    const socket = new WebSocket(wsScheme + '://' + window.location.host + '/ws/comments/');
     socket.onmessage = function (e) {
         const data = JSON.parse(e.data);
         if (data.message && data.username) {

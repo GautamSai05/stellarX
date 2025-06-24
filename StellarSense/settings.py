@@ -71,7 +71,6 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'StellarSense.wsgi.application'
 
 
 # Database
@@ -135,7 +134,7 @@ LOGIN_REDIRECT_URL = '/home/'
 LOGIN_REDIRECT_URL = '/home/'
 
 ASGI_APPLICATION = "StellarSense.asgi.application"
-
+WSGI_APPLICATION = 'StellarSense.wsgi.application'
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels.layers.InMemoryChannelLayer"
