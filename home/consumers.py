@@ -1,5 +1,6 @@
-import json
+# consumers.py
 from channels.generic.websocket import AsyncWebsocketConsumer
+import json
 
 class CommentConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -12,16 +13,20 @@ class CommentConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         data = json.loads(text_data)
         message = data['message']
+        user = self.scope["user"]
+        username = user.username if user.is_authenticated else "Anonymous"
 
         await self.channel_layer.group_send(
             "comments",
             {
-                'type': 'send_comment',
-                'message': message
+                "type": "chat_message",
+                "message": message,
+                "username": username,
             }
         )
 
-    async def send_comment(self, event):
+    async def chat_message(self, event):
         await self.send(text_data=json.dumps({
-            'message': event['message']
+            "message": event["message"],
+            "username": event["username"]
         }))

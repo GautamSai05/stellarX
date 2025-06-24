@@ -60,23 +60,28 @@
         </div>
     </div>
 
-    <!-- Live Comments Column -->
-    <div class="relative">
-        <h3 class="text-xl font-semibold mb-3">💬 Live Comments</h3>
-        <div id="live-comments" class="space-y-2 max-h-[60vh] overflow-y-auto"></div>
-
-        <!-- Chat Input -->
-        <form id="chat-form" class="flex mt-4">
-            <input type="text" id="chat-message-input" placeholder="Type a message..."
-                class="flex-1 px-3 py-2 rounded-l bg-gray-800 text-white border border-gray-600 focus:outline-none"
-                autocomplete="off">
-            <button type="submit"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-r">Send</button>
-        </form>
-    </div>
+    <!-- Empty Sidebar -->
+    <div></div>
 </div>
 
-<!-- WebSocket + Animations -->
+<!-- Fixed Chat Section -->
+<div class="fixed bottom-4 right-4 w-[25rem] max-w-full sm:max-w-[90%] max-h-[70vh] bg-gray-800 rounded-lg shadow-lg p-4 z-50 flex flex-col">
+    <h3 class="text-lg font-semibold text-white mb-2">💬 Live Comments</h3>
+
+    <div id="live-comments" class="flex-1 overflow-y-auto space-y-2 pr-1">
+        <!-- Messages will appear here -->
+    </div>
+
+    <!-- Chat Input -->
+    <form id="chat-form" class="mt-4 flex">
+        <input type="text" id="chat-message-input" placeholder="Type a message..."
+            class="flex-1 px-3 py-2 rounded-l bg-gray-700 text-white border border-gray-600 focus:outline-none break-words"
+            autocomplete="off">
+        <button type="submit"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-r">Send</button>
+    </form>
+</div>
+
 <script>
     const commentBox = document.getElementById('live-comments');
     const chatInput = document.getElementById('chat-message-input');
@@ -86,16 +91,12 @@
 
     socket.onmessage = function (e) {
         const data = JSON.parse(e.data);
-        if (data.message) {
+        if (data.message && data.username) {
             const comment = document.createElement('div');
-            comment.textContent = data.message;
-            comment.className = "bg-blue-800 text-white p-2 rounded shadow-md animate-fade-in transition-opacity duration-1000";
-            commentBox.prepend(comment);
-
-            setTimeout(() => {
-                comment.style.opacity = '0';
-                setTimeout(() => comment.remove(), 1000);
-            }, 5000);
+            comment.innerHTML = `<strong class="text-blue-400">${data.username}</strong>: <span class="break-words">${data.message}</span>`;
+            comment.className = "bg-blue-900 text-white p-2 rounded shadow-md whitespace-pre-wrap break-words";
+            commentBox.appendChild(comment);
+            commentBox.scrollTop = commentBox.scrollHeight;
         }
     };
 
@@ -108,14 +109,4 @@
         }
     });
 </script>
-
-<style>
-    @keyframes fade-in {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    .animate-fade-in {
-        animation: fade-in 0.3s ease-out;
-    }
-</style>
 {% endblock %}
