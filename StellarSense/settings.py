@@ -79,7 +79,7 @@ TEMPLATES = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / ',
     }
 }
 
@@ -140,3 +140,8 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels.layers.InMemoryChannelLayer"
     }
 }
+
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://stellarx.onrender.com",
+]
