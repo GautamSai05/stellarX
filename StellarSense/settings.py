@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'home',
     'observations',
     'widget_tweaks',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -132,3 +133,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Redirect after successful login and logout
 LOGIN_REDIRECT_URL = '/home/'
 LOGIN_REDIRECT_URL = '/home/'
+
+ASGI_APPLICATION = "StellarSense.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
