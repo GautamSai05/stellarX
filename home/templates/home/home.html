@@ -1,11 +1,56 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>StellarScope - Home</title>
-</head>
-<body>
-    <h2>🪐 Real Home Page</h2>
-    <p>Welcome to the cosmos dashboard.</p>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Home - StellarSense{% endblock %}
+
+{% block content %}
+<h1 class="text-4xl font-bold text-center mb-6">🌌 Welcome to StellarSense</h1>
+<p class="text-center text-lg text-gray-300 mb-10">
+    Explore daily celestial wonders and recent sky logs from fellow stargazers.
+</p>
+
+<!-- Create New Log Button -->
+{% if user.is_authenticated %}
+    <div class="text-center mb-8">
+        <a href="{% url 'log_create' %}" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300">
+            ➕ Create New Log
+        </a>
+    </div>
+{% endif %}
+
+<!-- NASA APOD -->
+<div class="bg-gray-800 rounded-lg shadow-lg p-6 mb-10 max-w-3xl mx-auto">
+    <h2 class="text-2xl font-semibold mb-4">🔭 NASA Astronomy Picture of the Day</h2>
+    {% if apod.url %}
+        <h3 class="text-xl font-medium mb-2">{{ apod.title }}</h3>
+        <img src="{{ apod.url }}" alt="NASA APOD" class="rounded-lg max-h-96 w-full object-cover mb-3">
+        <p class="text-gray-300 text-sm">{{ apod.explanation }}</p>
+    {% else %}
+        <p class="text-gray-400">NASA APOD data not available right now.</p>
+    {% endif %}
+</div>
+
+<!-- Logs -->
+<div class="bg-gray-800 rounded-lg shadow-lg p-6 max-w-4xl mx-auto">
+    <h2 class="text-2xl font-semibold mb-4">📝 Recent Celestial Logs</h2>
+    {% if logs %}
+        <div class="space-y-6">
+            {% for log in logs %}
+                <div class="bg-gray-700 p-4 rounded-lg shadow-md">
+                    <h4 class="text-lg font-bold">{{ log.title }}</h4>
+                    <p class="text-gray-300 mb-2">{{ log.description|truncatewords:30 }}</p>
+                    {% if log.photo %}
+                        <img src="{{ log.photo.url }}" alt="Observation Photo" class="rounded-lg max-h-72 w-full object-cover mb-2">
+                    {% endif %}
+                    <p class="text-sm text-gray-400">
+                        Logged by <span class="text-blue-300">{{ log.user.username }}</span> on {{ log.created_at }}
+                    </p>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-gray-400">
+            No logs yet. <a href="{% url 'log_create' %}" class="text-blue-400 underline">Be the first to add one!</a>
+        </p>
+    {% endif %}
+</div>
+{% endblock %}
