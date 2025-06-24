@@ -4,3 +4,4 @@ daphne>=4.0
 asgiref>=3.5
 Pillow>=9.0
 django-widget-tweaks>=1.4.12
+psycopg2-binary>=2.9
