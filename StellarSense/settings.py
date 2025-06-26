@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'channels',
 ]
 
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -52,7 +53,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
 ROOT_URLCONF = 'StellarSense.urls'
 
 TEMPLATES = [
@@ -146,7 +146,3 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 
-MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    # ... other middleware ...
-]
