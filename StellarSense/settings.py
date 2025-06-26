@@ -145,10 +145,8 @@ CSRF_TRUSTED_ORIGINS = [
     "https://stellarx.onrender.com",
 ]
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 MIDDLEWARE = [
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # add this right after SecurityMiddleware
     'django.middleware.security.SecurityMiddleware',
     # ... other middleware ...
 ]
