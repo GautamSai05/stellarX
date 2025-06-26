@@ -13,6 +13,7 @@ import os
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 from django.core.asgi import get_asgi_application
+from whitenoise import ASGIStaticFilesHandler 
 import home.routing
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'StellarSense.settings')
@@ -25,3 +26,6 @@ application = ProtocolTypeRouter({
         )
     ),
 })
+
+django_asgi_app = get_asgi_application()
+application = ASGIStaticFilesHandler(django_asgi_app)
