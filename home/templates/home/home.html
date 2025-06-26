@@ -4,7 +4,6 @@
 
 {% block content %}
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
     <!-- Main Content -->
     <div class="lg:col-span-2 space-y-8">
         <div>
@@ -65,31 +64,37 @@
 </div>
 
 <!-- Fixed Chat Section -->
-<div class="fixed bottom-4 right-4 w-[25rem] max-w-full sm:max-w-[90%] max-h-[70vh] bg-gray-800 rounded-lg shadow-lg p-4 z-50 flex flex-col">
-    <h3 class="text-lg font-semibold text-white mb-2">💬 Live Comments</h3>
-
-    <div id="live-comments" class="flex-1 overflow-y-auto space-y-2 pr-1">
-        <!-- Messages will appear here -->
+<div id="chat-container" class="fixed bottom-4 right-4 w-[25rem] max-w-full sm:max-w-[90%] max-h-[70vh] bg-gray-800 rounded-lg shadow-lg z-50 flex flex-col">
+    <!-- Header with Minimize Button -->
+    <div class="flex justify-between items-center bg-gray-800 p-4 border-b border-gray-700 rounded-t-lg">
+        <h3 class="text-lg font-semibold text-white">💬 Live Comments</h3>
+        <button id="chat-toggle" class="text-white hover:text-gray-400 text-xl">−</button>
     </div>
 
-    <!-- Chat Input -->
-    <form id="chat-form" class="mt-4 flex">
-        <input type="text" id="chat-message-input" placeholder="Type a message..."
-            class="flex-1 px-3 py-2 rounded-l bg-gray-700 text-white border border-gray-600 focus:outline-none break-words"
-            autocomplete="off">
-        <button type="submit"
-            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-r">Send</button>
-    </form>
+    <!-- Chat Content -->
+    <div id="chat-body" class="flex-1 flex flex-col p-4 space-y-2 overflow-y-auto max-h-[60vh]">
+        <div id="live-comments" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+
+        <form id="chat-form" class="mt-4 flex">
+            <input type="text" id="chat-message-input" placeholder="Type a message..."
+                class="flex-1 px-3 py-2 rounded-l bg-gray-700 text-white border border-gray-600 focus:outline-none break-words"
+                autocomplete="off">
+            <button type="submit"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-r">Send</button>
+        </form>
+    </div>
 </div>
 
 <script>
     const commentBox = document.getElementById('live-comments');
     const chatInput = document.getElementById('chat-message-input');
     const chatForm = document.getElementById('chat-form');
-
+    const chatBody = document.getElementById('chat-body');
+    const toggleBtn = document.getElementById('chat-toggle');
 
     const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
     const socket = new WebSocket(wsScheme + '://' + window.location.host + '/ws/comments/');
+
     socket.onmessage = function (e) {
         const data = JSON.parse(e.data);
         if (data.message && data.username) {
@@ -107,6 +112,16 @@
         if (message) {
             socket.send(JSON.stringify({ message: message }));
             chatInput.value = '';
+        }
+    });
+
+    toggleBtn.addEventListener('click', () => {
+        if (chatBody.style.display === 'none') {
+            chatBody.style.display = 'flex';
+            toggleBtn.textContent = '−';
+        } else {
+            chatBody.style.display = 'none';
+            toggleBtn.textContent = '+';
         }
     });
 </script>
