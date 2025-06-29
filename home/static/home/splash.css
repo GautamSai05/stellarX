@@ -2,12 +2,39 @@
 html,
 body {
     margin: 0;
-    overflow: hidden;
+    overflow-x: hidden; /* Allow horizontal scrolling if content overflows */
+    width: 100%;
+    min-height: 100vh; /* Ensure body takes full viewport height */
+    font-family: 'Arial', sans-serif;
+    color: #E0E0E0; /* Light gray for text */
+    background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%); /* Deep space background */
+    background-attachment: fixed; /* Keep background fixed during scroll */
+}
+
+/* Starfield effect */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to bottom, #000000 0%, #5788fe 100%);
-    font-family: 'Arial', sans-serif;
-    color: white;
+    background-image: radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+                      radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
+                      radial-gradient(2px 2px at 50px 160px, #ddd, rgba(0,0,0,0)),
+                      radial-gradient(2px 2px at 90px 120px, #fff, rgba(0,0,0,0)),
+                      radial-gradient(2px 2px at 130px 190px, #eee, rgba(0,0,0,0)),
+                      radial-gradient(2px 2px at 160px 40px, #fff, rgba(0,0,0,0));
+    background-repeat: repeat;
+    background-size: 200px 200px;
+    opacity: 0.7;
+    animation: twinkle 10s infinite alternate;
+    z-index: -1; /* Behind content */
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 0.9; }
 }
 
 /* Centered loading text */
@@ -23,12 +50,12 @@ body {
 h1 {
     font-size: 3rem;
     margin-bottom: 20px;
-    animation: glow 2s infinite alternate;
+    animation: subtle-glow 3s infinite alternate;
 }
 
-@keyframes glow {
-    from { text-shadow: 0 0 10px #00f2ff; }
-    to { text-shadow: 0 0 20px #00f2ff, 0 0 30px #0ff; }
+@keyframes subtle-glow {
+    from { text-shadow: 0 0 5px #00BFFF; }
+    to { text-shadow: 0 0 10px #00BFFF, 0 0 15px #1E90FF; }
 }
 
 canvas {
@@ -38,22 +65,7 @@ canvas {
     z-index: 1;
 }
 
-.filter {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background: #fe5757;
-    animation: colorChange 30s ease-in-out infinite;
-    mix-blend-mode: overlay;
-    z-index: 3;
-}
-
-@keyframes colorChange {
-    0%, 100% { opacity: 0; }
-    50% { opacity: .9; }
-}
+/* Removed .filter as it might clash with new theme */
 
 .landscape {
     position: absolute;
