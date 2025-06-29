@@ -7,55 +7,55 @@
     <!-- Main Content -->
     <div class="lg:col-span-2 space-y-8">
         <div>
-            <h1 class="text-5xl font-extrabold mb-4 text-blue-400 animate-pulse">🌌 Welcome to StellarSense</h1>
-            <p class="text-xl text-gray-200 leading-relaxed">
+            <h1 class="text-5xl font-extrabold mb-4 text-[#49467B] animate-pulse"> FEEDS </h1>
+            <p class="text-xl text-[#494A4D] leading-relaxed">
                 Explore daily celestial wonders and recent sky logs from fellow stargazers.
             </p>
         </div>
 
         {% if user.is_authenticated %}
         <div>
-            <a href="{% url 'log_create' %}" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out shadow-lg transform hover:scale-105">
+            <a href="{% url 'log_create' %}" class="inline-block bg-[#49467B] hover:bg-[#49467B] text-white font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out shadow-lg transform hover:scale-105">
                 ➕ Create New Log
             </a>
         </div>
         {% endif %}
 
         <!-- NASA APOD -->
-        <div class="bg-gray-800 rounded-xl shadow-lg p-8 border border-blue-700/30">
-            <h2 class="text-3xl font-semibold mb-6 text-blue-400">🔭 NASA Astronomy Picture of the Day</h2>
+        <div class="bg-[#1D1D1E] rounded-xl shadow-lg p-8 border border-[#49467B]/30">
+            <h2 class="text-3xl font-semibold mb-6 text-[#49467B]">🔭 NASA Astronomy Picture of the Day</h2>
             {% if apod.url %}
-                <h3 class="text-xl font-medium mb-3 text-gray-100">{{ apod.title }}</h3>
+                <h3 class="text-xl font-medium mb-3 text-[#494A4D]">{{ apod.title }}</h3>
                 <img src="{{ apod.url }}" alt="NASA APOD" class="rounded-lg max-h-96 w-full object-cover mb-4 shadow-md">
-                <p class="text-gray-300 text-base leading-relaxed">{{ apod.explanation }}</p>
+                <p class="text-[#494A4D] text-base leading-relaxed">{{ apod.explanation }}</p>
             {% else %}
-                <p class="text-gray-400 text-lg">
+                <p class="text-[#494A4D] text-lg">
                     NASA APOD data not available right now. Please check back later.
                 </p>
             {% endif %}
         </div>
 
         <!-- Logs -->
-        <div class="bg-gray-800 rounded-xl shadow-lg p-8 border border-blue-700/30">
-            <h2 class="text-3xl font-semibold mb-6 text-blue-400">📝 Recent Celestial Logs</h2>
+        <div class="bg-[#1D1D1E] rounded-xl shadow-lg p-8 border border-[#49467B]/30">
+            <h2 class="text-3xl font-semibold mb-6 text-[#49467B]">📝 Recent Celestial Logs</h2>
             {% if logs %}
                 <div class="space-y-8">
                     {% for log in logs %}
-                        <div class="bg-gray-700 p-6 rounded-lg shadow-md border border-gray-600 transition duration-300 ease-in-out hover:border-blue-500">
-                            <h4 class="text-xl font-bold text-gray-100 mb-2">{{ log.title }}</h4>
-                            <p class="text-gray-300 mb-3 leading-relaxed">{{ log.description|truncatewords:30 }}</p>
+                        <div class="bg-[#19191A] p-6 rounded-lg shadow-md border border-[#494A4D] transition duration-300 ease-in-out hover:border-[#49467B]">
+                            <h4 class="text-xl font-bold text-[#494A4D] mb-2">{{ log.title }}</h4>
+                            <p class="text-[#494A4D] mb-3 leading-relaxed">{{ log.description|truncatewords:30 }}</p>
                             {% if log.photo %}
                                 <img src="{{ log.photo.url }}" alt="Observation Photo" class="rounded-lg max-h-72 w-full object-cover mb-3 shadow-sm">
                             {% endif %}
-                            <p class="text-sm text-gray-400">
-                                Logged by <span class="text-blue-300 font-medium">{{ log.user.username }}</span> on {{ log.created_at|date:"F d, Y" }}
+                            <p class="text-sm text-[#494A4D]">
+                                Logged by <span class="text-[#49467B] font-medium">{{ log.user.username }}</span> on {{ log.created_at|date:"F d, Y" }}
                             </p>
                         </div>
                     {% endfor %}
                 </div>
             {% else %}
-                <p class="text-gray-400 text-lg">
-                    No logs yet. <a href="{% url 'log_create' %}" class="text-blue-400 underline hover:text-blue-300 transition duration-300">Be the first to add one!</a>
+                <p class="text-[#494A4D] text-lg">
+                    No logs yet. <a href="{% url 'log_create' %}" class="text-[#49467B] underline hover:text-[#49467B] transition duration-300">Be the first to add one!</a>
                 </p>
             {% endif %}
         </div>
@@ -64,13 +64,15 @@
     <!-- Empty Sidebar -->
     <div></div>
 </div>
+{% endblock %}
 
+{% block extra_body_content %}
 <!-- Fixed Chat Section -->
-<div id="chat-container" class="fixed bottom-4 right-4 w-full max-w-sm sm:max-w-md max-h-[70vh] bg-gray-800 rounded-xl shadow-xl z-50 flex flex-col border border-blue-700/30">
+<div id="chat-container" class="fixed bottom-4 right-4 w-full max-w-sm sm:max-w-md max-h-[70vh] bg-[#1D1D1E] rounded-xl shadow-xl z-50 flex flex-col border border-[#49467B]/30">
     <!-- Header with Minimize Button -->
-    <div class="flex justify-between items-center bg-gray-800 p-4 border-b border-gray-700 rounded-t-xl">
-        <h3 class="text-lg font-semibold text-blue-400">💬 Live Comments</h3>
-        <button id="chat-toggle" class="text-white hover:text-gray-400 text-xl focus:outline-none transition duration-300">−</button>
+    <div class="flex justify-between items-center bg-[#1D1D1E] p-4 border-b border-[#494A4D] rounded-t-xl">
+        <h3 class="text-lg font-semibold text-[#49467B]">💬 Live Comments</h3>
+        <button id="chat-toggle" class="text-[#494A4D] hover:text-[#49467B] text-xl focus:outline-none transition duration-300">−</button>
     </div>
 
     <!-- Chat Content -->
@@ -79,10 +81,10 @@
 
         <form id="chat-form" class="mt-4 flex">
             <input type="text" id="chat-message-input" placeholder="Type a message..."
-                class="flex-1 px-4 py-2 rounded-l-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 break-words transition duration-300"
+                class="flex-1 px-4 py-2 rounded-l-lg bg-[#19191A] text-[#494A4D] border border-[#494A4D] focus:outline-none focus:ring-2 focus:ring-[#49467B] break-words transition duration-300"
                 autocomplete="off">
             <button type="submit"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-r-lg transition duration-300 ease-in-out shadow-md">Send</button>
+                class="bg-[#49467B] hover:bg-[#49467B] text-white px-5 py-2 rounded-r-lg transition duration-300 ease-in-out shadow-md">Send</button>
         </form>
     </div>
 </div>
@@ -101,8 +103,8 @@
         const data = JSON.parse(e.data);
         if (data.message && data.username) {
             const comment = document.createElement('div');
-            comment.innerHTML = `<strong class="text-blue-400">${data.username}</strong>: <span class="break-words">${data.message}</span>`;
-            comment.className = "bg-blue-900 text-white p-2 rounded shadow-md whitespace-pre-wrap break-words";
+            comment.innerHTML = `<strong class="text-[#49467B]">${data.username}</strong>: <span class="break-words">${data.message}</span>`;
+            comment.className = "bg-[#19191A] text-[#494A4D] p-2 rounded shadow-md whitespace-pre-wrap break-words";
             commentBox.appendChild(comment);
             commentBox.scrollTop = commentBox.scrollHeight;
         }
@@ -127,4 +129,4 @@
         }
     });
 </script>
-{% endblock %}
+{% endblock extra_body_content %}

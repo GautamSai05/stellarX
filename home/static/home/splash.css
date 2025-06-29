@@ -6,8 +6,8 @@ body {
     width: 100%;
     min-height: 100vh; /* Ensure body takes full viewport height */
     font-family: 'Arial', sans-serif;
-    color: #E0E0E0; /* Light gray for text */
-    background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%); /* Deep space background */
+    color: #494A4D; /* Medium dark gray for text */
+    background: radial-gradient(ellipse at bottom, #1D1D1E 0%, #19191A 100%); /* Deep space background */
     background-attachment: fixed; /* Keep background fixed during scroll */
 }
 
@@ -19,12 +19,12 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
-                      radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
-                      radial-gradient(2px 2px at 50px 160px, #ddd, rgba(0,0,0,0)),
-                      radial-gradient(2px 2px at 90px 120px, #fff, rgba(0,0,0,0)),
-                      radial-gradient(2px 2px at 130px 190px, #eee, rgba(0,0,0,0)),
-                      radial-gradient(2px 2px at 160px 40px, #fff, rgba(0,0,0,0));
+    background-image: radial-gradient(2px 2px at 20px 30px, #494A4D, rgba(0,0,0,0)),
+                      radial-gradient(2px 2px at 40px 70px, #494A4D, rgba(0,0,0,0)),
+                      radial-gradient(2px 2px at 50px 160px, #494A4D, rgba(0,0,0,0)),
+                      radial-gradient(2px 2px at 90px 120px, #494A4D, rgba(0,0,0,0)),
+                      radial-gradient(2px 2px at 130px 190px, #494A4D, rgba(0,0,0,0)),
+                      radial-gradient(2px 2px at 160px 40px, #494A4D, rgba(0,0,0,0));
     background-repeat: repeat;
     background-size: 200px 200px;
     opacity: 0.7;
@@ -54,8 +54,8 @@ h1 {
 }
 
 @keyframes subtle-glow {
-    from { text-shadow: 0 0 5px #00BFFF; }
-    to { text-shadow: 0 0 10px #00BFFF, 0 0 15px #1E90FF; }
+    from { text-shadow: 0 0 5px #49467B; }
+    to { text-shadow: 0 0 10px #49467B, 0 0 15px #49467B; }
 }
 
 canvas {
