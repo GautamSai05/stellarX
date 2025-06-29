@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ user.username }}'s Profile - StellarSense{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <div>
+        <h1 class="text-4xl font-bold mb-3">{{ user.username }}'s Profile</h1>
+        <p class="text-lg text-gray-300">Viewing all logs from {{ user.username }}.</p>
+        <p class="text-md text-gray-400 mt-1">Total logs for {{ selected_year }}: {{ log_count_for_year }}</p>
+        <div class="mt-4 relative inline-block text-gray-400">
+            <button id="year-dropdown-btn" class="py-1 px-3 bg-gray-700 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                {{ selected_year }} ▼
+            </button>
+            <div id="year-dropdown-menu" class="hidden absolute z-10 mt-2 w-24 bg-gray-700 rounded-md shadow-lg py-1">
+                {% for y in years %}
+                    <a href="{% url 'profile_by_year' user.username y %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-600 {% if y == selected_year %}font-bold{% endif %}">{{ y }}</a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+<script>
+    const yearDropdownBtn = document.getElementById('year-dropdown-btn');
+    const yearDropdownMenu = document.getElementById('year-dropdown-menu');
+
+    yearDropdownBtn.addEventListener('click', () => {
+        yearDropdownMenu.classList.toggle('hidden');
+    });
+
+    // Close the dropdown if the user clicks outside of it
+    window.addEventListener('click', (event) => {
+        if (!yearDropdownBtn.contains(event.target) && !yearDropdownMenu.contains(event.target)) {
+            yearDropdownMenu.classList.add('hidden');
+        }
+    });
+</script>
+
+    
+
+    <!-- Monthly Log Activity Bar Chart -->
+    <div class="bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6">
+        <h2 class="text-2xl font-semibold mb-4">📊 Monthly Log Activity</h2>
+        <div class="flex items-end justify-around h-48">
+            {% for data in monthly_log_data %}
+                <div class="flex flex-col items-center group relative" style="height: {{ data.bar_height }}%; width: 6%;">
+                    <div class="w-full bg-blue-500 rounded-t-md transition-all duration-300 ease-in-out hover:bg-blue-400" style="height: 100%;"></div>
+                    <span class="text-xs text-gray-400 mt-1">{{ data.month_num|date:"M" }}</span>
+                    <span class="absolute bottom-full mb-1 hidden group-hover:block text-white text-xs bg-gray-700 px-2 py-1 rounded">{{ data.count }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Logs -->
+    <div class="bg-gray-800 rounded-lg shadow-lg p-6">
+        <h2 class="text-2xl font-semibold mb-4">📝 {{ user.username }}'s Celestial Logs</h2>
+        {% if logs %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for log in logs %}
+                    <div class="bg-gray-700 p-4 rounded-lg shadow-md flex flex-col">
+                        <h4 class="text-lg font-bold mb-2">{{ log.title }}</h4>
+                        <p class="text-gray-300 mb-3 flex-grow">{{ log.description|truncatewords:30 }}</p>
+                        {% if log.photo %}
+                            <img src="{{ log.photo.url }}" alt="Observation Photo" class="rounded-lg max-h-48 w-full object-cover mb-3">
+                        {% endif %}
+                        <p class="text-sm text-gray-400 mt-auto">
+                            Logged on {{ log.created_at|date:"F d, Y" }}
+                        </p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-400">
+                {{ user.username }} has not logged any observations yet.
+            </p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

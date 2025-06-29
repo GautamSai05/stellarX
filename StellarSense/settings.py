@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'home',
     'observations',
+    'crowdfunding',
+    'profiles',
     'widget_tweaks',
     'channels',
 ]

@@ -26,6 +26,8 @@ urlpatterns = [
     # App URLs
     path('', include('home.urls')),
     path('observations/', include('observations.urls')),
+    path('crowdfunding/', include('crowdfunding.urls')),
+    path('profile/', include('profiles.urls')),
 
     # Auth
     path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
