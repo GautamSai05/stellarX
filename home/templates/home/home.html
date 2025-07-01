@@ -3,71 +3,86 @@
 {% block title %}Home - StellarSense{% endblock %}
 
 {% block content %}
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    <!-- Main Content -->
-    <div class="lg:col-span-2 space-y-8">
-        <div>
-            <h1 class="text-5xl font-extrabold mb-4 text-[#49467B] animate-pulse"> FEEDS </h1>
-            <p class="text-xl text-[#494A4D] leading-relaxed">
-                Explore daily celestial wonders and recent sky logs from fellow stargazers.
-            </p>
-        </div>
+<div class="w-full max-w-5xl mx-auto space-y-10 pr-0 lg:pr-16">
+    <!-- FEEDS Header -->
+    <div>
+        <h1 class="text-5xl font-extrabold mb-4 text-white animate-pulse tracking-tight">FEEDS</h1>
 
-        {% if user.is_authenticated %}
-        <div>
-            <a href="{% url 'log_create' %}" class="inline-block bg-[#49467B] hover:bg-[#49467B] text-white font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out shadow-lg transform hover:scale-105">
-                ➕ Create New Log
-            </a>
-        </div>
-        {% endif %}
+        <p class="text-xl text-[#494A4D] leading-relaxed">
+            Explore daily celestial wonders and recent sky logs from fellow stargazers.
+        </p>
+    </div>
 
-        <!-- NASA APOD -->
-        <div class="bg-[#1D1D1E] rounded-xl shadow-lg p-8 border border-[#49467B]/30">
-            <h2 class="text-3xl font-semibold mb-6 text-[#49467B]"> NASA Astronomy Picture of the Day</h2>
-            <div id="apod-container">
-                <img id="apod-image" src="" alt="NASA Picture of the Day" class="rounded-lg max-h-96 w-full object-cover mb-4 shadow-md">
-                <h3 id="apod-title" class="text-xl font-medium mb-3 text-[#494A4D]"></h3>
-                <p id="apod-explanation" class="text-[#494A4D] text-base leading-relaxed"></p>
-            </div>
-        </div>
+    {% if user.is_authenticated %}
+    <div>
+        <a href="{% url 'log_create' %}" class="inline-block bg-[#49467B] hover:bg-[#49467B]/90 text-white font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out shadow-lg transform hover:scale-105">
+            ➕ Create New Log
+        </a>
+    </div>
+    {% endif %}
 
-        <!-- Logs -->
-        <div class="bg-[#1D1D1E] rounded-xl shadow-lg p-8 border border-[#49467B]/30">
-            <h2 class="text-3xl font-semibold mb-6 text-[#49467B]"> Recent Celestial Logs</h2>
-            {% if logs %}
-                <div class="space-y-8">
-                    {% for log in logs %}
-                        <div class="bg-[#19191A] p-6 rounded-lg shadow-md border border-[#494A4D] transition duration-300 ease-in-out hover:border-[#49467B]">
-                            <h4 class="text-xl font-bold text-[#494A4D] mb-2">{{ log.title }}</h4>
-                            <p class="text-[#494A4D] mb-3 leading-relaxed">{{ log.description|truncatewords:30 }}</p>
-                            {% if log.photo %}
-                                <img src="{{ log.photo.url }}" alt="Observation Photo" class="rounded-lg max-h-72 w-full object-cover mb-3 shadow-sm">
-                            {% endif %}
-                            <p class="text-sm text-[#494A4D]">
-                                Logged by <a href="{% url 'profile' log.user.username %}" class="text-[#49467B] font-medium">{{ log.user.username }}</a> on {{ log.created_at|date:"F d, Y" }}
-                            </p>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <p class="text-[#494A4D] text-lg">
-                    No logs yet. <a href="{% url 'log_create' %}" class="text-[#49467B] underline hover:text-[#49467B] transition duration-300">Be the first to add one!</a>
-                </p>
-            {% endif %}
+    <!-- NASA APOD -->
+    <div class="bg-[#1D1D1E] rounded-xl shadow-lg p-8 border border-[#49467B]/30">
+        <h2 class="text-3xl font-semibold mb-6 text-white">🔭 NASA Astronomy Picture of the Day</h2>
+
+        <div id="apod-container">
+            <img id="apod-image" src="" alt="NASA Picture of the Day" class="rounded-lg max-h-96 w-full object-cover mb-4 shadow-md border border-[#49467B]/20">
+            <h3 id="apod-title" class="text-xl font-medium mb-3 text-[#494A4D]"></h3>
+            <p id="apod-explanation" class="text-[#494A4D] text-base leading-relaxed"></p>
         </div>
     </div>
 
-    <!-- Empty Sidebar -->
-    <div></div>
+    <!-- Logs -->
+    <div id="celestial-logs" class="p-0 overflow-x-hidden">
+        <h2 class="text-3xl font-semibold mb-6 text-[#49467B]">📝 Recent Celestial Logs</h2>
+        {% if logs %}
+            <div id="logs-scroll-track" class="flex space-x-8 transition-transform duration-300 will-change-transform">
+                {% for log in logs %}
+                    <div class="w-72 h-64 bg-transparent p-0 rounded-lg shadow-lg transition duration-300 ease-in-out flex-shrink-0">
+                        <h4 class="text-xl font-bold text-[#494A4D] mb-2">{{ log.title }}</h4>
+                        <p class="text-[#494A4D] mb-3 leading-relaxed">{{ log.description|truncatewords:30 }}</p>
+                        {% if log.photo %}
+                            <img src="{{ log.photo.url }}" alt="Observation Photo" class="rounded-lg max-h-40 w-full object-cover mb-3 shadow-sm border border-[#49467B]/10">
+                        {% endif %}
+                        <p class="text-sm text-[#494A4D]">
+                            Logged by <a href="{% url 'profile' log.user.username %}" class="text-[#49467B] font-medium hover:underline">{{ log.user.username }}</a> on {{ log.created_at|date:"F d, Y" }}
+                        </p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-[#494A4D] text-lg">
+                No logs yet. <a href="{% url 'log_create' %}" class="text-[#49467B] underline hover:text-[#49467B] transition duration-300">Be the first to add one!</a>
+            </p>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
 
 {% block extra_body_content %}
-<!-- Fixed Chat Section -->
-<div id="chat-container" class="fixed bottom-4 right-4 w-full max-w-sm sm:max-w-md max-h-[70vh] bg-[#1D1D1E] rounded-xl shadow-xl z-50 flex flex-col border border-[#49467B]/30">
+<!-- Chat Bot Icon (initially visible) -->
+<button id="chat-bot-icon"
+    class="fixed bottom-6 right-6 z-50 bg-[#49467B] hover:bg-[#6a5acd] text-white rounded-full w-16 h-16 flex items-center justify-center shadow-xl transition duration-300"
+    aria-label="Open Live Chat">
+    <!-- Spaceship SVG icon -->
+    <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="19" cy="30" rx="10" ry="3" fill="#8a7fff" fill-opacity="0.3"/>
+      <path d="M19 4C22.866 4 26 7.13401 26 11C26 13.2091 24.2091 15 22 15H16C13.7909 15 12 13.2091 12 11C12 7.13401 15.134 4 19 4Z" fill="#fff"/>
+      <path d="M19 15V28" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+      <ellipse cx="19" cy="11" rx="2" ry="2" fill="#8a7fff"/>
+      <ellipse cx="15" cy="19" rx="2" ry="1" fill="#8a7fff"/>
+      <ellipse cx="23" cy="19" rx="2" ry="1" fill="#8a7fff"/>
+      <ellipse cx="19" cy="24" rx="2" ry="1" fill="#8a7fff"/>
+    </svg>
+</button>
+
+<!-- Fixed Chat Section (initially hidden) -->
+<div id="chat-container"
+    class="fixed bottom-4 right-4 w-full max-w-sm sm:max-w-md max-h-[70vh] bg-[#1D1D1E] rounded-xl shadow-xl z-50 flex flex-col border border-[#49467B]/30"
+    style="display: none;">
     <!-- Header with Minimize Button -->
     <div class="flex justify-between items-center bg-[#1D1D1E] p-4 border-b border-[#494A4D] rounded-t-xl">
-        <h3 class="text-lg font-semibold text-[#49467B]"> Live Comments</h3>
+        <h3 class="text-lg font-semibold text-[#49467B]">💬 Live Comments</h3>
         <button id="chat-toggle" class="text-[#494A4D] hover:text-[#49467B] text-xl focus:outline-none transition duration-300">−</button>
     </div>
 
@@ -77,21 +92,35 @@
 
         <form id="chat-form" class="mt-4 flex">
             <input type="text" id="chat-message-input" placeholder="Type a message..."
-                class="flex-1 px-4 py-2 rounded-l-lg bg-[#19191A] text-[#494A4D] border border-[#494A4D] focus:outline-none focus:ring-2 focus:ring-[#49467B] break-words transition duration-300"
+                class="flex-1 px-4 py-2 rounded-l-lg bg-[#19191A] text-white border border-[#494A4D] focus:outline-none focus:ring-2 focus:ring-[#49467B] break-words transition duration-300"
                 autocomplete="off">
             <button type="submit"
-                class="bg-[#49467B] hover:bg-[#49467B] text-white px-5 py-2 rounded-r-lg transition duration-300 ease-in-out shadow-md">Send</button>
+                class="bg-[#49467B] hover:bg-[#49467B]/90 text-white px-5 py-2 rounded-r-lg transition duration-300 ease-in-out shadow-md">Send</button>
         </form>
     </div>
 </div>
 
 <script>
+    // Show chat on icon click, hide icon
+    const chatBotIcon = document.getElementById('chat-bot-icon');
+    const chatContainer = document.getElementById('chat-container');
+    const chatToggle = document.getElementById('chat-toggle');
+    const chatBody = document.getElementById('chat-body');
     const commentBox = document.getElementById('live-comments');
     const chatInput = document.getElementById('chat-message-input');
     const chatForm = document.getElementById('chat-form');
-    const chatBody = document.getElementById('chat-body');
-    const toggleBtn = document.getElementById('chat-toggle');
 
+    chatBotIcon.addEventListener('click', () => {
+        chatContainer.style.display = 'flex';
+        chatBotIcon.style.display = 'none';
+    });
+
+    chatToggle.addEventListener('click', () => {
+        chatContainer.style.display = 'none';
+        chatBotIcon.style.display = 'flex';
+    });
+
+    // Chat WebSocket logic (unchanged)
     const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
     const socket = new WebSocket(wsScheme + '://' + window.location.host + '/ws/comments/');
 
@@ -99,8 +128,8 @@
         const data = JSON.parse(e.data);
         if (data.message && data.username) {
             const comment = document.createElement('div');
-            comment.innerHTML = `<strong class="text-[#49467B]">${data.username}</strong>: <span class="break-words">${data.message}</span>`;
-            comment.className = "bg-[#19191A] text-[#494A4D] p-2 rounded shadow-md whitespace-pre-wrap break-words";
+            comment.innerHTML = `<strong class="text-[#49467B]">${data.username}</strong>: <span class="break-words text-white">${data.message}</span>`;
+            comment.className = "bg-[#19191A] text-white p-2 rounded shadow-md whitespace-pre-wrap break-words";
             commentBox.appendChild(comment);
             commentBox.scrollTop = commentBox.scrollHeight;
         }
@@ -112,16 +141,6 @@
         if (message) {
             socket.send(JSON.stringify({ message: message }));
             chatInput.value = '';
-        }
-    });
-
-    toggleBtn.addEventListener('click', () => {
-        if (chatBody.style.display === 'none') {
-            chatBody.style.display = 'flex';
-            toggleBtn.textContent = '−';
-        } else {
-            chatBody.style.display = 'none';
-            toggleBtn.textContent = '+';
         }
     });
 
@@ -150,5 +169,44 @@
         }
     }
     getApod();
+
+    // Simple horizontal scroll on vertical scroll for celestial logs
+    const logsTrack = document.getElementById('logs-scroll-track');
+    const logsSection = document.getElementById('celestial-logs');
+
+    if (logsTrack && logsSection) {
+        window.addEventListener('scroll', () => {
+            const rect = logsSection.getBoundingClientRect();
+            const windowHeight = window.innerHeight;
+            if (rect.top < windowHeight && rect.bottom > 0) {
+                const sectionHeight = rect.height;
+                const scrollY = Math.min(Math.max(windowHeight - rect.top, 0), sectionHeight);
+                const maxTranslate = logsTrack.scrollWidth - logsSection.clientWidth;
+                const progress = scrollY / sectionHeight;
+                const translateX = -progress * 0.5 * maxTranslate; // 0.5 for slower scroll
+                logsTrack.style.transform = `translateX(${translateX}px)`;
+            }
+        });
+    }
 </script>
+
+<style>
+    .perspective-1000 {
+        perspective: 1000px;
+    }
+    #logs-carousel {
+        transform-style: preserve-3d;
+        width: 100%;
+        height: 100%;
+    }
+    .carousel-item {
+        transition: transform 0.5s cubic-bezier(.4,2,.6,1), opacity 0.5s;
+        opacity: 0.7;
+    }
+    .carousel-item.active {
+        opacity: 1;
+        z-index: 2;
+        box-shadow: 0 8px 32px 0 rgba(76,70,123,0.25);
+    }
+</style>
 {% endblock extra_body_content %}
