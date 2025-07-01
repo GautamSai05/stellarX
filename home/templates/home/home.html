@@ -44,7 +44,7 @@
                                 <img src="{{ log.photo.url }}" alt="Observation Photo" class="rounded-lg max-h-72 w-full object-cover mb-3 shadow-sm">
                             {% endif %}
                             <p class="text-sm text-[#494A4D]">
-                                Logged by <span class="text-[#49467B] font-medium">{{ log.user.username }}</span> on {{ log.created_at|date:"F d, Y" }}
+                                Logged by <a href="{% url 'profile' log.user.username %}" class="text-[#49467B] font-medium">{{ log.user.username }}</a> on {{ log.created_at|date:"F d, Y" }}
                             </p>
                         </div>
                     {% endfor %}
