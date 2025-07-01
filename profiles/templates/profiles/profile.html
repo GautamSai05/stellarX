@@ -105,6 +105,9 @@
     }
 
     document.getElementById('get-stargazing-conditions').addEventListener('click', () => {
+        const conditionsDiv = document.getElementById('stargazing-conditions');
+        conditionsDiv.innerHTML = '<p>Fetching stargazing conditions...</p>'; // Loading indicator
+
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
@@ -113,13 +116,13 @@
                 },
                 (error) => {
                     console.error('Geolocation error:', error);
-                    document.getElementById('stargazing-conditions').innerHTML = `<p>Geolocation access denied or failed. Defaulting to Chennai. Error: ${error.message}</p>`;
+                    conditionsDiv.innerHTML = `<p>Geolocation access denied or failed. Defaulting to Chennai. Error: ${error.message}</p>`;
                     // Default to Chennai, India
                     fetchStargazingConditions(13.0827, 80.2707);
                 }
             );
         } else {
-            document.getElementById('stargazing-conditions').innerHTML = '<p>Geolocation is not supported by this browser. Defaulting to Chennai.</p>';
+            conditionsDiv.innerHTML = '<p>Geolocation is not supported by this browser. Defaulting to Chennai.</p>';
             // Default to Chennai, India
             fetchStargazingConditions(13.0827, 80.2707);
         }
