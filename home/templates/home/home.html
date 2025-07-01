@@ -33,82 +33,26 @@
     </div>
 
     <!-- Logs -->
-    <div id="celestial-logs" class="p-0 overflow-hidden relative" style="height: 750px;">
-        <h2 class="text-3xl font-semibold mb-6 text-[#49467B]">📝 Recent Celestial Logs</h2>
+    <div id="celestial-logs">
+        <h2 class="text-3xl font-semibold mb-6 text-white">📝 Recent Celestial Logs</h2>
         {% if logs %}
-            <div id="logs-circular-container" class="relative w-full flex items-center justify-center" style="height: 500px;">
-                <div id="logs-circle" class="relative" style="width: 500px; height: 500px;">
-                    {% for log in logs %}
-                        <div class="celestial-log-item absolute w-72 h-64 bg-transparent p-4 rounded-lg shadow-lg transition-all duration-500 ease-in-out flex-shrink-0 transform" data-index="{{ forloop.counter0 }}">
-                            <div class="bg-[#1D1D1E] rounded-xl p-4 h-full border border-[#49467B]/30 shadow-xl">
-                                <h4 class="text-xl font-bold text-[#494A4D] mb-2">{{ log.title }}</h4>
-                                <p class="text-[#494A4D] mb-3 leading-relaxed text-sm">{{ log.description|truncatewords:20 }}</p>
-                                {% if log.photo %}
-                                    <img src="{{ log.photo.url }}" alt="Observation Photo" class="rounded-lg max-h-24 w-full object-cover mb-3 shadow-sm border border-[#49467B]/10">
-                                {% endif %}
-                                <p class="text-xs text-[#494A4D]">
-                                    Logged by <a href="{% url 'profile' log.user.username %}" class="text-[#49467B] font-medium hover:underline">{{ log.user.username }}</a> on {{ log.created_at|date:"F d, Y" }}
-                                </p>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-            
-            <!-- Interactive Wheel Controller -->
-            <div class="flex flex-col items-center mt-8 space-y-4">
-                <div class="relative">
-                    <!-- Wheel Background -->
-                    <div id="wheel-container" class="relative w-32 h-32 rounded-full bg-gradient-to-br from-[#49467B] to-[#6a5acd] shadow-xl border-4 border-[#1D1D1E] cursor-pointer select-none">
-                        <!-- Wheel Segments -->
-                        <div id="wheel-segments" class="absolute inset-0 rounded-full overflow-hidden">
-                            {% for log in logs %}
-                                <div class="wheel-segment absolute w-full h-full" data-index="{{ forloop.counter0 }}" style="transform: rotate({{ forloop.counter0|floatformat:0 }}deg);">
-                                    <div class="absolute top-1 left-1/2 transform -translate-x-1/2 w-1 h-8 bg-white opacity-40 rounded-full"></div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                        
-                        <!-- Center Hub -->
-                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center">
-                            <div class="w-3 h-3 bg-[#49467B] rounded-full"></div>
-                        </div>
-                        
-                        <!-- Rotation Indicator -->
-                        <div id="wheel-indicator" class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1 w-0 h-0 border-l-4 border-r-4 border-b-8 border-transparent border-b-white transition-transform duration-300"></div>
+            <div id="logs-grid" class="logs-tiling-grid gap-8">
+                {% for log in logs %}
+                    <div class="bg-[#1D1D1E] rounded-xl p-6 border border-[#49467B]/30 shadow-lg flex flex-col">
+                        <h4 class="text-xl font-bold text-white mb-2">{{ log.title }}</h4>
+                        <p class="text-[#a2a3a7] mb-4 leading-relaxed text-sm">{{ log.description }}</p>
+                        {% if log.photo %}
+                            <img src="{{ log.photo.url }}" alt="Observation Photo" class="rounded-lg max-h-48 w-full object-cover mb-4 shadow-md border border-[#49467B]/20">
+                        {% endif %}
+                        <p class="text-xs text-[#a2a3a7] mt-auto">
+                            Logged by <a href="{% url 'profile' log.user.username %}" class="text-[#49467B] font-medium hover:underline">{{ log.user.username }}</a> on {{ log.created_at|date:"F d, Y" }}
+                        </p>
                     </div>
-                </div>
-                
-                <!-- Navigation Buttons -->
-                <div class="flex space-x-4 items-center">
-                    <button id="prev-log" class="bg-[#49467B] hover:bg-[#6a5acd] text-white p-3 rounded-full transition duration-300 shadow-lg">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="15,18 9,12 15,6"></polyline>
-                        </svg>
-                    </button>
-                    
-                    <div class="text-center">
-                        <p class="text-[#494A4D] text-sm">Log <span id="current-log-number">1</span> of <span id="total-logs">{{ logs|length }}</span></p>
-                        <p class="text-[#49467B] font-medium text-xs mt-1">Drag wheel or use arrows</p>
-                    </div>
-                    
-                    <button id="next-log" class="bg-[#49467B] hover:bg-[#6a5acd] text-white p-3 rounded-full transition duration-300 shadow-lg">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="9,18 15,12 9,6"></polyline>
-                        </svg>
-                    </button>
-                </div>
-                
-                <!-- Log Counter Dots -->
-                <div id="log-dots" class="flex space-x-2">
-                    {% for log in logs %}
-                        <div class="log-dot w-3 h-3 rounded-full bg-[#494A4D] cursor-pointer transition-all duration-300 hover:bg-[#49467B]" data-index="{{ forloop.counter0 }}"></div>
-                    {% endfor %}
-                </div>
+                {% endfor %}
             </div>
         {% else %}
-            <p class="text-[#494A4D] text-lg">
-                No logs yet. <a href="{% url 'log_create' %}" class="text-[#49467B] underline hover:text-[#49467B] transition duration-300">Be the first to add one!</a>
+            <p class="text-[#a2a3a7] text-lg">
+                No logs yet. <a href="{% url 'log_create' %}" class="text-[#49467B] underline hover:text-[#6a5acd] transition duration-300">Be the first to add one!</a>
             </p>
         {% endif %}
     </div>
@@ -226,250 +170,30 @@
     }
     getApod();
 
-    // Circular wheel controller for celestial logs
-    const logsSection = document.getElementById('celestial-logs');
-    const logItems = document.querySelectorAll('.celestial-log-item');
-    const wheelContainer = document.getElementById('wheel-container');
-    const wheelIndicator = document.getElementById('wheel-indicator');
-    const wheelSegments = document.getElementById('wheel-segments');
-    const prevButton = document.getElementById('prev-log');
-    const nextButton = document.getElementById('next-log');
-    const currentLogNumber = document.getElementById('current-log-number');
-    const logDots = document.querySelectorAll('.log-dot');
-    
-    let currentLogIndex = 0;
-    let isWheelDragging = false;
-    let lastAngle = 0;
-    let totalRotation = 0;
-    
-    if (logsSection && logItems.length > 0) {
-        const radius = 200; // Radius of the circular path
-        const centerX = 250; // Center X of the circle
-        const centerY = 250; // Center Y of the circle
-        const totalItems = logItems.length;
-        
-        function updateCircularPosition(targetIndex = currentLogIndex) {
-            logItems.forEach((item, index) => {
-                // Calculate angle for each item (evenly distributed around circle)
-                const baseAngle = (index / totalItems) * 2 * Math.PI;
-                
-                // Add rotation to bring target item to front (bottom)
-                const rotationOffset = -(targetIndex / totalItems) * 2 * Math.PI;
-                const currentAngle = baseAngle + rotationOffset;
-                
-                // Calculate position on circle
-                const x = centerX + radius * Math.cos(currentAngle);
-                const y = centerY + radius * Math.sin(currentAngle);
-                
-                // Calculate scale and opacity based on Y position
-                const normalizedY = (y - (centerY - radius)) / (2 * radius);
-                const scale = 0.6 + 0.4 * (1 - Math.abs(normalizedY - 0.5) * 2);
-                const opacity = 0.4 + 0.6 * (1 - Math.abs(normalizedY - 0.5) * 2);
-                const zIndex = Math.floor(scale * 10);
-                
-                // Apply transformations
-                item.style.transform = `translate(${x - 144}px, ${y - 128}px) scale(${scale})`;
-                item.style.opacity = opacity;
-                item.style.zIndex = zIndex;
-                
-                // Add glow effect to featured item
-                if (index === targetIndex) {
-                    item.style.boxShadow = '0 0 30px rgba(73, 70, 123, 0.8)';
-                } else {
-                    item.style.boxShadow = 'none';
-                }
-            });
-            
-            // Update wheel indicator
-            const wheelRotation = -(targetIndex / totalItems) * 360;
-            wheelIndicator.style.transform = `rotate(${wheelRotation}deg) translateX(-50%) translateY(-4px)`;
-            wheelSegments.style.transform = `rotate(${wheelRotation}deg)`;
-            
-            // Update UI elements
-            currentLogNumber.textContent = targetIndex + 1;
-            
-            // Update dots
-            logDots.forEach((dot, index) => {
-                if (index === targetIndex) {
-                    dot.classList.add('bg-[#49467B]');
-                    dot.classList.remove('bg-[#494A4D]');
-                    dot.style.transform = 'scale(1.3)';
-                } else {
-                    dot.classList.remove('bg-[#49467B]');
-                    dot.classList.add('bg-[#494A4D]');
-                    dot.style.transform = 'scale(1)';
-                }
-            });
-        }
-        
-        function setCurrentLog(index) {
-            currentLogIndex = Math.max(0, Math.min(totalItems - 1, index));
-            updateCircularPosition(currentLogIndex);
-        }
-        
-        // Wheel drag functionality
-        function getAngle(e, element) {
-            const rect = element.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-            const x = (e.clientX || e.touches[0].clientX) - centerX;
-            const y = (e.clientY || e.touches[0].clientY) - centerY;
-            return Math.atan2(y, x) * (180 / Math.PI);
-        }
-        
-        function startDrag(e) {
-            isWheelDragging = true;
-            lastAngle = getAngle(e, wheelContainer);
-            wheelContainer.style.cursor = 'grabbing';
-            e.preventDefault();
-        }
-        
-        function drag(e) {
-            if (!isWheelDragging) return;
-            
-            const currentAngle = getAngle(e, wheelContainer);
-            let deltaAngle = currentAngle - lastAngle;
-            
-            // Handle angle wraparound
-            if (deltaAngle > 180) deltaAngle -= 360;
-            if (deltaAngle < -180) deltaAngle += 360;
-            
-            totalRotation += deltaAngle;
-            lastAngle = currentAngle;
-            
-            // Calculate which log should be active based on rotation
-            const segmentAngle = 360 / totalItems;
-            let newIndex = Math.round(-totalRotation / segmentAngle) % totalItems;
-            if (newIndex < 0) newIndex += totalItems;
-            
-            if (newIndex !== currentLogIndex) {
-                setCurrentLog(newIndex);
+    document.addEventListener('DOMContentLoaded', function() {
+        const logsGrid = document.getElementById('logs-grid');
+        const logItems = logsGrid.children.length;
+
+        function updateGridColumns() {
+            let columns;
+            const width = window.innerWidth;
+
+            if (width < 768) { // Mobile: 1 column
+                columns = '1fr';
+            } else {
+                // For larger screens, use auto-fit to create a dynamic number of columns
+                // This will create columns that are at least 250px wide, filling the available space
+                columns = 'repeat(2, 1fr)';
             }
-            
-            e.preventDefault();
+
+            logsGrid.style.gridTemplateColumns = columns;
         }
-        
-        function endDrag() {
-            isWheelDragging = false;
-            wheelContainer.style.cursor = 'pointer';
-        }
-        
-        // Event listeners for wheel
-        wheelContainer.addEventListener('mousedown', startDrag);
-        wheelContainer.addEventListener('touchstart', startDrag);
-        document.addEventListener('mousemove', drag);
-        document.addEventListener('touchmove', drag);
-        document.addEventListener('mouseup', endDrag);
-        document.addEventListener('touchend', endDrag);
-        
-        // Navigation buttons
-        prevButton.addEventListener('click', () => {
-            setCurrentLog(currentLogIndex - 1);
-        });
-        
-        nextButton.addEventListener('click', () => {
-            setCurrentLog(currentLogIndex + 1);
-        });
-        
-        // Dot navigation
-        logDots.forEach((dot, index) => {
-            dot.addEventListener('click', () => {
-                setCurrentLog(index);
-            });
-        });
-        
-        // Scroll-based rotation (optional - you can remove this if you only want manual control)
-        function updateFromScroll() {
-            const rect = logsSection.getBoundingClientRect();
-            const windowHeight = window.innerHeight;
-            
-            if (rect.top < windowHeight && rect.bottom > 0) {
-                const sectionHeight = rect.height;
-                const scrollY = Math.min(Math.max(windowHeight - rect.top, 0), sectionHeight);
-                const progress = scrollY / sectionHeight;
-                const scrollBasedIndex = Math.floor(progress * totalItems);
-                
-                if (scrollBasedIndex !== currentLogIndex && !isWheelDragging) {
-                    setCurrentLog(scrollBasedIndex);
-                }
-            }
-        }
-        
-        // Initialize positions
-        updateCircularPosition();
-        
-        // Update on scroll (comment out if you want only manual control)
-        window.addEventListener('scroll', updateFromScroll);
-        
-        // Initialize wheel segments
-        const segmentAngle = 360 / totalItems;
-        document.querySelectorAll('.wheel-segment').forEach((segment, index) => {
-            segment.style.transform = `rotate(${index * segmentAngle}deg)`;
-        });
-    }
+
+        // Initial grid setup and on resize
+        updateGridColumns();
+        window.addEventListener('resize', updateGridColumns);
+    });
 </script>
 
-<style>
-    .perspective-1000 {
-        perspective: 1000px;
-    }
-    
-    .celestial-log-item {
-        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        will-change: transform, opacity;
-    }
-    
-    .celestial-log-item:hover {
-        transform-origin: center;
-        z-index: 1000 !important;
-    }
-    
-    #celestial-logs {
-        perspective: 1000px;
-    }
-    
-    #logs-circular-container {
-        transform-style: preserve-3d;
-    }
-    
-    /* Wheel Styles */
-    #wheel-container {
-        cursor: pointer;
-        user-select: none;
-        position: relative;
-    }
-    
-    #wheel-container:hover {
-        transform: scale(1.05);
-        box-shadow: 0 0 20px rgba(73, 70, 123, 0.4);
-    }
-    
-    #wheel-container:active {
-        transform: scale(0.98);
-    }
-    
-    .wheel-segment {
-        transition: all 0.3s ease;
-    }
-    
-    .log-dot {
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    .log-dot:hover {
-        transform: scale(1.2);
-    }
-    
-    #wheel-indicator {
-        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-    }
-    
-    /* Prevent text selection during drag */
-    .no-select {
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-    }
-</style>
+
 {% endblock extra_body_content %}

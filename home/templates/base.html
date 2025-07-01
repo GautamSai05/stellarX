@@ -78,6 +78,23 @@
         .animate-fade-in {
             animation: fade-in 0.8s ease-out forwards;
         }
+
+        /* Tiling Grid Styles */
+        .logs-tiling-grid {
+            display: grid;
+            grid-auto-flow: dense; /* Fills in empty spaces */
+        }
+
+        /* Tile Styling */
+        .logs-tiling-grid > div {
+            background-color: #1D1D1E; /* Dark background for tiles */
+            border: 1px solid #49467B; /* Border color from theme */
+            border-radius: 0.75rem; /* Tailwind's rounded-xl */
+            padding: 1.5rem; /* Tailwind's p-6 */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Tailwind's shadow-lg */
+            display: flex;
+            flex-direction: column;
+        }
     </style>
 
     <script>
