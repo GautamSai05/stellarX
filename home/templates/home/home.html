@@ -24,15 +24,11 @@
         <!-- NASA APOD -->
         <div class="bg-[#1D1D1E] rounded-xl shadow-lg p-8 border border-[#49467B]/30">
             <h2 class="text-3xl font-semibold mb-6 text-[#49467B]">🔭 NASA Astronomy Picture of the Day</h2>
-            {% if apod.url %}
-                <h3 class="text-xl font-medium mb-3 text-[#494A4D]">{{ apod.title }}</h3>
-                <img src="{{ apod.url }}" alt="NASA APOD" class="rounded-lg max-h-96 w-full object-cover mb-4 shadow-md">
-                <p class="text-[#494A4D] text-base leading-relaxed">{{ apod.explanation }}</p>
-            {% else %}
-                <p class="text-[#494A4D] text-lg">
-                    NASA APOD data not available right now. Please check back later.
-                </p>
-            {% endif %}
+            <div id="apod-container">
+                <img id="apod-image" src="" alt="NASA Picture of the Day" class="rounded-lg max-h-96 w-full object-cover mb-4 shadow-md">
+                <h3 id="apod-title" class="text-xl font-medium mb-3 text-[#494A4D]"></h3>
+                <p id="apod-explanation" class="text-[#494A4D] text-base leading-relaxed"></p>
+            </div>
         </div>
 
         <!-- Logs -->
@@ -128,5 +124,31 @@
             toggleBtn.textContent = '+';
         }
     });
+
+    async function getApod() {
+        const apiKey = '{{ nasa_api_key }}';
+        const url = `https://api.nasa.gov/planetary/apod?api_key=${apiKey}`;
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            if (data.media_type === 'image') {
+                document.getElementById('apod-image').src = data.url;
+            } else if (data.media_type === 'video') {
+                const videoFrame = document.createElement('iframe');
+                videoFrame.src = data.url;
+                videoFrame.width = "100%";
+                videoFrame.height = "500px";
+                videoFrame.allowFullscreen = true;
+                const imageElement = document.getElementById('apod-image');
+                imageElement.parentNode.replaceChild(videoFrame, imageElement);
+            }
+            document.getElementById('apod-title').textContent = data.title;
+            document.getElementById('apod-explanation').textContent = data.explanation;
+        } catch (error) {
+            console.error('Error fetching APOD:', error);
+            document.getElementById('apod-container').innerHTML = '<p>Could not load the Picture of the Day. Please try again later.</p>';
+        }
+    }
+    getApod();
 </script>
 {% endblock extra_body_content %}

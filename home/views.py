@@ -1,7 +1,12 @@
 from django.shortcuts import render
+import requests
 from observations.models import Observation
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Create your views here.
 def splash(request):
@@ -9,14 +14,7 @@ def splash(request):
 
 def home_view(request):
         logs = Observation.objects.all().order_by('-created_at')[:10]
-        apod = {}
-        try:
-            r = requests.get("https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY")
-            if r.status_code == 200:
-                apod = r.json()
-        except:
-            pass
-        return render(request, 'home/home.html', {'logs': logs, 'apod': apod})
+        return render(request, 'home/home.html', {'logs': logs, 'nasa_api_key': os.getenv('NASA_API_KEY')})
 
 def signup_view(request):
     if request.method == 'POST':
