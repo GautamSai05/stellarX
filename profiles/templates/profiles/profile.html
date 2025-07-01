@@ -11,6 +11,7 @@
         </p>
     </div>
 
+    {% if user == request.user %}
     <div class="bg-[#1D1D1E] rounded-xl shadow-xl p-8 border border-[#49467B]/30">
         <h2 class="text-3xl font-semibold mb-6 text-[#49467B]">🔭 Stargazing Conditions</h2>
         <button id="get-stargazing-conditions" class="inline-block bg-[#49467B] hover:bg-[#49467B] text-white font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out shadow-lg transform hover:scale-105">
@@ -18,6 +19,7 @@
         </button>
         <div id="stargazing-conditions" class="mt-6"></div>
     </div>
+{% endif %}
 
     <!-- Logs -->
     <div class="bg-[#1D1D1E] rounded-xl shadow-xl p-8 border border-[#49467B]/30">
