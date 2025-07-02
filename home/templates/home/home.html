@@ -40,23 +40,30 @@
         </div>
     </div>
 
-    <!-- Logs -->
-    <div id="celestial-logs">
+    <!-- Logs Swiper Section -->
+    <div id="celestial-logs" class="mt-12">
         <h2 class="text-3xl font-semibold mb-6 text-white">📝 Recent Celestial Logs</h2>
         {% if logs %}
-            <div id="logs-grid" class="logs-tiling-grid gap-8">
-                {% for log in logs %}
-                    <div class="bg-[#1D1D1E] rounded-xl p-6 border border-[#49467B]/30 shadow-lg flex flex-col">
-                        <h4 class="text-xl font-bold text-white mb-2">{{ log.title }}</h4>
-                        <p class="text-[#a2a3a7] mb-4 leading-relaxed text-sm">{{ log.description }}</p>
+            <div class="swiper celestial-swiper" style="width: 350px; height: 500px;">
+                <div class="swiper-wrapper">
+                    {% for log in logs %}
+                    <div class="swiper-slide bg-[#1D1D1E] rounded-xl p-6 border border-[#49467B]/30 shadow-lg flex flex-col relative">
                         {% if log.photo %}
                             <img src="{{ log.photo.url }}" alt="Observation Photo" class="rounded-lg max-h-48 w-full object-cover mb-4 shadow-md border border-[#49467B]/20">
                         {% endif %}
-                        <p class="text-xs text-[#a2a3a7] mt-auto">
+                        <div class="overlay" style="position:absolute; inset:0; background: linear-gradient(to top, #0f2027, transparent, transparent); border-radius:inherit;"></div>
+                        <h4 class="text-xl font-bold text-white mb-2 relative z-10">{{ log.title }}</h4>
+                        <p class="text-[#a2a3a7] mb-4 leading-relaxed text-sm relative z-10">{{ log.description }}</p>
+                        <p class="text-xs text-[#a2a3a7] mt-auto relative z-10">
                             Logged by <a href="{% url 'profile' log.user.username %}" class="text-[#49467B] font-medium hover:underline">{{ log.user.username }}</a> on {{ log.created_at|date:"F d, Y" }}
                         </p>
                     </div>
-                {% endfor %}
+                    {% endfor %}
+                </div>
+                <!-- Optional Swiper navigation -->
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-pagination"></div>
             </div>
         {% else %}
             <p class="text-[#a2a3a7] text-lg">
@@ -176,30 +183,30 @@
     }
     getApod();
 
+    // Swiper for celestial logs
     document.addEventListener('DOMContentLoaded', function() {
-        const logsGrid = document.getElementById('logs-grid');
-        const logItems = logsGrid.children.length;
-
-        function updateGridColumns() {
-            let columns;
-            const width = window.innerWidth;
-
-            if (width < 768) { // Mobile: 1 column
-                columns = '1fr';
-            } else {
-                // For larger screens, use auto-fit to create a dynamic number of columns
-                // This will create columns that are at least 250px wide, filling the available space
-                columns = 'repeat(2, 1fr)';
-            }
-
-            logsGrid.style.gridTemplateColumns = columns;
-        }
-
-        // Initial grid setup and on resize
-        updateGridColumns();
-        window.addEventListener('resize', updateGridColumns);
+        new Swiper('.celestial-swiper', {
+            effect: "cards",
+            grabCursor: true,
+            initialSlide: 0,
+            speed: 500,
+            loop: true,
+            rotate: true,
+            mousewheel: { invert: false },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+        });
     });
 </script>
+<!-- Swiper.js CDN (add in your <head> or before </body>) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
 
 {% endblock extra_body_content %}
