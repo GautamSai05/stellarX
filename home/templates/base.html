@@ -20,6 +20,7 @@
     </button>
     <div class="hidden md:flex items-center space-x-6">
         <a href="{% url 'crowdfunding' %}" class="text-white hover:text-gray-300 text-lg font-medium transition duration-300">Funding</a>
+        <a href="{% url 'stellarium' %}" class="text-white hover:text-gray-300 text-lg font-medium transition duration-300">Stellarium</a>
         {% if user.is_authenticated %}
             <a href="{% url 'profile' user.username %}" class="text-white hover:text-gray-300 text-lg font-medium transition">My Profile</a>
             <span class="text-white">Hi, {{ user.username }}</span>
@@ -45,6 +46,7 @@
     </div>
     <nav class="flex flex-col p-4 space-y-4">
         <a href="{% url 'crowdfunding' %}" class="text-white hover:text-gray-300 text-xl font-medium">Funding</a>
+        <a href="{% url 'stellarium' %}" class="text-white hover:text-gray-300 text-xl font-medium">Stellarium</a>
         {% if user.is_authenticated %}
             <a href="{% url 'profile' user.username %}" class="text-white hover:text-gray-300 text-xl font-medium">My Profile</a>
             <span class="text-gray-500 text-xl">Hi, {{ user.username }}</span>

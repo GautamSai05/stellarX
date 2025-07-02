@@ -8,6 +8,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+def stellarium(request):
+    return render(request, 'home/stellarium.html')
+
 # Create your views here.
 def splash(request):
     return render(request,'home/splash.html')
