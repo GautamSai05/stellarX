@@ -104,85 +104,8 @@
 {% endblock %}
 
 {% block extra_body_content %}
-<!-- Chat Bot Icon (initially visible) -->
-<button id="chat-bot-icon"
-    class="fixed bottom-6 right-6 z-50 bg-black text-white dark:bg-white dark:text-black hover:bg-white hover:text-black dark:hover:bg-black dark:hover:text-white rounded-full w-16 h-16 flex items-center justify-center shadow-xl transition duration-300"
-    aria-label="Open Live Chat">
-    <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <ellipse cx="19" cy="30" rx="10" ry="3" fill="#ccc" fill-opacity="0.3"/>
-      <path d="M19 4C22.866 4 26 7.13401 26 11C26 13.2091 24.2091 15 22 15H16C13.7909 15 12 13.2091 12 11C12 7.13401 15.134 4 19 4Z" fill="currentColor"/>
-      <path d="M19 15V28" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      <ellipse cx="19" cy="11" rx="2" ry="2" fill="#ccc"/>
-      <ellipse cx="15" cy="19" rx="2" ry="1" fill="#ccc"/>
-      <ellipse cx="23" cy="19" rx="2" ry="1" fill="#ccc"/>
-      <ellipse cx="19" cy="24" rx="2" ry="1" fill="#ccc"/>
-    </svg>
-</button>
-
-<!-- Fixed Chat Section (initially hidden) -->
-<div id="chat-container"
-    class="fixed bottom-4 right-4 w-full max-w-sm sm:max-w-md max-h-[70vh] bg-white text-black dark:bg-black dark:text-white rounded-xl shadow-xl z-50 flex flex-col border border-gray-300 dark:border-[#444]"
-    style="display: none;">
-    <div class="flex justify-between items-center p-4 border-b border-gray-300 dark:border-[#444] rounded-t-xl">
-        <h3 class="text-lg font-semibold">💬 Live Comments</h3>
-        <button id="chat-toggle" class="text-black dark:text-white hover:text-gray-600 dark:hover:text-gray-400 text-xl focus:outline-none transition duration-300">−</button>
-    </div>
-    <div id="chat-body" class="flex-1 flex flex-col p-4 space-y-3 overflow-y-auto max-h-[60vh]">
-        <div id="live-comments" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
-        <form id="chat-form" class="mt-4 flex">
-            <input type="text" id="chat-message-input" placeholder="Type a message..."
-                class="flex-1 px-4 py-2 rounded-l-lg bg-[#f4f4f4] dark:bg-[#191919] text-black dark:text-white border border-gray-300 dark:border-[#444] focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition duration-300"
-                autocomplete="off">
-            <button type="submit"
-                class="bg-black text-white dark:bg-white dark:text-black hover:bg-white hover:text-black dark:hover:bg-black dark:hover:text-white px-5 py-2 rounded-r-lg transition duration-300 ease-in-out shadow-md">Send</button>
-        </form>
-    </div>
-</div>
-
-<script>
-    // Show chat on icon click, hide icon
-    const chatBotIcon = document.getElementById('chat-bot-icon');
-    const chatContainer = document.getElementById('chat-container');
-    const chatToggle = document.getElementById('chat-toggle');
-    const chatBody = document.getElementById('chat-body');
-    const commentBox = document.getElementById('live-comments');
-    const chatInput = document.getElementById('chat-message-input');
-    const chatForm = document.getElementById('chat-form');
-
-    chatBotIcon.addEventListener('click', () => {
-        chatContainer.style.display = 'flex';
-        chatBotIcon.style.display = 'none';
-    });
-
-    chatToggle.addEventListener('click', () => {
-        chatContainer.style.display = 'none';
-        chatBotIcon.style.display = 'flex';
-    });
-
-    // Chat WebSocket logic
-    const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
-    const socket = new WebSocket(wsScheme + '://' + window.location.host + '/ws/comments/');
-
-    socket.onmessage = function (e) {
-        const data = JSON.parse(e.data);
-        if (data.message && data.username) {
-            const comment = document.createElement('div');
-            comment.innerHTML = `<strong class="text-white">${data.username}</strong>: <span class="break-words text-white">${data.message}</span>`;
-            comment.className = "bg-[#19191A] text-white p-2 rounded shadow-md whitespace-pre-wrap break-words";
-            commentBox.appendChild(comment);
-            commentBox.scrollTop = commentBox.scrollHeight;
-        }
-    };
-
-    chatForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-        const message = chatInput.value.trim();
-        if (message) {
-            socket.send(JSON.stringify({ message: message }));
-            chatInput.value = '';
-        }
-    });
-
+    {% include "home/chatbot.html" %}
+    <script>
     async function getApod() {
         const apiKey = '{{ nasa_api_key }}';
         const url = `https://api.nasa.gov/planetary/apod?api_key=${apiKey}`;
@@ -266,124 +189,124 @@
             }
         });
     });
-</script>
+    </script>
 
-<style>
-/* Custom line-clamp utilities for better text truncation */
-.line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-.line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-.line-clamp-4 {
-    display: -webkit-box;
-    -webkit-line-clamp: 4;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
+    <style>
+    /* Custom line-clamp utilities for better text truncation */
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .line-clamp-3 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .line-clamp-4 {
+        display: -webkit-box;
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
 
-/* Unified Swiper Styles */
-.celestial-swiper {
-    margin: 0 auto;
-    position: relative;
-    overflow: hidden;
-    list-style: none;
-    padding: 0;
-    z-index: 1;
-}
-
-/* Mobile styles */
-@media (max-width: 1023px) {
+    /* Unified Swiper Styles */
     .celestial-swiper {
-        width: 350px;
-        height: 500px;
+        margin: 0 auto;
+        position: relative;
+        overflow: hidden;
+        list-style: none;
+        padding: 0;
+        z-index: 1;
     }
-    
-    .celestial-swiper .swiper-slide {
-        border-radius: 18px;
-        font-size: 22px;
+
+    /* Mobile styles */
+    @media (max-width: 1023px) {
+        .celestial-swiper {
+            width: 350px;
+            height: 500px;
+        }
+        
+        .celestial-swiper .swiper-slide {
+            border-radius: 18px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #fff;
+            background: #1D1D1E;
+        }
+    }
+
+    /* Desktop styles */
+    @media (min-width: 1024px) {
+        .celestial-swiper {
+            width: 700px;
+            height: 320px;
+        }
+        
+        .celestial-swiper .swiper-slide {
+            border-radius: 18px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #fff;
+            background: #1D1D1E;
+        }
+    }
+
+    /* Enhanced hover effects */
+    .celestial-logs .swiper-slide:hover {
+        transform: translateY(-2px);
+        transition: all 0.3s ease;
+    }
+
+    /* Navigation button styles */
+    .swiper-button-next,
+    .swiper-button-prev {
+        color: #49467B !important;
+        background: rgba(255, 255, 255, 0.1);
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+    }
+
+    .swiper-button-next:hover,
+    .swiper-button-prev:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: #6a5acd !important;
+    }
+
+    .swiper-button-next:after,
+    .swiper-button-prev:after {
+        font-size: 16px;
         font-weight: bold;
-        color: #fff;
-        background: #1D1D1E;
     }
-}
 
-/* Desktop styles */
-@media (min-width: 1024px) {
-    .celestial-swiper {
-        width: 700px;
-        height: 320px;
+    /* Pagination styles */
+    .swiper-pagination-bullet {
+        background: #49467B;
+        opacity: 0.5;
     }
-    
-    .celestial-swiper .swiper-slide {
+
+    .swiper-pagination-bullet-active {
+        background: #6a5acd;
+        opacity: 1;
+    }
+
+    /* Cards effect shadows and positioning */
+    .swiper-cards .swiper-slide {
+        overflow: hidden;
         border-radius: 18px;
-        font-size: 22px;
-        font-weight: bold;
-        color: #fff;
-        background: #1D1D1E;
     }
-}
 
-/* Enhanced hover effects */
-.celestial-logs .swiper-slide:hover {
-    transform: translateY(-2px);
-    transition: all 0.3s ease;
-}
+    .swiper-cards .swiper-slide-shadow {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 18px;
+    }
+    </style>
 
-/* Navigation button styles */
-.swiper-button-next,
-.swiper-button-prev {
-    color: #49467B !important;
-    background: rgba(255, 255, 255, 0.1);
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
-}
-
-.swiper-button-next:hover,
-.swiper-button-prev:hover {
-    background: rgba(255, 255, 255, 0.2);
-    color: #6a5acd !important;
-}
-
-.swiper-button-next:after,
-.swiper-button-prev:after {
-    font-size: 16px;
-    font-weight: bold;
-}
-
-/* Pagination styles */
-.swiper-pagination-bullet {
-    background: #49467B;
-    opacity: 0.5;
-}
-
-.swiper-pagination-bullet-active {
-    background: #6a5acd;
-    opacity: 1;
-}
-
-/* Cards effect shadows and positioning */
-.swiper-cards .swiper-slide {
-    overflow: hidden;
-    border-radius: 18px;
-}
-
-.swiper-cards .swiper-slide-shadow {
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 18px;
-}
-</style>
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 {% endblock extra_body_content %}
