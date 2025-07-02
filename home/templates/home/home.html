@@ -62,7 +62,7 @@
 {% block extra_body_content %}
 <!-- Chat Bot Icon (initially visible) -->
 <button id="chat-bot-icon"
-    class="fixed bottom-6 right-6 z-50 bg-[#49467B] hover:bg-[#6a5acd] text-white rounded-full w-16 h-16 flex items-center justify-center shadow-xl transition duration-300"
+        class="fixed bottom-6 right-6 z-50 bg-gray-800 hover:bg-gray-700 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-xl transition duration-300"
     aria-label="Open Live Chat">
     <!-- Spaceship SVG icon -->
     <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -128,7 +128,7 @@
         const data = JSON.parse(e.data);
         if (data.message && data.username) {
             const comment = document.createElement('div');
-            comment.innerHTML = `<strong class="text-[#49467B]">${data.username}</strong>: <span class="break-words text-white">${data.message}</span>`;
+                                            comment.innerHTML = `<strong class="text-white">${data.username}</strong>: <span class="break-words text-white">${data.message}</span>`;
             comment.className = "bg-[#19191A] text-white p-2 rounded shadow-md whitespace-pre-wrap break-words";
             commentBox.appendChild(comment);
             commentBox.scrollTop = commentBox.scrollHeight;
