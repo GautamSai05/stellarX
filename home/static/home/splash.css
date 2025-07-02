@@ -19,12 +19,12 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: radial-gradient(2px 2px at 20px 30px, #494A4D, rgba(0,0,0,0)),
-                      radial-gradient(2px 2px at 40px 70px, #494A4D, rgba(0,0,0,0)),
-                      radial-gradient(2px 2px at 50px 160px, #494A4D, rgba(0,0,0,0)),
-                      radial-gradient(2px 2px at 90px 120px, #494A4D, rgba(0,0,0,0)),
-                      radial-gradient(2px 2px at 130px 190px, #494A4D, rgba(0,0,0,0)),
-                      radial-gradient(2px 2px at 160px 40px, #494A4D, rgba(0,0,0,0));
+    background-image:                       radial-gradient(2px 2px at 20px 30px, #CCCCCC, rgba(0,0,0,0)),
+                      radial-gradient(2px 2px at 40px 70px, #CCCCCC, rgba(0,0,0,0)),
+                      radial-gradient(2px 2px at 50px 160px, #CCCCCC, rgba(0,0,0,0)),
+                      radial-gradient(2px 2px at 90px 120px, #CCCCCC, rgba(0,0,0,0)),
+                      radial-gradient(2px 2px at 130px 190px, #CCCCCC, rgba(0,0,0,0)),
+                      radial-gradient(2px 2px at 160px 40px, #CCCCCC, rgba(0,0,0,0));
     background-repeat: repeat;
     background-size: 200px 200px;
     opacity: 0.7;
@@ -54,8 +54,8 @@ h1 {
 }
 
 @keyframes subtle-glow {
-    from { text-shadow: 0 0 5px #49467B; }
-    to { text-shadow: 0 0 10px #49467B, 0 0 15px #49467B; }
+    from { text-shadow: 0 0 5px #666666; }
+    to { text-shadow: 0 0 10px #666666, 0 0 15px #666666; }
 }
 
 canvas {

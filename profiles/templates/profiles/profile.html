@@ -40,7 +40,7 @@
                 {% endfor %}
             </div>
         {% else %}
-            <p class="text-[#494A4D] text-lg">
+            <p class="text-gray-300 text-lg">
                 {{ user.username }} has not logged any observations yet.
             </p>
         {% endif %}
@@ -93,7 +93,7 @@
             if (bestTime) {
                 conditionsDiv.innerHTML = `
                     <h3 class="text-xl font-medium mb-3 text-[#494A4D]">Best Stargazing Time: ${bestTime.toLocaleString()}</h3>
-                    <p class="text-[#494A4D] text-base leading-relaxed">
+                    <p class="text-gray-300 text-base leading-relaxed">
                         At this time, the conditions are expected to be optimal for stargazing, with low cloud cover, high visibility, and low wind.
                     </p>
                 `;
