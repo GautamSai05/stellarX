@@ -7,32 +7,29 @@
     <!-- FEEDS Header -->
     <div>
         <h1 class="text-5xl font-extrabold mb-4 text-white animate-pulse tracking-tight">FEEDS</h1>
-
         <p class="text-xl text-[#494A4D] leading-relaxed">
             Explore daily celestial wonders and recent sky logs from fellow stargazers.
         </p>
     </div>
 
     {% if user.is_authenticated %}
-
-<div>
-    <a href="{% url 'log_create' %}"
-       class="inline-block 
-              bg-white text-black 
-              hover:bg-black hover:text-white 
-              dark:bg-white dark:text-black 
-              dark:hover:bg-black dark:hover:text-white 
-              font-bold py-3 px-6 rounded-full 
-              transition duration-300 ease-in-out shadow-lg transform hover:scale-105">
-        ➕ Create New Log
-    </a>
-</div>
+    <div>
+        <a href="{% url 'log_create' %}"
+           class="inline-block 
+                  bg-white text-black 
+                  hover:bg-black hover:text-white 
+                  dark:bg-white dark:text-black 
+                  dark:hover:bg-black dark:hover:text-white 
+                  font-bold py-3 px-6 rounded-full 
+                  transition duration-300 ease-in-out shadow-lg transform hover:scale-105">
+            ➕ Create New Log
+        </a>
+    </div>
     {% endif %}
 
     <!-- NASA APOD -->
     <div class="bg-[#1D1D1E] rounded-xl shadow-lg p-8 border border-[#49467B]/30">
         <h2 class="text-3xl font-semibold mb-6 text-white">🔭 NASA Astronomy Picture of the Day</h2>
-
         <div id="apod-container">
             <img id="apod-image" src="" alt="NASA Picture of the Day" class="rounded-lg max-h-96 w-full object-cover mb-4 shadow-md border border-[#49467B]/20">
             <h3 id="apod-title" class="text-xl font-medium mb-3 text-[#494A4D]"></h3>
@@ -40,29 +37,61 @@
         </div>
     </div>
 
-    <!-- Logs Swiper Section -->
-    <div id="celestial-logs" class="mt-12">
+    <!-- Unified Swiper Layout for Both Desktop and Mobile -->
+    <div id="celestial-logs" class="mt-12 celestial-logs">
         <h2 class="text-3xl font-semibold mb-6 text-white">📝 Recent Celestial Logs</h2>
         {% if logs %}
-            <div class="swiper celestial-swiper" style="width: 350px; height: 500px;">
+            <div class="swiper celestial-swiper">
                 <div class="swiper-wrapper">
                     {% for log in logs %}
-                    <div class="swiper-slide bg-[#1D1D1E] rounded-xl p-6 border border-[#49467B]/30 shadow-lg flex flex-col relative">
-                        {% if log.photo %}
-                            <img src="{{ log.photo.url }}" alt="Observation Photo" class="rounded-lg max-h-48 w-full object-cover mb-4 shadow-md border border-[#49467B]/20">
-                        {% endif %}
-                        <div class="overlay" style="position:absolute; inset:0; background: linear-gradient(to top, #0f2027, transparent, transparent); border-radius:inherit;"></div>
-                        <h4 class="text-xl font-bold text-white mb-2 relative z-10">{{ log.title }}</h4>
-                        <p class="text-[#a2a3a7] mb-4 leading-relaxed text-sm relative z-10">{{ log.description }}</p>
-                        <p class="text-xs text-[#a2a3a7] mt-auto relative z-10">
-                            Logged by <a href="{% url 'profile' log.user.username %}" class="text-[#49467B] font-medium hover:underline">{{ log.user.username }}</a> on {{ log.created_at|date:"F d, Y" }}
-                        </p>
+                    <div class="swiper-slide">
+                        <div class="bg-[#1D1D1E] rounded-xl border border-[#49467B]/30 shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 h-full">
+                            <div class="flex flex-col lg:flex-row h-full lg:h-80">
+                                <!-- Image Section -->
+                                <div class="w-full lg:w-2/5 relative overflow-hidden h-48 lg:h-full">
+                                    {% if log.photo %}
+                                        <img src="{{ log.photo.url }}" alt="Observation Photo" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105">
+                                    {% else %}
+                                        <div class="w-full h-full bg-gradient-to-br from-[#49467B]/20 to-[#1D1D1E] flex items-center justify-center">
+                                            <svg class="w-16 h-16 text-[#49467B]/50" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                                            </svg>
+                                        </div>
+                                    {% endif %}
+                                    <!-- Mobile overlay -->
+                                    <div class="lg:hidden absolute inset-0 bg-gradient-to-t from-[#1D1D1E]/80 via-transparent to-transparent"></div>
+                                    <!-- Desktop overlay -->
+                                    <div class="hidden lg:block absolute inset-0 bg-gradient-to-r from-transparent to-[#1D1D1E]/20"></div>
+                                </div>
+                                
+                                <!-- Details Section -->
+                                <div class="w-full lg:w-3/5 p-6 flex flex-col justify-between">
+                                    <div>
+                                        <h4 class="text-xl lg:text-2xl font-bold text-white mb-3 line-clamp-2">{{ log.title }}</h4>
+                                        <p class="text-[#a2a3a7] leading-relaxed text-sm line-clamp-3 lg:line-clamp-4 mb-4">{{ log.description }}</p>
+                                    </div>
+                                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                        <p class="text-xs text-[#a2a3a7]">
+                                            Logged by 
+                                            <a href="{% url 'profile' log.user.username %}" 
+                                               class="text-[#49467B] font-medium hover:text-[#6a5acd] transition duration-300">
+                                                {{ log.user.username }}
+                                            </a>
+                                        </p>
+                                        <p class="text-xs text-[#a2a3a7]">{{ log.created_at|date:"F d, Y" }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     {% endfor %}
                 </div>
-                <!-- Optional Swiper navigation -->
+                
+                <!-- Navigation buttons -->
                 <div class="swiper-button-next"></div>
                 <div class="swiper-button-prev"></div>
+                
+                <!-- Pagination -->
                 <div class="swiper-pagination"></div>
             </div>
         {% else %}
@@ -75,8 +104,6 @@
 {% endblock %}
 
 {% block extra_body_content %}
-<!-- Chat Bot Icon (initially visible) -->
-
 <!-- Chat Bot Icon (initially visible) -->
 <button id="chat-bot-icon"
     class="fixed bottom-6 right-6 z-50 bg-black text-white dark:bg-white dark:text-black hover:bg-white hover:text-black dark:hover:bg-black dark:hover:text-white rounded-full w-16 h-16 flex items-center justify-center shadow-xl transition duration-300"
@@ -100,10 +127,8 @@
         <h3 class="text-lg font-semibold">💬 Live Comments</h3>
         <button id="chat-toggle" class="text-black dark:text-white hover:text-gray-600 dark:hover:text-gray-400 text-xl focus:outline-none transition duration-300">−</button>
     </div>
-
     <div id="chat-body" class="flex-1 flex flex-col p-4 space-y-3 overflow-y-auto max-h-[60vh]">
         <div id="live-comments" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
-
         <form id="chat-form" class="mt-4 flex">
             <input type="text" id="chat-message-input" placeholder="Type a message..."
                 class="flex-1 px-4 py-2 rounded-l-lg bg-[#f4f4f4] dark:bg-[#191919] text-black dark:text-white border border-gray-300 dark:border-[#444] focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition duration-300"
@@ -113,6 +138,7 @@
         </form>
     </div>
 </div>
+
 <script>
     // Show chat on icon click, hide icon
     const chatBotIcon = document.getElementById('chat-bot-icon');
@@ -133,7 +159,7 @@
         chatBotIcon.style.display = 'flex';
     });
 
-    // Chat WebSocket logic (unchanged)
+    // Chat WebSocket logic
     const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
     const socket = new WebSocket(wsScheme + '://' + window.location.host + '/ws/comments/');
 
@@ -141,7 +167,7 @@
         const data = JSON.parse(e.data);
         if (data.message && data.username) {
             const comment = document.createElement('div');
-                                            comment.innerHTML = `<strong class="text-white">${data.username}</strong>: <span class="break-words text-white">${data.message}</span>`;
+            comment.innerHTML = `<strong class="text-white">${data.username}</strong>: <span class="break-words text-white">${data.message}</span>`;
             comment.className = "bg-[#19191A] text-white p-2 rounded shadow-md whitespace-pre-wrap break-words";
             commentBox.appendChild(comment);
             commentBox.scrollTop = commentBox.scrollHeight;
@@ -183,16 +209,25 @@
     }
     getApod();
 
-    // Swiper for celestial logs
+    // Initialize Unified Swiper for both Desktop and Mobile
     document.addEventListener('DOMContentLoaded', function() {
-        new Swiper('.celestial-swiper', {
+        const swiper = new Swiper('.celestial-swiper', {
             effect: "cards",
             grabCursor: true,
             initialSlide: 0,
             speed: 500,
             loop: true,
             rotate: true,
-            mousewheel: { invert: false },
+            mousewheel: { 
+                invert: false,
+                forceToAxis: false,
+                sensitivity: 1,
+                releaseOnEdges: false,
+            },
+            keyboard: {
+                enabled: true,
+                onlyInViewport: false,
+            },
             navigation: {
                 nextEl: '.swiper-button-next',
                 prevEl: '.swiper-button-prev',
@@ -200,13 +235,155 @@
             pagination: {
                 el: '.swiper-pagination',
                 clickable: true,
+                dynamicBullets: true,
             },
+            // Responsive breakpoints for different behavior
+            breakpoints: {
+                320: {
+                    cardsEffect: {
+                        perSlideOffset: 8,
+                        perSlideRotate: 2,
+                        rotate: true,
+                        slideShadows: true,
+                    }
+                },
+                768: {
+                    cardsEffect: {
+                        perSlideOffset: 12,
+                        perSlideRotate: 3,
+                        rotate: true,
+                        slideShadows: true,
+                    }
+                },
+                1024: {
+                    cardsEffect: {
+                        perSlideOffset: 15,
+                        perSlideRotate: 4,
+                        rotate: true,
+                        slideShadows: true,
+                    }
+                }
+            }
         });
     });
 </script>
-<!-- Swiper.js CDN (add in your <head> or before </body>) -->
+
+<style>
+/* Custom line-clamp utilities for better text truncation */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.line-clamp-4 {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Unified Swiper Styles */
+.celestial-swiper {
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+    list-style: none;
+    padding: 0;
+    z-index: 1;
+}
+
+/* Mobile styles */
+@media (max-width: 1023px) {
+    .celestial-swiper {
+        width: 350px;
+        height: 500px;
+    }
+    
+    .celestial-swiper .swiper-slide {
+        border-radius: 18px;
+        font-size: 22px;
+        font-weight: bold;
+        color: #fff;
+        background: #1D1D1E;
+    }
+}
+
+/* Desktop styles */
+@media (min-width: 1024px) {
+    .celestial-swiper {
+        width: 700px;
+        height: 320px;
+    }
+    
+    .celestial-swiper .swiper-slide {
+        border-radius: 18px;
+        font-size: 22px;
+        font-weight: bold;
+        color: #fff;
+        background: #1D1D1E;
+    }
+}
+
+/* Enhanced hover effects */
+.celestial-logs .swiper-slide:hover {
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+}
+
+/* Navigation button styles */
+.swiper-button-next,
+.swiper-button-prev {
+    color: #49467B !important;
+    background: rgba(255, 255, 255, 0.1);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #6a5acd !important;
+}
+
+.swiper-button-next:after,
+.swiper-button-prev:after {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* Pagination styles */
+.swiper-pagination-bullet {
+    background: #49467B;
+    opacity: 0.5;
+}
+
+.swiper-pagination-bullet-active {
+    background: #6a5acd;
+    opacity: 1;
+}
+
+/* Cards effect shadows and positioning */
+.swiper-cards .swiper-slide {
+    overflow: hidden;
+    border-radius: 18px;
+}
+
+.swiper-cards .swiper-slide-shadow {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 18px;
+}
+</style>
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
-
 {% endblock extra_body_content %}
