@@ -6,8 +6,8 @@ body {
     width: 100%;
     min-height: 100vh; /* Ensure body takes full viewport height */
     font-family: 'Arial', sans-serif;
-    color: #494A4D; /* Medium dark gray for text */
-    background: radial-gradient(ellipse at bottom, #1D1D1E 0%, #19191A 100%); /* Deep space background */
+    color: #CCCCCC; /* Light gray for text */
+    background: radial-gradient(ellipse at bottom, #000000 0%, #333333 100%); /* Black to dark gray background */
     background-attachment: fixed; /* Keep background fixed during scroll */
 }
 
