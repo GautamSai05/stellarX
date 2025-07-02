@@ -1,82 +1,69 @@
-html,
-body {
+html, body {
     margin: 0;
-    overflow-x: hidden; /* Allow horizontal scrolling if content overflows */
+    padding: 0;
     width: 100%;
-    min-height: 100vh; /* Ensure body takes full viewport height */
-    font-family: 'Arial', sans-serif;
-    color: #CCCCCC; /* Light gray for text */
-    background: radial-gradient(ellipse at bottom, #000000 0%, #333333 100%); /* Black to dark gray background */
-    background-attachment: fixed; /* Keep background fixed during scroll */
+    height: 100%;
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    color: #ffffff;
+    background-color: #0a0a0a; /* Near black */
+    overflow: hidden;
 }
 
-/* Starfield effect */
-body::before {
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+.content {
+    padding: 2rem;
+    background: rgba(16, 16, 16, 0.7); /* Dark, slightly transparent background */
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+h1 {
+    font-size: 4rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin: 0;
+    animation: text-glow 2.5s infinite alternate;
+}
+
+@keyframes text-glow {
+    from {
+        text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #e60073, 0 0 40px #e60073;
+    }
+    to {
+        text-shadow: 0 0 20px #fff, 0 0 30px #ff4da6, 0 0 40px #ff4da6, 0 0 50px #ff4da6;
+    }
+}
+
+/* Background Animation */
+body::after {
     content: '';
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-image:                       radial-gradient(2px 2px at 20px 30px, #CCCCCC, rgba(0,0,0,0)),
-                      radial-gradient(2px 2px at 40px 70px, #CCCCCC, rgba(0,0,0,0)),
-                      radial-gradient(2px 2px at 50px 160px, #CCCCCC, rgba(0,0,0,0)),
-                      radial-gradient(2px 2px at 90px 120px, #CCCCCC, rgba(0,0,0,0)),
-                      radial-gradient(2px 2px at 130px 190px, #CCCCCC, rgba(0,0,0,0)),
-                      radial-gradient(2px 2px at 160px 40px, #CCCCCC, rgba(0,0,0,0));
-    background-repeat: repeat;
-    background-size: 200px 200px;
-    opacity: 0.7;
-    animation: twinkle 10s infinite alternate;
-    z-index: -1; /* Behind content */
-}
-
-@keyframes twinkle {
-    0%, 100% { opacity: 0.7; }
-    50% { opacity: 0.9; }
-}
-
-/* Centered loading text */
-.loading-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    z-index: 10;
-}
-
-h1 {
-    font-size: 3rem;
-    margin-bottom: 20px;
-    animation: subtle-glow 3s infinite alternate;
-}
-
-@keyframes subtle-glow {
-    from { text-shadow: 0 0 5px #666666; }
-    to { text-shadow: 0 0 10px #666666, 0 0 15px #666666; }
-}
-
-canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
+    background: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+    animation: move-grid 20s linear infinite;
     z-index: 1;
 }
 
-/* Removed .filter as it might clash with new theme */
-
-.landscape {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-		background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA+gAAAD6CAMAAAAFi53bAAAAdVBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB5WX1YAAAAJnRSTlMABhPx+SU4Wiunkk1AinCCtOC9xMwd2XwMmmZh06BHMVNq5nfqrf6mDXsAAETISURBVHja7MFJDoJAFAXA9x2QqIgsFBfGxE3f/4hwjk5VBQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOlOfAN2bztkdKkCHKrtHlimpvJd/XkNyHwN0ZJyTtc3Pdv3Vt7W2DsfK5XTLbmPn7nrbhMEoAB+wHQLhy0DIQkJS2vT8/5841nZr12kTTLtwpvNYsnzh21evbB95t4GI/A8itq6mbUluPWcVj6h7thGwmSf1dpH/Qcs+t6Qlb54zc+Mzswu7L4CvkOYxnkZ8p0O8yF0qyLLhJ7fsaDdNXBFNfUDKLsar4QQRuS8RgB157vgL753pryxHmngiG7y6dBCR+xKlGzj+xpAyLWjIpqbdAdhGcEWaQ0TuhrsC6BiDv2PJQ/W23AKoUhQsHUTkbjykANxjWvFPWssXxu0RMT6yApBcICJ3YWNiIPJcqGzaJ7YXUwAoG7V1kfuQ0K0p9DHjrDs7YG+eR4jIPZi4AVBwqZ7fGGDIh12rzJxIyKIcwCUCcp7TCiVXivbNUKGsICIBe85xNhEQk/RTwXVaDD5uqqSEiASsyEDGAGqSdtdzDR/h6ZwPjVEEXiRopy4nI8yDs6yyXGEE7PTAvlHmXSRccYwdO3JMv7j9wJm3XCHbTtMm96whIsHap3B84aLTznAlk1Z0cXFToYsEzSbgixGD91wpjskiI20CEQmXN3vDb2zR1Vzp5A6kP97oISIB69kbvuiAtjhYLjddk0eS1pMKu4uELLF8478AOPhnLmRyPJRuOHLm9YwuErQr31jTOZQVitRziRrTqcRl4uwIEQmZ4weHU4rq7LnEOfK84sxvOuVlRII28GdtmfZcxFj61vDVDiISroKfPAEj11NPFwnYyM9s23MdHdNFwhPhg5T/RgERCcm2iv99oet/d5GQbB2Yvrf2gn/lMen57uYVmREJSmYfPA+IgaoFEBsu8mmbd498d93rMk4kKAlpWSMDKkYAdlygdoPlD8aY5swPkowQ+crefS23cQRRAL0TNuedzQEZ9/8/0UsAFCmLlBVo0VXu84JCbeGxMbM93dPiPyTlpmkXD1eG2Cz8Z42u+cJ2jbMsG75wULks6kL8Z2jLTRT3O7KED6T8AdbybwxQ8dlFDXBMAKg9NpNc9C7E5yq4sZmzJIvVeXD8FdV0jC3v1i4MvZDUAOocwEUa1IX4XPp1cu1Ce9Sx5a+5/66cMJfeioUlEHIENKWdTYhPVvFrZRjx11XlAN1FmlFu6CNgDiRSPyPEZ0sX/o3hr7oEyax2u3wYSGNci4B9MvVWZjQJ8elifpBeh6X2L+s8T9xoIKEp88XEEEJ8tgs/wilJUNbacIx5o9HW5DWTtlUh/gt6foAGqkdpaSubVaQNduPOkiwbMoUQ4rOpkjwZ/p6yMK6xNKonDbkg4Z0lcyCUYBfiswUdDT+Ey8yjXq6zvCuPIRBaqZoR4rMpF1W24b9C4clFJrIJ8R/g5zn/DVZjE0ZxtocQ4tP13Jgijit+pAKbA7NCTtmE+A84cGNChBU/UgIgr1gVEYQQn05bPrnwA11HFkqh4+YiratCfLKd0lnFDxUnYz96lR2uWVtxU0k+TojPVR/Bf9JF/FFuYdWWc5uEV+pwnBs+aSGE+EyrgV75XU2Ig+GPOO1wOQVl57iiYe9Z3tQQQ... [truncated]
-    background-size: 1000px 250px;
-    background-repeat: repeat-x;
-    background-position: center bottom;
-    z-index: 2;
+@keyframes move-grid {
+    from {
+        background-position: 0 0;
+    }
+    to {
+        background-position: 200px 200px;
+    }
 }
-
-/* Cache busting comment: 2025-07-02 10:30 AM */
