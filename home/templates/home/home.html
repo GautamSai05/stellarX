@@ -6,7 +6,7 @@
 <div class="w-full max-w-5xl mx-auto space-y-10 pr-0 lg:pr-16">
     <!-- FEEDS Header -->
     <div>
-        <h1 class="text-5xl font-extrabold mb-4 text-white animate-pulse tracking-tight">FEEDS</h1>
+        <h1 class="text-5xl font-extrabold mb-4 text-white ">FEEDS</h1>
         <p class="text-xl text-[#494A4D] leading-relaxed">
             Explore daily celestial wonders and recent sky logs from fellow stargazers.
         </p>
@@ -29,9 +29,9 @@
 
     <!-- NASA APOD -->
     <div class="bg-[#1D1D1E] rounded-xl shadow-lg p-8 border border-[#49467B]/30">
-        <h2 class="text-3xl font-semibold mb-6 text-white">🔭 NASA Astronomy Picture of the Day</h2>
+        <h2 class="text-3xl font-semibold mb-6 text-white"> NASA Astronomy Picture of the Day</h2>
         <div id="apod-container">
-            <img id="apod-image" src="" alt="NASA Picture of the Day" class="rounded-lg max-h-96 w-full object-cover mb-4 shadow-md border border-[#49467B]/20">
+            <img id="apod-image" src="" alt="NASA Picture of the Day" class="rounded-lg max-h-60 w-full object-cover mb-4 shadow-md border border-[#49467B]/20">
             <h3 id="apod-title" class="text-xl font-medium mb-3 text-[#494A4D]"></h3>
             <p id="apod-explanation" class="text-[#494A4D] text-base leading-relaxed"></p>
         </div>
@@ -39,7 +39,7 @@
 
     <!-- Unified Swiper Layout for Both Desktop and Mobile -->
     <div id="celestial-logs" class="mt-12 celestial-logs">
-        <h2 class="text-3xl font-semibold mb-6 text-white">📝 Recent Celestial Logs</h2>
+        <h2 class="text-3xl font-semibold mb-6 text-white">Recent Celestial Logs</h2>
         {% if logs %}
             <div class="swiper celestial-swiper">
                 <div class="swiper-wrapper">
