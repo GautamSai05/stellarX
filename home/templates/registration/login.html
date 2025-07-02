@@ -1,6 +1,5 @@
 
 {% load static %}
-{% load static %}
 {% load widget_tweaks %}
 <!DOCTYPE html>
 <html lang="en">
@@ -8,33 +7,34 @@
     <meta charset="UTF-8">
     <title>Login | StellarSense</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="{% static 'home/splash.css' %}"> {# Include splash.css for background #}
+    <link rel="stylesheet" href="{% static 'home/splash.css' %}">
 </head>
-<body class="min-h-screen flex items-center justify-center px-4">
-    <div class="bg-[#1D1D1E] shadow-xl rounded-xl p-8 w-full max-w-md border border-[#49467B]/30 animate-fade-in">
-        <h2 class="text-3xl font-bold text-center mb-8 text-[#49467B]">🔐 Login to StellarSense</h2>
+<body class="min-h-screen flex items-center justify-center px-4 bg-white text-black dark:bg-black dark:text-white transition-colors duration-300">
+    <div class="bg-white dark:bg-[#101010] shadow-xl rounded-xl p-8 w-full max-w-md border border-gray-300 dark:border-[#333333] animate-fade-in">
+        <h2 class="text-3xl font-bold text-center mb-8 text-black dark:text-white"> Login</h2>
 
         <form method="post" class="space-y-6">
             {% csrf_token %}
-            
+
             <div>
-                <label class="block text-sm font-medium text-[#494A4D] mb-1">Username</label>
-                {{ form.username|add_class:"w-full px-4 py-3 rounded-lg bg-[#19191A] text-[#494A4D] border border-[#494A4D] focus:outline-none focus:ring-2 focus:ring-[#49467B] focus:border-transparent transition duration-300" }}
+                <label class="block text-sm font-medium text-black dark:text-white mb-1">Username</label>
+                {{ form.username|add_class:"w-full px-4 py-3 rounded-lg bg-[#f4f4f4] dark:bg-[#191919] text-black dark:text-white border border-[#cccccc] dark:border-[#444444] focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition duration-300" }}
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-[#494A4D] mb-1">Password</label>
-                {{ form.password|add_class:"w-full px-4 py-3 rounded-lg bg-[#19191A] text-[#494A4D] border border-[#494A4D] focus:outline-none focus:ring-2 focus:ring-[#49467B] focus:border-transparent transition duration-300" }}
+                <label class="block text-sm font-medium text-black dark:text-white mb-1">Password</label>
+                {{ form.password|add_class:"w-full px-4 py-3 rounded-lg bg-[#f4f4f4] dark:bg-[#191919] text-black dark:text-white border border-[#cccccc] dark:border-[#444444] focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition duration-300" }}
             </div>
 
-            <button type="submit" class="w-full bg-[#49467B] hover:bg-[#49467B] text-white font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out shadow-lg transform hover:scale-105">
+            <button type="submit"
+                class="w-full bg-black text-white dark:bg-white dark:text-black hover:bg-white hover:text-black dark:hover:bg-black dark:hover:text-white font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out shadow-lg transform hover:scale-105">
                 Log in
             </button>
         </form>
 
-        <p class="mt-8 text-sm text-center text-[#494A4D]">
+        <p class="mt-8 text-sm text-center text-black dark:text-white">
             Don't have an account?
-            <a href="{% url 'signup' %}" class="text-white hover:text-gray-400 underline transition duration-300">Sign up here</a>.
+            <a href="{% url 'signup' %}" class="text-black dark:text-white hover:underline">Sign up here</a>.
         </p>
     </div>
 </body>

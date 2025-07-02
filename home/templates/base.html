@@ -6,342 +6,153 @@
     <title>{% block title %}StellarSense{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-[#19191A] text-[#494A4D] font-sans relative">
-    <canvas id="matrix-canvas" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none;"></canvas>
+<body class="bg-black text-gray-300 font-sans relative">
+<canvas id="matrix-canvas" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none;"></canvas>
 
-    <!-- Header (formerly Navbar) -->
-    <header class="fixed top-0 left-0 w-full bg-transparent p-4 flex justify-between items-center z-50 transition-all duration-300">
-        <a href="{% url 'home' %}">
-            <h1 class="text-xl font-bold text-[#e0e0e0] hover:text-[#a6a6fa] transition duration-300 ease-in-out">StellarSense</h1>
-        </a>
-        <button id="sidebar-toggle" class="text-[#e0e0e0] focus:outline-none md:hidden">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+<header class="fixed top-0 left-0 w-full bg-transparent p-4 flex justify-between items-center z-50">
+    <a href="{% url 'home' %}">
+        <h1 class="text-xl font-bold text-white hover:text-gray-300 transition duration-300 ease-in-out">StellarSense</h1>
+    </a>
+    <button id="sidebar-toggle" class="text-white md:hidden">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+        </svg>
+    </button>
+    <div class="hidden md:flex items-center space-x-6">
+        <a href="{% url 'crowdfunding' %}" class="text-white hover:text-gray-300 text-lg font-medium transition duration-300">Funding</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' user.username %}" class="text-white hover:text-gray-300 text-lg font-medium transition">My Profile</a>
+            <span class="text-white">Hi, {{ user.username }}</span>
+            <form action="{% url 'logout' %}" method="post" class="inline">
+                {% csrf_token %}
+                <button type="submit" class="bg-white hover:bg-gray-100 text-black font-bold py-2 px-4 rounded-full transition duration-300 shadow-md transform hover:scale-105">Logout</button>
+            </form>
+        {% else %}
+            <a href="{% url 'login' %}" class="text-white hover:text-gray-300 text-lg font-medium transition">Login</a>
+            <a href="{% url 'signup' %}" class="bg-white hover:bg-gray-100 text-black font-bold py-2 px-4 rounded-full transition duration-300 shadow-md transform hover:scale-105">Sign Up</a>
+        {% endif %}
+    </div>
+</header>
+
+<div id="sidebar" class="fixed top-0 left-0 w-64 h-full bg-black shadow-xl transform -translate-x-full transition-transform duration-300 z-40">
+    <div class="p-4 border-b border-gray-700 flex justify-between items-center">
+        <h2 class="text-xl font-bold text-white">Menu</h2>
+        <button id="sidebar-close" class="text-white">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
         </button>
-        <!-- Desktop Navigation (remains horizontal for larger screens) -->
-        <div class="hidden md:flex items-center space-x-6">
-            <a href="{% url 'crowdfunding' %}" class="text-[#e0e0e0] hover:text-[#a6a6fa] text-lg font-medium hover:scale-105 transition duration-300 ease-in-out">Funding</a>
-            {% if user.is_authenticated %}
-                <a href="{% url 'profile' user.username %}" class="text-[#e0e0e0] hover:text-[#a6a6fa] text-lg font-medium hover:scale-105 transition duration-300 ease-in-out">My Profile</a>
-                <span class="text-[#e0e0e0]">Hi, {{ user.username }}</span>
-                <form action="{% url 'logout' %}" method="post" class="inline">
-                    {% csrf_token %}
-                    <button type="submit" class="bg-[#49467B] hover:bg-[#49467B] text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out shadow-md transform hover:scale-105">Logout</button>
-                </form>
-            {% else %}
-                <a href="{% url 'login' %}" class="text-[#e0e0e0] hover:text-[#a6a6fa] text-lg font-medium hover:scale-105 transition duration-300 ease-in-out">Login</a>
-                <a href="{% url 'signup' %}" class="bg-[#49467B] hover:bg-[#49467B] text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out shadow-md transform hover:scale-105">Sign Up</a>
-            {% endif %}
-        </div>
-    </header>
-
-    <!-- Slide-out Sidebar -->
-    <div id="sidebar" class="fixed top-0 left-0 w-64 h-full bg-[#19191A] shadow-xl transform -translate-x-full transition-transform duration-300 ease-in-out z-40">
-        <div class="p-4 border-b border-[#494A4D] flex justify-between items-center">
-            <h2 class="text-xl font-bold text-[#494A4D]">Menu</h2>
-            <button id="sidebar-close" class="text-[#494A4D] focus:outline-none">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
-        </div>
-        <nav class="flex flex-col p-4 space-y-4">
-            <a href="{% url 'crowdfunding' %}" class="text-white hover:text-[#49467B] text-xl font-medium hover:scale-105 transition duration-300 ease-in-out"> funding</a>
-            {% if user.is_authenticated %}
-                <a href="{% url 'profile' user.username %}" class="text-white hover:text-[#49467B] text-xl font-medium hover:scale-105 transition duration-300 ease-in-out">My Profile</a>
- <span class="text-[#494A4D] text-xl">Hi, {{ user.username }}</span>
-                <form action="{% url 'logout' %}" method="post" class="inline">
-                    {% csrf_token %}
-                    <button type="submit" class="text-white hover:text-gray-400 text-xl font-medium hover:scale-105 transition duration-300 ease-in-out text-left">Logout</button>
-                </form>
-            {% else %}
-                <a href="{% url 'login' %}" class="text-[#494A4D] hover:text-[#49467B] text-xl font-medium hover:scale-105 transition duration-300 ease-in-out">Login</a>
-                <a href="{% url 'signup' %}" class="text-[#494A4D] hover:text-[#49467B] text-xl font-medium hover:scale-105 transition duration-300 ease-in-out">Sign Up</a>
-            {% endif %}
-        </nav>
     </div>
+    <nav class="flex flex-col p-4 space-y-4">
+        <a href="{% url 'crowdfunding' %}" class="text-white hover:text-gray-300 text-xl font-medium">Funding</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' user.username %}" class="text-white hover:text-gray-300 text-xl font-medium">My Profile</a>
+            <span class="text-gray-500 text-xl">Hi, {{ user.username }}</span>
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="text-white hover:text-gray-400 text-xl font-medium">Logout</button>
+            </form>
+        {% else %}
+            <a href="{% url 'login' %}" class="text-gray-500 hover:text-gray-300 text-xl font-medium">Login</a>
+            <a href="{% url 'signup' %}" class="text-gray-500 hover:text-gray-300 text-xl font-medium">Sign Up</a>
+        {% endif %}
+    </nav>
+</div>
 
-    <!-- Overlay for when sidebar is open -->
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black opacity-0 pointer-events-none transition-opacity duration-300 ease-in-out z-30"></div>
+<div id="sidebar-overlay" class="fixed inset-0 bg-black opacity-0 pointer-events-none transition-opacity duration-300 z-30"></div>
 
-    <!-- Main Content -->
-    <main class="p-6 max-w-6xl mx-auto animate-fade-in pt-24">
-        {% block content %}{% endblock %}
-    </main>
+<main class="p-6 max-w-6xl mx-auto animate-fade-in pt-24">
+    {% block content %}{% endblock %}
+</main>
 
-    <style>
-        @keyframes fade-in {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-            animation: fade-in 0.8s ease-out forwards;
-        }
+<style>
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in { animation: fade-in 0.8s ease-out forwards; }
+</style>
 
-        /* Tiling Grid Styles */
-        .logs-tiling-grid {
-            display: grid;
-            grid-auto-flow: dense; /* Fills in empty spaces */
-        }
+<script>
+const canvas = document.getElementById('matrix-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+let stars = [];
+const STAR_COUNT = 100;
 
-        /* Tile Styling */
-        .logs-tiling-grid > div {
-            background-color: #1D1D1E; /* Dark background for tiles */
-            border: 1px solid #49467B; /* Border color from theme */
-            border-radius: 0.75rem; /* Tailwind's rounded-xl */
-            padding: 1.5rem; /* Tailwind's p-6 */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Tailwind's shadow-lg */
-            display: flex;
-            flex-direction: column;
-        }
-    </style>
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    initStars();
+}
 
-    <script>
-        const sidebarToggle = document.getElementById('sidebar-toggle');
-        const sidebar = document.getElementById('sidebar');
-        const sidebarClose = document.getElementById('sidebar-close');
-        const sidebarOverlay = document.getElementById('sidebar-overlay');
-
-        function openSidebar() {
-            sidebar.classList.remove('-translate-x-full');
-            sidebar.classList.add('translate-x-0');
-            sidebarOverlay.classList.remove('pointer-events-none');
-            sidebarOverlay.classList.add('opacity-50');
-        }
-
-        function closeSidebar() {
-            sidebar.classList.remove('translate-x-0');
-            sidebar.classList.add('-translate-x-full');
-            sidebarOverlay.classList.remove('opacity-50');
-            sidebarOverlay.classList.add('pointer-events-none');
-        }
-
-        sidebarToggle.addEventListener('click', openSidebar);
-        sidebarClose.addEventListener('click', closeSidebar);
-        sidebarOverlay.addEventListener('click', closeSidebar);
-
-        // Close sidebar on navigation link click (optional, but good UX)
-        document.querySelectorAll('#sidebar a').forEach(link => {
-            link.addEventListener('click', closeSidebar);
+function initStars() {
+    stars = [];
+    for (let i = 0; i < STAR_COUNT; i++) {
+        stars.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            r: Math.random() * 1.5 + 0.5,
+            alpha: Math.random() * 0.5 + 0.5,
+            twinkle: Math.random() * 0.02 + 0.01
         });
-    </script>
-
-    {% block extra_body_content %}{% endblock %}
-
-    <script>
-    // Matrix Network Effect Implementation
-    const canvas = document.getElementById('matrix-canvas');
-    if (canvas) {
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-        let trailParticles = [];
-        let mousePosition = { x: 0, y: 0 };
-
-        // --- Space additions ---
-        // Star properties
-        const STAR_COUNT = 120;
-        let stars = [];
-        // Planet properties
-        const PLANETS = [
-            { x: 200, y: 300, r: 70, color: 'rgba(80,120,255,0.18)' },
-            { x: 1100, y: 150, r: 50, color: 'rgba(255,220,120,0.13)' },
-            { x: 700, y: 600, r: 90, color: 'rgba(180,255,220,0.10)' }
-        ];
-
-        function randomBetween(a, b) {
-            return a + Math.random() * (b - a);
-        }
-
-        function initStars() {
-            stars = [];
-            for (let i = 0; i < STAR_COUNT; i++) {
-                stars.push({
-                    x: randomBetween(0, canvas.width),
-                    y: randomBetween(0, canvas.height),
-                    r: randomBetween(0.5, 1.7),
-                    alpha: randomBetween(0.5, 1),
-                    twinkle: Math.random() * 0.02 + 0.01
-                });
-            }
-        }
-
-        function drawStars() {
-            for (let star of stars) {
-                ctx.save();
-                ctx.globalAlpha = star.alpha;
-                ctx.beginPath();
-                ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
-                ctx.fillStyle = "#fff";
-                ctx.shadowColor = "#fff";
-                ctx.shadowBlur = 8;
-                ctx.fill();
-                ctx.restore();
-
-                // Twinkle
-                star.alpha += star.twinkle * (Math.random() > 0.5 ? 1 : -1);
-                if (star.alpha > 1) star.alpha = 1;
-                if (star.alpha < 0.3) star.alpha = 0.3;
-            }
-        }
-
-        function drawPlanets() {
-            for (let planet of PLANETS) {
-                ctx.save();
-                ctx.beginPath();
-                ctx.arc(planet.x, planet.y, planet.r, 0, Math.PI * 2);
-                ctx.fillStyle = planet.color;
-                ctx.shadowColor = planet.color;
-                ctx.shadowBlur = 40;
-                ctx.fill();
-                ctx.restore();
-            }
-        }
-        // --- End space additions ---
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            initNetworkParticles();
-            initStars();
-            // Optionally, randomize planet positions here if you want them to move on resize
-        }
-
-        class NetworkParticle {
-            constructor(x, y) {
-                this.x = x;
-                this.y = y;
-                this.baseX = x;
-                this.baseY = y;
-                this.density = (Math.random() * 40) + 5;
-            }
-            draw() {
-                ctx.fillStyle = 'rgba(73, 70, 123, 0.8)';
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
-                ctx.closePath();
-                ctx.fill();
-            }
-            update() {
-                let dx = mousePosition.x - this.x;
-                let dy = mousePosition.y - this.y;
-                let distance = Math.sqrt(dx * dx + dy * dy);
-                let forceDirectionX = dx / distance;
-                let forceDirectionY = dy / distance;
-                let maxDistance = 120;
-                let force = (maxDistance - distance) / maxDistance;
-                let directionX = forceDirectionX * force * this.density * 0.4;
-                let directionY = forceDirectionY * force * this.density * 0.4;
-
-                if (distance < maxDistance) {
-                    this.x -= directionX;
-                    this.y -= directionY;
-                } else {
-                    if (this.x !== this.baseX) {
-                        let dx = this.x - this.baseX;
-                        this.x -= dx / 20;
-                    }
-                    if (this.y !== this.baseY) {
-                        let dy = this.y - this.baseY;
-                        this.y -= dy / 20;
-                    }
-                }
-            }
-        }
-
-        function initNetworkParticles() {
-            particles = [];
-            const spacing = 90;
-            for (let x = -spacing; x <= canvas.width + spacing; x += spacing) {
-                for (let y = -spacing; y <= canvas.height + spacing; y += spacing) {
-                    particles.push(new NetworkParticle(
-                        x + (Math.random() - 0.5) * 40,
-                        y + (Math.random() - 0.5) * 40
-                    ));
-                }
-            }
-        }
-
-        function connectNetworkParticles() {
-            for (let a = 0; a < particles.length; a++) {
-                for (let b = a; b < particles.length; b++) {
-                    let distance = Math.sqrt(
-                        Math.pow(particles[a].x - particles[b].x, 2) +
-                        Math.pow(particles[a].y - particles[b].y, 2)
-                    );
-                    if (distance < 160) {
-                        let opacity = 1 - (distance / 160);
-                        ctx.strokeStyle = `rgba(73, 70, 123, ${opacity * 0.4})`;
-                        ctx.lineWidth = 1;
-                        ctx.beginPath();
-                        ctx.moveTo(particles[a].x, particles[a].y);
-                        ctx.lineTo(particles[b].x, particles[b].y);
-                        ctx.stroke();
-                    }
-                }
-            }
-        }
-
-        function handleMouseMove(e) {
-            const x = e.clientX;
-            const y = e.clientY;
-            mousePosition.x = x;
-            mousePosition.y = y;
-            trailParticles.push({
-                x: x,
-                y: y,
-                alpha: 1,
-                radius: Math.random() * 3 + 1,
-                dx: (Math.random() - 0.5) * 2,
-                dy: (Math.random() - 0.5) * 2,
-            });
-        }
-
-        function animate() {
-            // Space gradient background
-            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-            gradient.addColorStop(0, 'rgba(0, 0, 0, 0.95)');
-            gradient.addColorStop(0.5, 'rgba(10, 10, 10, 0.95)');
-            gradient.addColorStop(1, 'rgba(0, 0, 0, 0.95)');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Draw planets (behind everything)
-            drawPlanets();
-
-            // Draw stars (above planets, below network)
-            drawStars();
-
-            // Matrix network
-            for (let i = 0; i < particles.length; i++) {
-                particles[i].draw();
-                particles[i].update();
-            }
-            connectNetworkParticles();
-
-            // Sparkling mouse trail
-            trailParticles.forEach((p, i) => {
-                p.x += p.dx;
-                p.y += p.dy;
-                p.alpha -= 0.02;
-                if (p.alpha <= 0) {
-                    trailParticles.splice(i, 1);
-                } else {
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(73, 112, 202, ${p.alpha})`;
-                    ctx.fill();
-                }
-            });
-
-            requestAnimationFrame(animate);
-        }
-
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-        window.addEventListener('mousemove', handleMouseMove);
-        animate();
     }
-    </script>
+}
+
+function drawStars() {
+    for (let star of stars) {
+        ctx.save();
+        ctx.globalAlpha = star.alpha;
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+        ctx.fillStyle = "white";
+        ctx.shadowColor = "white";
+        ctx.shadowBlur = 8;
+        ctx.fill();
+        ctx.restore();
+
+        star.alpha += star.twinkle * (Math.random() > 0.5 ? 1 : -1);
+        if (star.alpha > 1) star.alpha = 1;
+        if (star.alpha < 0.3) star.alpha = 0.3;
+    }
+}
+
+function animate() {
+    ctx.fillStyle = "rgba(0,0,0,0.95)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    drawStars();
+    requestAnimationFrame(animate);
+}
+
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+animate();
+
+const sidebarToggle = document.getElementById('sidebar-toggle');
+const sidebar = document.getElementById('sidebar');
+const sidebarClose = document.getElementById('sidebar-close');
+const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+function openSidebar() {
+    sidebar.classList.remove('-translate-x-full');
+    sidebar.classList.add('translate-x-0');
+    sidebarOverlay.classList.remove('pointer-events-none');
+    sidebarOverlay.classList.add('opacity-50');
+}
+
+function closeSidebar() {
+    sidebar.classList.remove('translate-x-0');
+    sidebar.classList.add('-translate-x-full');
+    sidebarOverlay.classList.remove('opacity-50');
+    sidebarOverlay.classList.add('pointer-events-none');
+}
+
+sidebarToggle.addEventListener('click', openSidebar);
+sidebarClose.addEventListener('click', closeSidebar);
+sidebarOverlay.addEventListener('click', closeSidebar);
+document.querySelectorAll('#sidebar a').forEach(link => link.addEventListener('click', closeSidebar));
+</script>
+
+{% block extra_body_content %}{% endblock %}
 </body>
 </html>

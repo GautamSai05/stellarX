@@ -14,11 +14,19 @@
     </div>
 
     {% if user.is_authenticated %}
-    <div>
-        <a href="{% url 'log_create' %}" class="inline-block bg-[#49467B] hover:bg-[#49467B]/90 text-white font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out shadow-lg transform hover:scale-105">
-            ➕ Create New Log
-        </a>
-    </div>
+
+<div>
+    <a href="{% url 'log_create' %}"
+       class="inline-block 
+              bg-white text-black 
+              hover:bg-black hover:text-white 
+              dark:bg-white dark:text-black 
+              dark:hover:bg-black dark:hover:text-white 
+              font-bold py-3 px-6 rounded-full 
+              transition duration-300 ease-in-out shadow-lg transform hover:scale-105">
+        ➕ Create New Log
+    </a>
+</div>
     {% endif %}
 
     <!-- NASA APOD -->
@@ -61,45 +69,43 @@
 
 {% block extra_body_content %}
 <!-- Chat Bot Icon (initially visible) -->
+
+<!-- Chat Bot Icon (initially visible) -->
 <button id="chat-bot-icon"
-        class="fixed bottom-6 right-6 z-50 bg-gray-800 hover:bg-gray-700 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-xl transition duration-300"
+    class="fixed bottom-6 right-6 z-50 bg-black text-white dark:bg-white dark:text-black hover:bg-white hover:text-black dark:hover:bg-black dark:hover:text-white rounded-full w-16 h-16 flex items-center justify-center shadow-xl transition duration-300"
     aria-label="Open Live Chat">
-    <!-- Spaceship SVG icon -->
     <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <ellipse cx="19" cy="30" rx="10" ry="3" fill="#8a7fff" fill-opacity="0.3"/>
-      <path d="M19 4C22.866 4 26 7.13401 26 11C26 13.2091 24.2091 15 22 15H16C13.7909 15 12 13.2091 12 11C12 7.13401 15.134 4 19 4Z" fill="#fff"/>
-      <path d="M19 15V28" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
-      <ellipse cx="19" cy="11" rx="2" ry="2" fill="#8a7fff"/>
-      <ellipse cx="15" cy="19" rx="2" ry="1" fill="#8a7fff"/>
-      <ellipse cx="23" cy="19" rx="2" ry="1" fill="#8a7fff"/>
-      <ellipse cx="19" cy="24" rx="2" ry="1" fill="#8a7fff"/>
+      <ellipse cx="19" cy="30" rx="10" ry="3" fill="#ccc" fill-opacity="0.3"/>
+      <path d="M19 4C22.866 4 26 7.13401 26 11C26 13.2091 24.2091 15 22 15H16C13.7909 15 12 13.2091 12 11C12 7.13401 15.134 4 19 4Z" fill="currentColor"/>
+      <path d="M19 15V28" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <ellipse cx="19" cy="11" rx="2" ry="2" fill="#ccc"/>
+      <ellipse cx="15" cy="19" rx="2" ry="1" fill="#ccc"/>
+      <ellipse cx="23" cy="19" rx="2" ry="1" fill="#ccc"/>
+      <ellipse cx="19" cy="24" rx="2" ry="1" fill="#ccc"/>
     </svg>
 </button>
 
 <!-- Fixed Chat Section (initially hidden) -->
 <div id="chat-container"
-    class="fixed bottom-4 right-4 w-full max-w-sm sm:max-w-md max-h-[70vh] bg-[#1D1D1E] rounded-xl shadow-xl z-50 flex flex-col border border-[#49467B]/30"
+    class="fixed bottom-4 right-4 w-full max-w-sm sm:max-w-md max-h-[70vh] bg-white text-black dark:bg-black dark:text-white rounded-xl shadow-xl z-50 flex flex-col border border-gray-300 dark:border-[#444]"
     style="display: none;">
-    <!-- Header with Minimize Button -->
-    <div class="flex justify-between items-center bg-[#1D1D1E] p-4 border-b border-[#494A4D] rounded-t-xl">
-        <h3 class="text-lg font-semibold text-[#49467B]">💬 Live Comments</h3>
-        <button id="chat-toggle" class="text-[#494A4D] hover:text-[#49467B] text-xl focus:outline-none transition duration-300">−</button>
+    <div class="flex justify-between items-center p-4 border-b border-gray-300 dark:border-[#444] rounded-t-xl">
+        <h3 class="text-lg font-semibold">💬 Live Comments</h3>
+        <button id="chat-toggle" class="text-black dark:text-white hover:text-gray-600 dark:hover:text-gray-400 text-xl focus:outline-none transition duration-300">−</button>
     </div>
 
-    <!-- Chat Content -->
     <div id="chat-body" class="flex-1 flex flex-col p-4 space-y-3 overflow-y-auto max-h-[60vh]">
         <div id="live-comments" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
 
         <form id="chat-form" class="mt-4 flex">
             <input type="text" id="chat-message-input" placeholder="Type a message..."
-                class="flex-1 px-4 py-2 rounded-l-lg bg-[#19191A] text-white border border-[#494A4D] focus:outline-none focus:ring-2 focus:ring-[#49467B] break-words transition duration-300"
+                class="flex-1 px-4 py-2 rounded-l-lg bg-[#f4f4f4] dark:bg-[#191919] text-black dark:text-white border border-gray-300 dark:border-[#444] focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition duration-300"
                 autocomplete="off">
             <button type="submit"
-                class="bg-[#49467B] hover:bg-[#49467B]/90 text-white px-5 py-2 rounded-r-lg transition duration-300 ease-in-out shadow-md">Send</button>
+                class="bg-black text-white dark:bg-white dark:text-black hover:bg-white hover:text-black dark:hover:bg-black dark:hover:text-white px-5 py-2 rounded-r-lg transition duration-300 ease-in-out shadow-md">Send</button>
         </form>
     </div>
 </div>
-
 <script>
     // Show chat on icon click, hide icon
     const chatBotIcon = document.getElementById('chat-bot-icon');

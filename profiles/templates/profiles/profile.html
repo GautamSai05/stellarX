@@ -5,42 +5,42 @@
 {% block content %}
 <div class="space-y-8">
     <div>
-        <h1 class="text-5xl font-extrabold mb-4 text-[#49467B] animate-pulse">{{ user.username }}'s Profile</h1>
-        <p class="text-xl text-[#494A4D] leading-relaxed">
+        <h1 class="text-5xl font-extrabold mb-4 text-white animate-pulse">{{ user.username }}'s Profile</h1>
+        <p class="text-xl text-gray-400 leading-relaxed">
             Explore all celestial observations logged by {{ user.username }}.
         </p>
     </div>
 
     {% if user == request.user %}
-    <div class="bg-[#1D1D1E] rounded-xl shadow-xl p-8 border border-[#49467B]/30">
-        <h2 class="text-3xl font-semibold mb-6 text-[#49467B]">🔭 Stargazing Conditions</h2>
-        <button id="get-stargazing-conditions" class="inline-block bg-[#49467B] hover:bg-[#49467B] text-white font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out shadow-lg transform hover:scale-105">
+    <div class="bg-black rounded-xl shadow-xl p-8 border border-gray-700">
+        <h2 class="text-3xl font-semibold mb-6 text-white">🔭 Stargazing Conditions</h2>
+        <button id="get-stargazing-conditions" class="inline-block bg-white text-black font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out shadow-lg transform hover:scale-105">
             Get Stargazing Conditions
         </button>
         <div id="stargazing-conditions" class="mt-6"></div>
     </div>
-{% endif %}
+    {% endif %}
 
     <!-- Logs -->
-    <div class="bg-[#1D1D1E] rounded-xl shadow-xl p-8 border border-[#49467B]/30">
-        <h2 class="text-3xl font-semibold mb-6 text-[#49467B]">📝 {{ user.username }}'s Celestial Logs</h2>
+    <div class="bg-black rounded-xl shadow-xl p-8 border border-gray-700">
+        <h2 class="text-3xl font-semibold mb-6 text-white">📝 {{ user.username }}'s Celestial Logs</h2>
         {% if logs %}
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 {% for log in logs %}
-                    <div class="bg-[#19191A] p-6 rounded-lg shadow-md border border-[#494A4D] transition duration-300 ease-in-out hover:border-[#49467B] transform hover:-translate-y-1">
-                        <h4 class="text-xl font-bold text-[#494A4D] mb-2">{{ log.title }}</h4>
-                        <p class="text-[#494A4D] mb-3 leading-relaxed">{{ log.description|truncatewords:30 }}</p>
+                    <div class="bg-[#0F0F10] p-6 rounded-lg shadow-md border border-gray-600 transition duration-300 ease-in-out hover:border-white transform hover:-translate-y-1">
+                        <h4 class="text-xl font-bold text-white mb-2">{{ log.title }}</h4>
+                        <p class="text-gray-400 mb-3 leading-relaxed">{{ log.description|truncatewords:30 }}</p>
                         {% if log.photo %}
                             <img src="{{ log.photo.url }}" alt="Observation Photo" class="rounded-lg max-h-48 w-full object-cover mb-3 shadow-sm">
                         {% endif %}
-                        <p class="text-sm text-[#494A4D] mt-auto">
+                        <p class="text-sm text-gray-500 mt-auto">
                             Logged on {{ log.created_at|date:"F d, Y" }}
                         </p>
                     </div>
                 {% endfor %}
             </div>
         {% else %}
-            <p class="text-gray-300 text-lg">
+            <p class="text-gray-400 text-lg">
                 {{ user.username }} has not logged any observations yet.
             </p>
         {% endif %}
@@ -53,7 +53,7 @@
     async function fetchStargazingConditions(lat, lon) {
         const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=cloudcover,visibility,windspeed_10m`;
         const conditionsDiv = document.getElementById('stargazing-conditions');
-        conditionsDiv.innerHTML = '<p>Fetching stargazing conditions...</p>';
+        conditionsDiv.innerHTML = '<p class="text-white">Fetching stargazing conditions...</p>';
 
         try {
             const response = await fetch(url);
@@ -61,10 +61,9 @@
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
-            console.log('Open-Meteo API response:', data);
 
             if (!data.hourly || !data.hourly.time || data.hourly.time.length === 0) {
-                conditionsDiv.innerHTML = '<p>No hourly data available for stargazing conditions.</p>';
+                conditionsDiv.innerHTML = '<p class="text-white">No hourly data available for stargazing conditions.</p>';
                 return;
             }
 
@@ -73,14 +72,12 @@
 
             for (let i = 0; i < data.hourly.time.length; i++) {
                 const time = new Date(data.hourly.time[i]);
-                // Only consider night time (between 6 PM and 6 AM)
                 if (time.getHours() >= 18 || time.getHours() < 6) {
                     const cloudcover = data.hourly.cloudcover[i];
                     const visibility = data.hourly.visibility[i];
                     const windspeed = data.hourly.windspeed_10m[i];
 
-                    // Simple scoring system: lower cloud, higher visibility, lower wind are better
-                    const normalizedVisibility = visibility / 24140; // Max visibility in meters
+                    const normalizedVisibility = visibility / 24140;
                     const score = (100 - cloudcover) + (normalizedVisibility * 100) - windspeed;
 
                     if (score > bestScore) {
@@ -92,40 +89,36 @@
 
             if (bestTime) {
                 conditionsDiv.innerHTML = `
-                    <h3 class="text-xl font-medium mb-3 text-[#494A4D]">Best Stargazing Time: ${bestTime.toLocaleString()}</h3>
-                    <p class="text-gray-300 text-base leading-relaxed">
+                    <h3 class="text-xl font-medium mb-3 text-white">Best Stargazing Time: ${bestTime.toLocaleString()}</h3>
+                    <p class="text-gray-400 text-base leading-relaxed">
                         At this time, the conditions are expected to be optimal for stargazing, with low cloud cover, high visibility, and low wind.
                     </p>
                 `;
             } else {
-                conditionsDiv.innerHTML = '<p>Could not determine the best stargazing time for the next 24 hours. Try again later.</p>';
+                conditionsDiv.innerHTML = '<p class="text-white">Could not determine the best stargazing time for the next 24 hours. Try again later.</p>';
             }
         } catch (error) {
             console.error('Error fetching stargazing conditions:', error);
-            conditionsDiv.innerHTML = `<p>Error: ${error.message}. Could not fetch stargazing conditions. Please try again later.</p>`;
+            conditionsDiv.innerHTML = `<p class="text-white">Error: ${error.message}. Could not fetch stargazing conditions. Please try again later.</p>`;
         }
     }
 
     document.getElementById('get-stargazing-conditions').addEventListener('click', () => {
         const conditionsDiv = document.getElementById('stargazing-conditions');
-        conditionsDiv.innerHTML = '<p>Fetching stargazing conditions...</p>'; // Loading indicator
+        conditionsDiv.innerHTML = '<p class="text-white">Fetching stargazing conditions...</p>';
 
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
-                    console.log('Geolocation successful.');
                     fetchStargazingConditions(position.coords.latitude, position.coords.longitude);
                 },
                 (error) => {
-                    console.error('Geolocation error:', error);
-                    conditionsDiv.innerHTML = `<p>Geolocation access denied or failed. Defaulting to Chennai. Error: ${error.message}</p>`;
-                    // Default to Chennai, India
+                    conditionsDiv.innerHTML = `<p class="text-white">Geolocation access denied or failed. Defaulting to Chennai. Error: ${error.message}</p>`;
                     fetchStargazingConditions(13.0827, 80.2707);
                 }
             );
         } else {
-            conditionsDiv.innerHTML = '<p>Geolocation is not supported by this browser. Defaulting to Chennai.</p>';
-            // Default to Chennai, India
+            conditionsDiv.innerHTML = '<p class="text-white">Geolocation is not supported by this browser. Defaulting to Chennai.</p>';
             fetchStargazingConditions(13.0827, 80.2707);
         }
     });
