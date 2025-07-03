@@ -28,6 +28,7 @@ urlpatterns = [
     path('observations/', include('observations.urls')),
     path('crowdfunding/', include('crowdfunding.urls')),
     path('profile/', include('profiles.urls')),
+    path('calender/', include('calender.urls')),
 
     # Auth
     path('accounts/login/', auth_views.LoginView.as_view(), name='login'),

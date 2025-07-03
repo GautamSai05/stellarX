@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="min-h-screen text-white p-6 flex flex-col items-center">
+    <h1 class="text-3xl font-bold text-white mb-6">🪐 Astronomy Event Calendar & Chatbot</h1>
+
+    <!-- Chatbot UI -->
+    <div class="w-full max-w-2xl bg-transparent rounded-xl shadow-lg flex flex-col justify-between border border-white/20 backdrop-blur-md">
+        <!-- Chat Messages -->
+        <div id="chat-window" class="p-4 h-96 overflow-y-auto space-y-4 text-white">
+            <div class="border border-white/20 p-3 rounded-xl w-fit max-w-xs">
+                <p class="text-sm">Hi! Ask me what happened on a date like <span class="text-[#38bdf8]">April 1, 2024</span> 🌌</p>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <form id="chat-form" class="flex border-t border-white/20 p-3">
+            <input type="text" id="chat-input" placeholder="Ask about April 1, 2024..." class="flex-grow bg-transparent border border-white/20 text-white placeholder-gray-400 px-4 py-2 rounded-l-xl focus:outline-none focus:ring-1 focus:ring-white" />
+            <button type="submit" class="bg-white text-black hover:bg-black hover:text-white hover:border hover:border-white px-4 py-2 rounded-r-xl font-semibold transition-all duration-300">Send</button>
+        </form>
+    </div>
+</div>
+
+<!-- Gemini API Setup -->
+<script>
+    const GEMINI_API_KEY = "{{ GEMINI_API_KEY }}";  // Passed from Django securely  
+    const endpoint = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent";
+    async function fetchGeminiReply(prompt) {
+        const response = await fetch(`${endpoint}?key=${GEMINI_API_KEY}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }]
+            })
+        });
+
+        const data = await response.json();
+        if (data?.candidates?.length) {
+            return data.candidates[0].content.parts[0].text;
+        } else {
+            return "❌ No event found. Try another date or ask differently.";
+        }
+    }
+</script>
+
+<!-- Chat Logic -->
+<script>
+    const chatForm = document.getElementById("chat-form");
+    const chatInput = document.getElementById("chat-input");
+    const chatWindow = document.getElementById("chat-window");
+
+    chatForm.addEventListener("submit", async function(e) {
+        e.preventDefault();
+        const userMsg = chatInput.value.trim();
+        if (!userMsg) return;
+
+        // Display user message
+        const userBubble = document.createElement("div");
+        userBubble.className = "bg-white text-black p-3 rounded-xl self-end w-fit max-w-xs ml-auto";
+        userBubble.innerHTML = `<p class="text-sm">${userMsg}</p>`;
+        chatWindow.appendChild(userBubble);
+        chatInput.value = "";
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+
+        // Show thinking message
+        const botBubble = document.createElement("div");
+        botBubble.className = "border border-white/20 p-3 rounded-xl w-fit max-w-xs";
+        botBubble.innerHTML = `<p class="text-sm italic text-gray-400">Thinking...</p>`;
+        chatWindow.appendChild(botBubble);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+
+        // Fetch Gemini response
+        try {
+            const reply = await fetchGeminiReply(`List the notable astronomical events that occurred on ${userMsg}. Be concise, bullet-pointed if possible, and skip if nothing occurred.`);
+            botBubble.innerHTML = `<p class="text-sm whitespace-pre-line">${reply}</p>`;
+        } catch (err) {
+            botBubble.innerHTML = `<p class="text-sm text-red-400">⚠️ ${err.message}</p>`;
+        }
+
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    });
+</script>
+{% endblock %}
