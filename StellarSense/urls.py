@@ -29,6 +29,7 @@ urlpatterns = [
     path('crowdfunding/', include('crowdfunding.urls')),
     path('profile/', include('profiles.urls')),
     path('calender/', include('calender.urls')),
+    path('gravity_simulation/', include('gravity_simulation.urls')),
 
     # Auth
     path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
