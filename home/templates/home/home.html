@@ -3,10 +3,31 @@
 {% block title %}Home - StellarSense{% endblock %}
 
 {% block content %}
-<div class="w-full max-w-5xl mx-auto space-y-10 pr-0 lg:pr-16">
+
+<!-- Full Viewport Hero Section -->
+<div class="w-full h-screen bg-gradient-to-b from-black to-[#1D1D1E] flex flex-col items-center justify-center text-white text-center px-6">
+  <h1 class="text-5xl lg:text-7xl font-bold mb-4">Welcome to StellarSense</h1>
+  <p class="text-lg lg:text-2xl max-w-2xl text-gray-300">
+    Dive into the cosmos with NASA's daily celestial wonders and community sky logs.
+  </p>
+</div>
+
+<!-- Main Content Starts -->
+<div class="w-full max-w-5xl mx-auto space-y-10 pr-0 lg:pr-16 mt-10">
+
+    <!-- NASA APOD -->
+    <div class="bg-[#1D1D1E] rounded-xl shadow-lg p-8 border border-[#49467B]/30">
+        <h2 class="text-3xl font-semibold mb-6 text-white"> NASA Astronomy Picture of the Day</h2>
+        <div id="apod-container">
+            <img id="apod-image" src="" alt="NASA Picture of the Day" class="rounded-lg max-h-60 w-full object-cover mb-4 shadow-md border border-[#49467B]/20">
+            <h3 id="apod-title" class="text-xl font-medium mb-3 text-[#494A4D]"></h3>
+            <p id="apod-explanation" class="text-[#494A4D] text-base leading-relaxed"></p>
+        </div>
+    </div>
+
     <!-- FEEDS Header -->
     <div>
-        <h1 class="text-5xl font-extrabold mb-4 text-white ">FEEDS</h1>
+        <h1 class="text-5xl font-extrabold mb-4 text-white">FEEDS</h1>
         <p class="text-xl text-[#494A4D] leading-relaxed">
             Explore daily celestial wonders and recent sky logs from fellow stargazers.
         </p>
@@ -27,17 +48,7 @@
     </div>
     {% endif %}
 
-    <!-- NASA APOD -->
-    <div class="bg-[#1D1D1E] rounded-xl shadow-lg p-8 border border-[#49467B]/30">
-        <h2 class="text-3xl font-semibold mb-6 text-white"> NASA Astronomy Picture of the Day</h2>
-        <div id="apod-container">
-            <img id="apod-image" src="" alt="NASA Picture of the Day" class="rounded-lg max-h-60 w-full object-cover mb-4 shadow-md border border-[#49467B]/20">
-            <h3 id="apod-title" class="text-xl font-medium mb-3 text-[#494A4D]"></h3>
-            <p id="apod-explanation" class="text-[#494A4D] text-base leading-relaxed"></p>
-        </div>
-    </div>
-
-    <!-- Unified Swiper Layout for Both Desktop and Mobile -->
+    <!-- Unified Swiper Layout for Logs -->
     <div id="celestial-logs" class="mt-12 celestial-logs">
         <h2 class="text-3xl font-semibold mb-6 text-white">Recent Celestial Logs</h2>
         {% if logs %}
@@ -58,9 +69,7 @@
                                             </svg>
                                         </div>
                                     {% endif %}
-                                    <!-- Mobile overlay -->
                                     <div class="lg:hidden absolute inset-0 bg-gradient-to-t from-[#1D1D1E]/80 via-transparent to-transparent"></div>
-                                    <!-- Desktop overlay -->
                                     <div class="hidden lg:block absolute inset-0 bg-gradient-to-r from-transparent to-[#1D1D1E]/20"></div>
                                 </div>
                                 
@@ -87,11 +96,9 @@
                     {% endfor %}
                 </div>
                 
-                <!-- Navigation buttons -->
+                <!-- Swiper Navigation -->
                 <div class="swiper-button-next"></div>
                 <div class="swiper-button-prev"></div>
-                
-                <!-- Pagination -->
                 <div class="swiper-pagination"></div>
             </div>
         {% else %}
@@ -105,6 +112,7 @@
 
 {% block extra_body_content %}
     {% include "home/chatbot.html" %}
+
     <script>
     async function getApod() {
         const apiKey = '{{ nasa_api_key }}';
@@ -132,25 +140,12 @@
     }
     getApod();
 
-    // Initialize Unified Swiper for both Desktop and Mobile
     document.addEventListener('DOMContentLoaded', function() {
         const swiper = new Swiper('.celestial-swiper', {
             effect: "cards",
             grabCursor: true,
-            initialSlide: 0,
-            speed: 500,
             loop: true,
-            rotate: true,
-            mousewheel: { 
-                invert: false,
-                forceToAxis: false,
-                sensitivity: 1,
-                releaseOnEdges: false,
-            },
-            keyboard: {
-                enabled: true,
-                onlyInViewport: false,
-            },
+            speed: 500,
             navigation: {
                 nextEl: '.swiper-button-next',
                 prevEl: '.swiper-button-prev',
@@ -160,7 +155,6 @@
                 clickable: true,
                 dynamicBullets: true,
             },
-            // Responsive breakpoints for different behavior
             breakpoints: {
                 320: {
                     cardsEffect: {
@@ -192,7 +186,6 @@
     </script>
 
     <style>
-    /* Custom line-clamp utilities for better text truncation */
     .line-clamp-2 {
         display: -webkit-box;
         -webkit-line-clamp: 2;
@@ -212,7 +205,6 @@
         overflow: hidden;
     }
 
-    /* Unified Swiper Styles */
     .celestial-swiper {
         margin: 0 auto;
         position: relative;
@@ -222,13 +214,12 @@
         z-index: 1;
     }
 
-    /* Mobile styles */
     @media (max-width: 1023px) {
         .celestial-swiper {
             width: 350px;
             height: 500px;
         }
-        
+
         .celestial-swiper .swiper-slide {
             border-radius: 18px;
             font-size: 22px;
@@ -238,13 +229,12 @@
         }
     }
 
-    /* Desktop styles */
     @media (min-width: 1024px) {
         .celestial-swiper {
             width: 700px;
             height: 320px;
         }
-        
+
         .celestial-swiper .swiper-slide {
             border-radius: 18px;
             font-size: 22px;
@@ -254,13 +244,11 @@
         }
     }
 
-    /* Enhanced hover effects */
     .celestial-logs .swiper-slide:hover {
         transform: translateY(-2px);
         transition: all 0.3s ease;
     }
 
-    /* Navigation button styles */
     .swiper-button-next,
     .swiper-button-prev {
         color: #49467B !important;
@@ -284,7 +272,6 @@
         font-weight: bold;
     }
 
-    /* Pagination styles */
     .swiper-pagination-bullet {
         background: #49467B;
         opacity: 0.5;
@@ -295,7 +282,6 @@
         opacity: 1;
     }
 
-    /* Cards effect shadows and positioning */
     .swiper-cards .swiper-slide {
         overflow: hidden;
         border-radius: 18px;
