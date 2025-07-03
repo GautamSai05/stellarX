@@ -1,23 +1,81 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="min-h-screen text-white p-6 flex flex-col items-center">
-    <h1 class="text-3xl font-bold text-white mb-6">Chatbot Calender</h1>
+<div class="min-h-screen text-white p-6">
+    <h1 class="text-3xl font-bold text-white mb-6 text-center">Chatbot Calendar</h1>
 
-    <div class="w-full max-w-2xl bg-transparent rounded-xl shadow-lg flex flex-col justify-between border border-white/20 backdrop-blur-md">
-        <!-- Chat Window -->
-        <div id="chat-window" class="p-4 h-96 overflow-y-auto space-y-4 text-white">
-            <div class="border border-white/20 p-3 rounded-xl w-fit max-w-xs">
-                <p class="text-sm">Hi! Ask me what happened on a date like <span class="text-[#38bdf8]">April 1</span> 🌌</p>
+    <!-- Main Container with Two Columns -->
+    <div class="flex flex-col lg:flex-row gap-6 max-w-7xl mx-auto">
+        
+        <!-- Left Side - Calendar Picker -->
+        <div class="w-full lg:w-1/2 bg-transparent rounded-xl shadow-lg border border-white/20 backdrop-blur-md">
+            <div class="p-4 border-b border-white/20">
+                <h2 class="text-xl font-semibold text-white mb-2">Pick a Date from Calendar</h2>
+                <p class="text-sm text-gray-300">Click on any date to see what happened on that day</p>
+            </div>
+            
+            <!-- Calendar -->
+            <div class="p-4">
+                <div class="calendar-container">
+                    <!-- Calendar Header -->
+                    <div class="flex items-center justify-between mb-4">
+                        <button id="prev-month" class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-lg transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                        </button>
+                        <h3 id="month-year" class="text-lg font-semibold text-white"></h3>
+                        <button id="next-month" class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-lg transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Calendar Grid -->
+                    <div class="grid grid-cols-7 gap-2 mb-4">
+                        <!-- Days of week -->
+                        <div class="text-center text-sm font-medium text-gray-300 p-2">Sun</div>
+                        <div class="text-center text-sm font-medium text-gray-300 p-2">Mon</div>
+                        <div class="text-center text-sm font-medium text-gray-300 p-2">Tue</div>
+                        <div class="text-center text-sm font-medium text-gray-300 p-2">Wed</div>
+                        <div class="text-center text-sm font-medium text-gray-300 p-2">Thu</div>
+                        <div class="text-center text-sm font-medium text-gray-300 p-2">Fri</div>
+                        <div class="text-center text-sm font-medium text-gray-300 p-2">Sat</div>
+                    </div>
+
+                    <!-- Calendar Days -->
+                    <div id="calendar-days" class="grid grid-cols-7 gap-2">
+                        <!-- Days will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Selected Date Display -->
+            <div class="p-4 border-t border-white/20">
+                <div class="bg-white/10 rounded-lg p-4">
+                    <h4 class="text-white font-semibold mb-2">Calendar Date Picker</h4>
+                    <p class="text-sm text-gray-300">Click on any date above to send it to the chatbot →</p>
+                </div>
             </div>
         </div>
 
-        <!-- Input -->
-        <form id="chat-form" class="flex border-t border-white/20 p-3">
-            {% csrf_token %}
-            <input type="text" id="chat-input" placeholder="Ask about April 1, 2024..." class="flex-grow bg-transparent border border-white/20 text-white placeholder-gray-400 px-4 py-2 rounded-l-xl focus:outline-none focus:ring-1 focus:ring-white" />
-            <button type="submit" class="bg-white text-black hover:bg-black hover:text-white hover:border hover:border-white px-4 py-2 rounded-r-xl font-semibold transition-all duration-300">Send</button>
-        </form>
+        <!-- Right Side - Original Chatbot -->
+        <div class="w-full lg:w-1/2 bg-transparent rounded-xl shadow-lg flex flex-col justify-between border border-white/20 backdrop-blur-md">
+            <!-- Chat Window -->
+            <div id="chat-window" class="p-4 h-96 overflow-y-auto space-y-4 text-white">
+                <div class="border border-white/20 p-3 rounded-xl w-fit max-w-xs">
+                    <p class="text-sm">Hi! Ask me what happened on a date like <span class="text-[#38bdf8]">April 1</span> 🌌</p>
+                </div>
+            </div>
+
+            <!-- Input -->
+            <form id="chat-form" class="flex border-t border-white/20 p-3">
+                {% csrf_token %}
+                <input type="text" id="chat-input" placeholder="Ask about April 1, 2024..." class="flex-grow bg-transparent border border-white/20 text-white placeholder-gray-400 px-4 py-2 rounded-l-xl focus:outline-none focus:ring-1 focus:ring-white" />
+                <button type="submit" class="bg-white text-black hover:bg-black hover:text-white hover:border hover:border-white px-4 py-2 rounded-r-xl font-semibold transition-all duration-300">Send</button>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -47,6 +105,7 @@
         }
     }
 
+    // Original chatbot functionality
     const chatForm = document.getElementById("chat-form");
     const chatInput = document.getElementById("chat-input");
     const chatWindow = document.getElementById("chat-window");
@@ -99,5 +158,116 @@
 
         chatWindow.scrollTop = chatWindow.scrollHeight;
     });
+
+    // Calendar functionality
+    let currentDate = new Date();
+    const monthNames = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"];
+
+    function renderCalendar(date) {
+        const monthYear = document.getElementById('month-year');
+        const calendarDays = document.getElementById('calendar-days');
+        
+        monthYear.textContent = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+        
+        // Clear previous days
+        calendarDays.innerHTML = '';
+        
+        // Get first day of month and number of days
+        const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+        const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+        const daysInMonth = lastDay.getDate();
+        const startingDayOfWeek = firstDay.getDay();
+        
+        // Add empty cells for days before month starts
+        for (let i = 0; i < startingDayOfWeek; i++) {
+            const emptyDay = document.createElement('div');
+            emptyDay.className = 'p-2';
+            calendarDays.appendChild(emptyDay);
+        }
+        
+        // Add days of the month
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dayElement = document.createElement('div');
+            dayElement.className = 'p-2 text-center cursor-pointer hover:bg-white/20 rounded-lg transition-all text-white border border-white/10 hover:border-white/30';
+            dayElement.textContent = day;
+            dayElement.addEventListener('click', () => selectDate(date.getFullYear(), date.getMonth(), day));
+            calendarDays.appendChild(dayElement);
+        }
+    }
+
+    async function selectDate(year, month, day) {
+        const selectedDate = new Date(year, month, day);
+        const dateString = selectedDate.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+        
+        // Send selected date to chatbot
+        sendDateToChatbot(dateString);
+    }
+
+    async function sendDateToChatbot(dateString) {
+        // Add user message bubble to chatbot
+        const userBubble = document.createElement("div");
+        userBubble.className = "bg-white text-black p-3 rounded-xl self-end w-fit max-w-xs ml-auto";
+        userBubble.innerHTML = `<p class="text-sm">${dateString}</p>`;
+        chatWindow.appendChild(userBubble);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+
+        // Add bot thinking bubble
+        const botBubble = document.createElement("div");
+        botBubble.className = "border border-white/20 p-3 rounded-xl w-fit max-w-xs";
+        botBubble.innerHTML = `<p class="text-sm italic text-gray-400">Thinking...</p>`;
+        chatWindow.appendChild(botBubble);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+
+        try {
+            // Send date to Django backend
+            const response = await fetch("", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": csrfToken
+                },
+                body: `date=${dateString}`
+            });
+
+            const data = await response.json();
+            botBubble.innerHTML = `<p class="text-sm whitespace-pre-line">${data.description}</p>`;
+        } catch (err) {
+            botBubble.innerHTML = `<p class="text-sm text-red-400">⚠️ ${err.message}</p>`;
+        }
+
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    // Calendar navigation
+    document.getElementById('prev-month').addEventListener('click', () => {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        renderCalendar(currentDate);
+    });
+
+    document.getElementById('next-month').addEventListener('click', () => {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        renderCalendar(currentDate);
+    });
+
+    // Initialize calendar
+    renderCalendar(currentDate);
 </script>
+
+<style>
+    .calendar-container {
+        max-width: 100%;
+    }
+    
+    #calendar-days > div {
+        min-height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
 {% endblock %}

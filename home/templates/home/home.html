@@ -1276,6 +1276,16 @@ canvas {
         background: rgba(0, 0, 0, 0.3);
         border-radius: 18px;
     }
+
+#apod-image {
+  transition: transform 0.4s cubic-bezier(0.4,0,0.2,1), box-shadow 0.4s cubic-bezier(0.4,0,0.2,1);
+  will-change: transform;
+}
+#apod-image:hover {
+  transform: translateY(-18px) scale(1.04);
+  box-shadow: 0 16px 40px 0 rgba(80, 80, 255, 0.25), 0 2px 8px 0 rgba(0,0,0,0.18);
+  z-index: 2;
+}
     </style>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
