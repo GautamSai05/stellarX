@@ -7,43 +7,52 @@
     <meta charset="UTF-8">
     <title>Signup | StellarSense</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="{% static 'home/splash.css' %}"> {# Include splash.css for background #}
+    <link rel="stylesheet" href="{% static 'home/splash.css' %}">
+    <style>
+        body {
+            background: linear-gradient(to right, #000000, #0f0f0f);
+        }
+        .glass-card {
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(14px);
+        }
+    </style>
 </head>
-<body class="min-h-screen flex items-center justify-center px-4">
-    <div class="bg-[#1D1D1E] shadow-xl rounded-xl p-8 w-full max-w-md border border-[#49467B]/30 animate-fade-in">
-        <h2 class="text-3xl font-bold text-center mb-8 text-[#49467B]">🚀 Create Your Account</h2>
+<body class="min-h-screen flex items-center justify-center px-4 text-white font-sans">
+    <div class="glass-card shadow-2xl rounded-xl p-8 w-full max-w-md border border-white/10 animate-fade-in">
+        <h2 class="text-3xl font-bold text-center mb-8 text-white"> Create Your Account</h2>
 
         <form method="post" class="space-y-6">
             {% csrf_token %}
 
             <div>
-                <label class="block text-sm font-medium text-[#494A4D] mb-1">Username</label>
-                {{ form.username|add_class:"w-full px-4 py-3 rounded-lg bg-[#19191A] text-[#494A4D] border border-[#494A4D] focus:outline-none focus:ring-2 focus:ring-[#49467B] focus:border-transparent transition duration-300" }}
+                <label class="block text-sm font-medium text-white mb-1">Username</label>
+                {{ form.username|add_class:"w-full px-4 py-3 rounded-lg bg-black/60 text-white border border-white/20 placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white transition duration-300" }}
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-[#494A4D] mb-1">Email</label>
-                {{ form.email|add_class:"w-full px-4 py-3 rounded-lg bg-[#19191A] text-[#494A4D] border border-[#494A4D] focus:outline-none focus:ring-2 focus:ring-[#49467B] focus:border-transparent transition duration-300" }}
+                <label class="block text-sm font-medium text-white mb-1">Email</label>
+                {{ form.email|add_class:"w-full px-4 py-3 rounded-lg bg-black/60 text-white border border-white/20 placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white transition duration-300" }}
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-[#494A4D] mb-1">Password</label>
-                {{ form.password1|add_class:"w-full px-4 py-3 rounded-lg bg-[#19191A] text-[#494A4D] border border-[#494A4D] focus:outline-none focus:ring-2 focus:ring-[#49467B] focus:border-transparent transition duration-300" }}
+                <label class="block text-sm font-medium text-white mb-1">Password</label>
+                {{ form.password1|add_class:"w-full px-4 py-3 rounded-lg bg-black/60 text-white border border-white/20 placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white transition duration-300" }}
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-[#494A4D] mb-1">Confirm Password</label>
-                {{ form.password2|add_class:"w-full px-4 py-3 rounded-lg bg-[#19191A] text-[#494A4D] border border-[#494A4D] focus:outline-none focus:ring-2 focus:ring-[#49467B] focus:border-transparent transition duration-300" }}
+                <label class="block text-sm font-medium text-white mb-1">Confirm Password</label>
+                {{ form.password2|add_class:"w-full px-4 py-3 rounded-lg bg-black/60 text-white border border-white/20 placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white transition duration-300" }}
             </div>
 
-            <button type="submit" class="w-full bg-[#49467B] hover:bg-[#49467B] text-white font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out shadow-lg transform hover:scale-105">
+            <button type="submit" class="w-full bg-white text-black font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out shadow-lg transform hover:bg-black hover:text-white hover:shadow-[0_0_0_2px_white]">
                 Sign Up
             </button>
         </form>
 
-        <p class="mt-8 text-sm text-center text-[#494A4D]">
+        <p class="mt-8 text-sm text-center text-gray-400">
             Already have an account?
-            <a href="{% url 'login' %}" class="text-white hover:text-gray-400 underline transition duration-300">Log in</a>.
+            <a href="{% url 'login' %}" class="text-white hover:text-gray-200 underline transition duration-300">Log in</a>.
         </p>
     </div>
 </body>

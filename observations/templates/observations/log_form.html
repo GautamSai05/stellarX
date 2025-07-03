@@ -4,31 +4,31 @@
 {% block title %}Submit Observation - StellarSense{% endblock %}
 
 {% block content %}
-<div class="max-w-2xl mx-auto bg-[#1D1D1E] shadow-lg rounded-xl p-8 mt-10 border border-[#49467B]/30">
-    <h2 class="text-3xl font-bold text-[#49467B] mb-8 text-center">📸 Submit a Celestial Observation</h2>
+<div class="max-w-2xl mx-auto mt-10 rounded-xl border border-white/10 shadow-2xl p-8 backdrop-blur-lg bg-black/60 animate-fade-in">
+    <h2 class="text-3xl font-bold text-white mb-8 text-center">Submit a Celestial Observation</h2>
 
     <form method="POST" enctype="multipart/form-data" class="space-y-6">
         {% csrf_token %}
 
-        <!-- Render each form field manually for better styling -->
         <div>
-            <label for="{{ form.title.id_for_label }}" class="block text-sm font-medium text-[#494A4D] mb-1">Title</label>
-            {{ form.title|add_class:"w-full px-4 py-3 rounded-lg bg-[#19191A] text-[#494A4D] border border-[#494A4D] focus:outline-none focus:ring-2 focus:ring-[#49467B] focus:border-transparent transition duration-300" }}
+            <label for="{{ form.title.id_for_label }}" class="block text-sm font-medium text-white mb-1">Title</label>
+            {{ form.title|add_class:"w-full px-4 py-3 rounded-lg bg-black/50 text-white placeholder-white/50 border border-white/20 focus:outline-none focus:ring-2 focus:ring-white transition duration-300" }}
         </div>
 
         <div>
-            <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-[#494A4D] mb-1">Description</label>
-            {{ form.description|add_class:"w-full px-4 py-3 rounded-lg bg-[#19191A] text-[#494A4D] border border-[#494A4D] focus:outline-none focus:ring-2 focus:ring-[#49467B] focus:border-transparent transition duration-300" }}
+            <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-white mb-1">Description</label>
+            {{ form.description|add_class:"w-full px-4 py-3 rounded-lg bg-black/50 text-white placeholder-white/50 border border-white/20 focus:outline-none focus:ring-2 focus:ring-white transition duration-300" }}
         </div>
 
         <div>
-            <label for="{{ form.photo.id_for_label }}" class="block text-sm font-medium text-[#494A4D] mb-1">Upload Photo</label>
-            {{ form.photo|add_class:"block w-full text-sm text-[#494A4D] bg-[#19191A] rounded-lg border border-[#494A4D] cursor-pointer focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#49467B] file:text-white hover:file:bg-[#49467B] transition duration-300" }}
+            <label for="{{ form.photo.id_for_label }}" class="block text-sm font-medium text-white mb-1">Upload Photo</label>
+            {{ form.photo|add_class:"block w-full text-sm text-white bg-black/40 rounded-lg border border-white/20 cursor-pointer focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-white file:text-black hover:file:bg-black hover:file:text-white hover:file:shadow-[0_0_0_2px_white] transition duration-300" }}
         </div>
 
         <div class="text-center pt-4">
-            <button type="submit" class="bg-gray-800 hover:bg-gray-700 text-white font-bold px-8 py-3 rounded-full transition duration-300 ease-in-out shadow-lg transform hover:scale-105">
-                🚀 Submit Observation
+            <button type="submit"
+                class="bg-white text-black font-bold px-8 py-3 rounded-full transition duration-300 ease-in-out shadow-lg transform hover:bg-black hover:text-white hover:shadow-[0_0_0_2px_white]">
+                Submit Observation
             </button>
         </div>
     </form>

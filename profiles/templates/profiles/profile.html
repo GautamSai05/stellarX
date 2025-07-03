@@ -13,7 +13,7 @@
 
     {% if user == request.user %}
     <div class="bg-black rounded-xl shadow-xl p-8 border border-gray-700">
-        <h2 class="text-3xl font-semibold mb-6 text-white">🔭 Stargazing Conditions</h2>
+        <h2 class="text-3xl font-semibold mb-6 text-white"> Stargazing Conditions</h2>
         <button id="get-stargazing-conditions" class="inline-block bg-white text-black font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out shadow-lg transform hover:scale-105">
             Get Stargazing Conditions
         </button>
@@ -23,7 +23,7 @@
 
     <!-- Logs -->
     <div class="bg-black rounded-xl shadow-xl p-8 border border-gray-700">
-        <h2 class="text-3xl font-semibold mb-6 text-white">📝 {{ user.username }}'s Celestial Logs</h2>
+        <h2 class="text-3xl font-semibold mb-6 text-white"> {{ user.username }}'s Celestial Logs</h2>
         {% if logs %}
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 {% for log in logs %}
