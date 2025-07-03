@@ -56,6 +56,18 @@ Space is silent, yet it speaks in stars—a canvas stretched beyond our scars; h
         </p>
     </div>
 
+    <!-- Today's Events -->
+    {% if today_events %}
+    <div class="mt-10">
+        <h2 class="text-3xl font-semibold mb-6 text-white">Today's Astronomical Events</h2>
+        <ul class="list-disc list-inside text-white/80">
+            {% for event in today_events %}
+            <li>{{ event.description }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
     {% if user.is_authenticated %}
 <div>
   <a href="{% url 'log_create' %}"
@@ -138,6 +150,10 @@ Space is silent, yet it speaks in stars—a canvas stretched beyond our scars; h
 
 {% block extra_body_content %}
     {% include "home/chatbot.html" %}
+
+    <script>
+        var todayEvents = JSON.parse('{{ today_events|safe|escapejs }}');
+    </script>
 
     <script>
 // Example data – replace these with your dynamic values

@@ -278,6 +278,22 @@
             chatContainer.style.display = 'flex';
             chatContainer.classList.add('chat-show');
             chatInput.focus();
+
+            // Display today's events if available
+            if (typeof todayEvents !== 'undefined' && todayEvents.length > 0) {
+                const botMessage = document.createElement('div');
+                botMessage.className = 'message bot';
+                const today = new Date();
+                const options = { month: 'long', day: 'numeric' };
+                const formattedDate = today.toLocaleDateString(undefined, options);
+                let eventsHtml = `Astronomical Events for ${formattedDate}:<br>`;
+                todayEvents.forEach(event => {
+                    eventsHtml += `- ${event.description}<br>`;
+                });
+                botMessage.innerHTML = eventsHtml;
+                commentBox.appendChild(botMessage);
+                commentBox.scrollTop = commentBox.scrollHeight;
+            }
         }, 400);
     });
 

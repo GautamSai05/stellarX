@@ -5,6 +5,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 import os
 from dotenv import load_dotenv
+from datetime import date
+from calender.models import AstronomicalEvent
 
 load_dotenv()
 
@@ -17,7 +19,8 @@ def splash(request):
 
 def home_view(request):
         logs = Observation.objects.all().order_by('-created_at')[:10]
-        return render(request, 'home/home.html', {'logs': logs, 'nasa_api_key': os.getenv('NASA_API_KEY')})
+        today_events = AstronomicalEvent.objects.filter(date=date.today())
+        return render(request, 'home/home.html', {'logs': logs, 'nasa_api_key': os.getenv('NASA_API_KEY'), 'today_events': today_events})
 
 def signup_view(request):
     if request.method == 'POST':
