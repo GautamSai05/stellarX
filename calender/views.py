@@ -23,7 +23,7 @@ def calendar_chatbot(request):
             return JsonResponse({"description": "❌ Invalid date format."})
 
         # Always query Gemini API for the event description
-        prompt = f"Describe any astronomical phenomena or events visible from Earth on {user_date}, even minor ones. If nothing significant, state that. Be concise and informative."
+        prompt =  f"Search for notable astronomical, astrophysical, or space-related historical events that occurred on {user_date}, ignoring the year. These can include celestial discoveries, spacecraft launches, astronaut milestones, telescope deployments, or landmark scientific findings. Present each event as a short, engaging story suitable for astronomy enthusiasts visiting a homepage. Be educational, accurate, and use a touch of creativity. If nothing important happened, state it clearly but positively."
         try:
             response = gemini_model.generate_content(prompt)
             reply = response.text.strip() if response.text else "No information available from Gemini API."
