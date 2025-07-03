@@ -54,7 +54,7 @@
        PROFILE
     </a>
 
-    <span class="text-white">Hi, {{ user.username }}</span>
+   
 
     <form action="{% url 'logout' %}" method="post" class="inline">
       {% csrf_token %}
@@ -107,7 +107,7 @@
         <a href="{% url 'stellarium' %}" class="text-white hover:text-gray-300 text-base font-bold">STUFF</a>
         {% if user.is_authenticated %}
             <a href="{% url 'profile' user.username %}" class="text-white hover:text-gray-300 text-base font-bold">PROFILE</a>
-            <span class="text-gray-500 text-xl">Hi, {{ user.username }}</span>
+         
             <form action="{% url 'logout' %}" method="post">
                 {% csrf_token %}
                 <button type="submit" class="text-white hover:text-gray-400 text-base font-bold">Logout</button>
