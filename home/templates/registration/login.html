@@ -33,12 +33,22 @@
             </div>
         {% endif %}
 
+        {% if messages %}
+            {% for message in messages %}
+                <div class="mb-4 bg-green-700/80 text-white rounded-lg px-4 py-3 text-center border border-green-400 animate-pulse">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
         <form method="post" class="space-y-6">
             {% csrf_token %}
 
             <div>
                 <label class="block text-sm font-medium text-white mb-1">Username</label>
-                {{ form.username|add_class:"w-full px-4 py-3 rounded-lg bg-black/60 text-white border border-white/20 placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white transition duration-300" }}
+                <input type="text" name="username"
+                    class="w-full px-4 py-3 rounded-lg bg-black/60 text-white border border-white/20 placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white transition duration-300"
+                    value="{{ request.GET.username|default:'' }}">
             </div>
 
             <div>
