@@ -90,7 +90,7 @@ The "Live Comments" feature (`chatbot.html`) is a real-time public chat system, 
 - Tailwind CSS, React.js
 
 **Database & Storage:**  
-- SQLite3, Pillow, Whitenoise
+- SQLite3(local testing), postgresql(deploying) Pillow, Whitenoise
 
 **APIs & External Services:**  
 - NASA APOD API, NASA NeoWs API, Open Meteo API, Google Generative AI

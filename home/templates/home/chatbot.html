@@ -67,15 +67,16 @@
         <div id="chat-body">
             <div id="live-comments">
                 <!-- Welcome message -->
-                <div class="message welcome-message">
-                    <div class="welcome-header">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="welcome-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a3 3 0 01-3-3V8a3 3 0 013-3h8z" />
-                        </svg>
-                        <strong>Welcome to Live Chat!</strong>
-                    </div>
-                    <p>Connect with users across multiple devices in real-time. Click the info icon (ℹ️) above to learn more about how this chat works.</p>
-                </div>
+
+<div class="message welcome-message bg-black text-white border border-white p-4 rounded-lg">
+    <div class="welcome-header flex items-center gap-2 mb-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="welcome-icon w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a3 3 0 01-3-3V8a3 3 0 013-3h8z" />
+        </svg>
+        <strong class="text-white">Welcome to Live Chat!</strong>
+    </div>
+    <p class="text-white">Connect with users across multiple devices in real-time. Click the info icon (ℹ️) above to learn more about how this chat works.</p>
+</div>
             </div>
             <form id="chat-form">
                 <input type="text" id="chat-message-input" placeholder="Type your message..." autocomplete="off">
@@ -329,16 +330,21 @@
             border: 1px solid #000000;
         }
 
-        .welcome-message {
-            background: linear-gradient(135deg, var(--info-color), var(--success-color));
-            color: white;
-            max-width: 100%;
-            align-self: center;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            margin-bottom: 1rem;
-        }
 
+.welcome-message {
+    background: transparent;
+    color: white;
+    max-width: 100%;
+    align-self: center;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    margin-bottom: 1rem;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    padding: 1rem;
+    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
+}
         .welcome-header {
             display: flex;
             align-items: center;
