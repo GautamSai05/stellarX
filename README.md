@@ -223,9 +223,10 @@ Visit: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 ## ⚡️ **Important Note About Website Loading Time**
 
 > **StellarSense is deployed on [Render](https://render.com/) using their free plan.**  
-> Because of this, the website may experience slower loading times, especially during peak usage periods. We recommend being patient as the site loads, and we appreciate your understanding.
+> Because we use both a backend server and multiple APIs, **the website may take up to 3 minutes to load the very first time you visit it** (this is due to the server "waking up" from sleep on the free tier).  
+> **This delay happens only on the first visit after a period of inactivity. Subsequent visits will be fast.**
 >
-> **For the best experience, consider contributing to our crowdfunding campaign to help us upgrade to a paid plan for faster, more reliable access.**
+> **If you run the project locally, there is no such delay and everything works instantly and smoothly.**
 
 ---
 
