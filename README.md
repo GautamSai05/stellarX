@@ -41,6 +41,7 @@ StellarSense is structured as a modular Django project, with distinct applicatio
 *   **`profiles`**: Manages user-specific data and profile settings.
 *   **`calender`**: Provides the framework for the astronomical events calendar.
 *   **`gravity_simulation`**: Contains the logic and frontend for the gravity simulation.
+*   **`Admin Page`**: Accessible via `/admin`, provides an interface for site administration and content management.
 
 The project utilizes Django's built-in ORM for database interactions and leverages Django Channels for handling asynchronous tasks and real-time communication, enabling features like live updates or interactive simulations. Static and media files are served efficiently, with configurations for both development and production environments. Integration with Google Generative AI is set up to potentially power intelligent features across the platform.
 
