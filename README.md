@@ -172,6 +172,13 @@ cd stellarX
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+<for mobile>
+git clone https://github.com/Kaileshwar16/stellarX.git
+cd stellarX
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+
 ```
 
 ### Environment Setup
