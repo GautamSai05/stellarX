@@ -10,9 +10,9 @@
 
 ---
 
-## 🚨 **Admin Access (For Judges & Reviewers)**
+## 🚨 **Admin Access **
 
-> **To access the admin panel and explore all features, use:**  
+> **To access the admin panel and moderate users:**  
 > **Username:** `root`  
 > **Password:** `root`  
 >  
