@@ -33,11 +33,11 @@ Our platform combines factual accuracy with creative storytelling, making astron
 
 ## ✨ Key Features
 
-### 🗓️ Astronomical Calendar & Chatbot
+### 🗓️ Astronomical Calendar & Date Explorer
 *Displays historical events for the current date, with rich storytelling, images, and interactive timelines. Browse decades of space exploration milestones by category.  
-The chatbot and calendar are tightly integrated: users can pick a date or ask the chatbot about any day in space history, and get instant, AI-powered answers and event details.*
+The calendar and date explorer are tightly integrated: users can pick a date or ask about any day in space history, and get instant, AI-powered answers and event details.*
 
-![Astronomical Calendar & Chatbot](https://drive.google.com/uc?id=1TVaY5BGeIO7OUny8_jR1a-hzlNvFv2p8)
+![Astronomical Calendar & Date Explorer](https://drive.google.com/uc?id=1TVaY5BGeIO7OUny8_jR1a-hzlNvFv2p8)
 
 ---
 
@@ -61,15 +61,20 @@ In space, gravity keeps planets in orbit around stars, moons around planets, and
 *Explore a real-time, interactive map of satellites, debris, and celestial objects orbiting Earth.  
 Click on any object to learn about its name, type, orbital parameters, and more. This feature helps users visualize the density and diversity of objects in Earth's orbit and discover details about stars, planets, and satellites in our galaxy and universe.*
 
+![Around Earth](https://drive.google.com/uc?id=1iqZhs93TaFRoamaIfphgNYGhdWv0s04L)
+
 ---
 
-## 🤖 About the Chatbot Feature
+## 💬 Live Comments (Not a Chatbot)
 
-The chatbot (`chatbot.html`) is a core interactive component of StellarSense.  
-- **Calendar Integration:** Users can pick any date from the calendar or type a question to the chatbot (e.g., "What happened on July 4th in space history?").
-- **AI-Powered:** The chatbot uses Google Generative AI to provide instant, conversational answers about astronomical events, space facts, and more.
-- **Live Comments:** The chat interface also supports real-time comments and discussion, powered by Django Channels and WebSockets.
-- **Accessibility:** The chatbot is always available via a floating icon, making it easy for users to get help or information anywhere on the site.
+The "Live Comments" feature (`chatbot.html`) is a real-time public chat system, not a traditional AI chatbot.  
+- **Real-Time Messaging:** Users can send and receive messages instantly across devices, similar to a group chat.
+- **WebSocket Powered:** Built using Django Channels and WebSockets for instant delivery.
+- **Open to All:** Both logged-in and anonymous users can participate; usernames are shown if logged in.
+- **Community Wall:** All messages are visible to everyone currently online, fostering open discussion and collaboration.
+- **Info Panel:** Users can view chat guidelines and how the system works.
+
+![Live Comments](https://drive.google.com/uc?id=1dnJdOA3-90J5cAm1K2sENlFe_wxi5Cti)
 
 ---
 
@@ -195,15 +200,20 @@ Visit: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 
 ---
 
-## 🙏 Acknowledgements
+## 🙏 Acknowledgements & Credits
 
-- NASA
-- Open-Meteo
-- Google Generative AI
-- ChatGPT
-- Django
-- Tailwind CSS
-- Render
+- [NASA Open APIs](https://api.nasa.gov/) (APOD, NeoWs, and more)
+- [Open-Meteo](https://open-meteo.com/) (Weather data)
+- [Stuff in Space](https://stuffin.space/) (Satellite visualization)
+- [Google Generative AI](https://ai.google/)
+- [ChatGPT](https://chat.openai.com/)
+- [Django](https://www.djangoproject.com/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Render](https://render.com/)
+- [Swiper.js](https://swiperjs.com/) (for carousel/logs)
+- [FontAwesome](https://fontawesome.com/) (icons)
+- [Rogue Space Systems Corporation](https://rogue.space/) (satellite data)
+- [Various open-source astronomy datasets and community resources]
 
 ---
 
