@@ -3,6 +3,8 @@ import requests
 from observations.models import Observation
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.urls import reverse
 import os
 from dotenv import load_dotenv
 from datetime import date
@@ -26,8 +28,9 @@ def signup_view(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('login')  # Redirect to login after successful signup
+            user = form.save()
+            messages.success(request, 'You have been successfully registered! Please log in.')
+            return redirect(f"{reverse('login')}?username={user.username}")
     else:
         form = UserCreationForm()
     return render(request, 'registration/signup.html', {'form': form})
