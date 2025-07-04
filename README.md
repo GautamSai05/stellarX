@@ -77,6 +77,17 @@ The "Live Comments" feature (`chatbot.html`) is a real-time public chat system, 
 
 ---
 
+### 🆕 Social Astronomy Feed (Instagram/Facebook-like Posting)
+> **A unique, community-driven feature!**
+>
+> Users can **create accounts and post their own astronomy observations, discoveries, or thoughts**—just like on Instagram or Facebook, but tailored for astronomy.  
+> Each post is presented in a way that's easy for anyone to understand, with clear explanations, images, and interactive elements.  
+> This makes sharing and learning about the cosmos accessible and engaging for all ages and backgrounds.
+
+![Social Astronomy Feed](https://drive.google.com/uc?id=1Cr7Imq3t-DDghhD0JIL871IgQ3vlCQ8H)
+
+---
+
 ## 🚀 Technical Implementation
 
 ### Technology Stack
@@ -241,4 +252,3 @@ StellarSense transforms everyday curiosity into cosmic discovery. By integrating
 ---
 
 *Feature images are linked from Google Drive. For best results on GitHub, upload images to your repository or use a dedicated image hosting service.*
-
