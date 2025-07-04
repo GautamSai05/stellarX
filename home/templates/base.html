@@ -46,6 +46,13 @@
      GRAVITY
   </a>
 
+  <a href="{% url 'admin:index' %}"
+     class="relative text-white text-base font-bold transition duration-300 hover:text-gray-300
+            after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 hover:after:w-full
+            after:bg-white after:transition-all after:duration-300">
+     ADMIN
+  </a>
+
   {% if user.is_authenticated %}
     <a href="{% url 'profile' user.username %}"
        class="relative text-white text-base font-bold transition duration-300 hover:text-gray-300
@@ -104,6 +111,7 @@
         <a href="{% url 'calender' %}" class="text-white hover:text-gray-300 text-base font-bold">CALENDER</a>
         <a href="{% url 'crowdfunding' %}" class="text-white hover:text-gray-300 text-base font-bold">FUNDING</a>
         <a href="{% url 'gravity_simulation' %}" class="text-white hover:text-gray-300 text-base font-bold">GRAVITY</a>
+        <a href="{% url 'admin:index' %}" class="text-white hover:text-gray-300 text-base font-bold">ADMIN</a>
         <a href="{% url 'stellarium' %}" class="text-white hover:text-gray-300 text-base font-bold">STUFF</a>
         {% if user.is_authenticated %}
             <a href="{% url 'profile' user.username %}" class="text-white hover:text-gray-300 text-base font-bold">PROFILE</a>
