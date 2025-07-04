@@ -220,6 +220,15 @@ Visit: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 
 ---
 
+## ⚡️ **Important Note About Website Loading Time**
+
+> **StellarSense is deployed on [Render](https://render.com/) using their free plan.**  
+> Because of this, the website may experience slower loading times, especially during peak usage periods. We recommend being patient as the site loads, and we appreciate your understanding.
+>
+> **For the best experience, consider contributing to our crowdfunding campaign to help us upgrade to a paid plan for faster, more reliable access.**
+
+---
+
 ## 🙏 Acknowledgements & Credits
 
 - [NASA Open APIs](https://api.nasa.gov/) (APOD, NeoWs, and more)
