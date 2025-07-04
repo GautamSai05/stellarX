@@ -164,7 +164,7 @@ The "Live Comments" feature (`chatbot.html`) is a real-time public chat system, 
 - pip
 - Git
 
-### Installation
+### Installation (linux)
 
 ```bash
 git clone https://github.com/Kaileshwar16/stellarX.git
@@ -172,7 +172,10 @@ cd stellarX
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-<for mobile>
+```
+### Installation (windows)
+
+```bash
 git clone https://github.com/Kaileshwar16/stellarX.git
 cd stellarX
 python -m venv venv
