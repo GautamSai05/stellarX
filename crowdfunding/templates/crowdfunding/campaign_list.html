@@ -1,0 +1,8 @@
+<h1> Fund ISRO Missions</h1>
+{% for campaign in campaigns %}
+    <div>
+        <h2>{{ campaign.title }}</h2>
+        <p>{{ campaign.description }}</p>
+        <p>Goal: ₹{{ campaign.goal_amount }} | Raised: ₹{{ campaign.current_amount }}</p>
+    </div>
+{% endfor %}
