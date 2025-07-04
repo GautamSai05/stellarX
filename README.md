@@ -95,7 +95,7 @@ The "Live Comments" feature (`chatbot.html`) is a real-time public chat system, 
 - NASA APOD API, NASA NeoWs API, Open Meteo API, Google Generative AI
 
 **Development Tools:**  
-- python-dotenv, python-dateutil, django-widget-tweaks
+- renderer, nvim, postman
 
 ### Architecture Overview
 
