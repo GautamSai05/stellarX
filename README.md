@@ -10,6 +10,18 @@
 
 ---
 
+## 🚨 **Admin Access (For Judges & Reviewers)**
+
+> **To access the admin panel and explore all features, use:**  
+> **Username:** `root`  
+> **Password:** `root`  
+>  
+> 👉 [Go to Admin Panel](https://stellarx.onrender.com/admin/)  
+>  
+> **This is provided for demo and evaluation purposes.**
+
+---
+
 ## 🎯 Project Overview
 
 StellarSense is a comprehensive web platform that transforms how people interact with astronomy by presenting real astronomical events occurring on the current date in history. When users visit our website, they are automatically greeted with significant space milestones, satellite launches, planetary discoveries, and celestial events that happened on that exact date throughout history.
@@ -18,20 +30,7 @@ Our platform combines factual accuracy with creative storytelling, making astron
 
 ---
 
-## 🌌 Core Problem Solved
-
-**The Challenge:** Astronomy is inspiring, but access to engaging, localized space data is limited. Existing apps are too technical or static, and amateurs want to observe, log, and share celestial events easily.
-
-**Our Solution:** StellarSense bridges this gap by providing:
-- Date-specific historical astronomy events that automatically update based on the current date
-- Interactive sky observation tools with real-time weather integration
-- Community-driven platform for sharing and discovering celestial observations
-- Educational storytelling that makes complex astronomical concepts accessible
-- AI-powered insights for enhanced user experience
-
----
-
-## ✨ Key Features
+## 🌟 **Most Important Features**
 
 ### 🗓️ Astronomical Calendar & Date Explorer
 *Displays historical events for the current date, with rich storytelling, images, and interactive timelines. Browse decades of space exploration milestones by category.  
@@ -65,8 +64,8 @@ Click on any object to learn about its name, type, orbital parameters, and more.
 
 ---
 
-## 💬 Live Comments (Not a Chatbot)
-
+### 💬 Live Comments (Not a Chatbot)
+> **A standout feature!**  
 The "Live Comments" feature (`chatbot.html`) is a real-time public chat system, not a traditional AI chatbot.  
 - **Real-Time Messaging:** Users can send and receive messages instantly across devices, similar to a group chat.
 - **WebSocket Powered:** Built using Django Channels and WebSockets for instant delivery.
@@ -90,7 +89,7 @@ The "Live Comments" feature (`chatbot.html`) is a real-time public chat system, 
 - Tailwind CSS, React.js
 
 **Database & Storage:**  
-- SQLite3(local testing), postgresql(deploying) Pillow, Whitenoise
+- SQLite3 (local testing), PostgreSQL (deploying), Pillow, Whitenoise
 
 **APIs & External Services:**  
 - NASA APOD API, NASA NeoWs API, Open Meteo API, Google Generative AI
