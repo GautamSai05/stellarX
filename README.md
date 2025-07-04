@@ -33,43 +33,43 @@ Our platform combines factual accuracy with creative storytelling, making astron
 
 ## ✨ Key Features
 
-### 🗓️ Astronomical Calendar
-*Displays historical events for the current date, with rich storytelling, images, and interactive timelines. Browse decades of space exploration milestones by category.*
+### 🗓️ Astronomical Calendar & Chatbot
+*Displays historical events for the current date, with rich storytelling, images, and interactive timelines. Browse decades of space exploration milestones by category.  
+The chatbot and calendar are tightly integrated: users can pick a date or ask the chatbot about any day in space history, and get instant, AI-powered answers and event details.*
 
-![Feature: Astronomical Calendar](add-your-image-path-here)
+![Astronomical Calendar & Chatbot](https://drive.google.com/uc?id=1TVaY5BGeIO7OUny8_jR1a-hzlNvFv2p8)
 
 ---
 
 ### 🔭 Sky Observation Platform
 *Personal logbook for recording and sharing observations, image uploads, community interaction (comments, upvotes), and real-time weather integration for stargazing.*
 
-![Feature: Sky Observation](add-your-image-path-here)
+![Sky Observation Platform](https://drive.google.com/uc?id=1Hx1qJubyYH2gzBoHwbvJs2cW8OLk27jG)
 
 ---
 
-### 🤖 AI-Powered Chatbot & Smart Features
-*AI chatbot answers astronomy questions, suggests tags for observations, and recommends upcoming celestial events using Google Generative AI.*
+### 🌍 Gravity Simulation
+*Educational tool for understanding celestial mechanics.  
+Gravity is the force that pulls objects toward one another. Every object with mass exerts a gravitational pull — the more mass, the stronger the pull.  
+In space, gravity keeps planets in orbit around stars, moons around planets, and governs the beautiful dances of galaxies. This simulation shows how particles move under the influence of artificial gravity points you create by clicking — mimicking how real celestial bodies attract one another.*
 
-![Feature: AI Chatbot](add-your-image-path-here)
-
----
-
-### 🌍 Interactive Features
-- **Gravity Simulation:** Educational tool for understanding celestial mechanics.  
-  > Gravity is the force that pulls objects toward one another. Every object with mass exerts a gravitational pull — the more mass, the stronger the pull.  
-  > In space, gravity keeps planets in orbit around stars, moons around planets, and governs the beautiful dances of galaxies. This simulation shows how particles move under the influence of artificial gravity points you create by clicking — mimicking how real celestial bodies attract one another.
-
-![Feature: Gravity Simulation](add-your-image-path-here)
-
-- **Real-time Sky Map:** Interactive celestial map showing current sky conditions.
-- **Crowdfunding Platform:** Support space-related research and community projects.
+![Gravity Simulation](https://drive.google.com/uc?id=1EuM6jOz3TjONSsUmziO5XbDByWmdfgrs)
 
 ---
 
-### 🗕️ Astronomical Calendar & Event Tracking
-*Comprehensive calendar of upcoming and historical astronomical events, with personalized alerts and detailed documentation.*
+### 🪐 Around Earth (Stuff in Space)
+*Explore a real-time, interactive map of satellites, debris, and celestial objects orbiting Earth.  
+Click on any object to learn about its name, type, orbital parameters, and more. This feature helps users visualize the density and diversity of objects in Earth's orbit and discover details about stars, planets, and satellites in our galaxy and universe.*
 
-![Feature: Event Calendar](add-your-image-path-here)
+---
+
+## 🤖 About the Chatbot Feature
+
+The chatbot (`chatbot.html`) is a core interactive component of StellarSense.  
+- **Calendar Integration:** Users can pick any date from the calendar or type a question to the chatbot (e.g., "What happened on July 4th in space history?").
+- **AI-Powered:** The chatbot uses Google Generative AI to provide instant, conversational answers about astronomical events, space facts, and more.
+- **Live Comments:** The chat interface also supports real-time comments and discussion, powered by Django Channels and WebSockets.
+- **Accessibility:** The chatbot is always available via a floating icon, making it easy for users to get help or information anywhere on the site.
 
 ---
 
@@ -224,5 +224,5 @@ StellarSense transforms everyday curiosity into cosmic discovery. By integrating
 
 ---
 
-*Add feature images/screenshots above for a more engaging presentation.*
+*Feature images are linked from Google Drive. For best results on GitHub, upload images to your repository or use a dedicated image hosting service.*
 
