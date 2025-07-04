@@ -2,6 +2,11 @@
 
 StellarSense is a comprehensive web platform built with Django, designed to bring together astronomy enthusiasts. It offers a suite of features for tracking celestial observations, fostering community-driven crowdfunding for space-related projects, providing an astronomical calendar, and even simulating gravitational interactions.
 
+## Login as Admin (user /admin to acess to admin page)
+
+username : root 
+password : root
+
 ## Features
 
 *   **User Authentication & Profiles:** Secure user registration, login, logout, and personalized user profiles.
@@ -76,6 +81,8 @@ The project utilizes Django's built-in ORM for database interactions and leverag
     ```bash
     python manage.py createsuperuser
     ```
+    When prompted, use `username: root` and `password: root` (or your desired credentials).
+
 7.  **Run the development server:**
     ```bash
     python manage.py runserver
