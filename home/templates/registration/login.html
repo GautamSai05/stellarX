@@ -19,7 +19,19 @@
 </head>
 <body class="min-h-screen flex items-center justify-center px-4 text-white font-sans">
     <div class="glass-card shadow-2xl rounded-xl p-8 w-full max-w-md border border-white/10 animate-fade-in">
-        <h2 class="text-3xl font-bold text-center mb-8">🔐 Login</h2>
+        <h2 class="text-3xl font-bold text-center mb-8"> Login</h2>
+
+        {% if form.non_field_errors %}
+            <div class="mb-4 bg-red-700/80 text-white rounded-lg px-4 py-3 text-center border border-red-400 animate-pulse">
+                {% for error in form.non_field_errors %}
+                    {% if "username" in error or "user" in error or "account" in error %}
+                        Please register first.
+                    {% else %}
+                        {{ error }}
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
 
         <form method="post" class="space-y-6">
             {% csrf_token %}
