@@ -10,6 +10,18 @@
 
 ---
 
+## 🚨 **Admin Access **
+
+> **To access the admin panel and moderate users:**  
+> **Username:** `root`  
+> **Password:** `root`  
+>  
+> 👉 [Go to Admin Panel](https://stellarx.onrender.com/admin/)  
+>  
+> **This is provided for demo and evaluation purposes.**
+
+---
+
 ## 🎯 Project Overview
 
 StellarSense is a comprehensive web platform that transforms how people interact with astronomy by presenting real astronomical events occurring on the current date in history. When users visit our website, they are automatically greeted with significant space milestones, satellite launches, planetary discoveries, and celestial events that happened on that exact date throughout history.
@@ -18,20 +30,7 @@ Our platform combines factual accuracy with creative storytelling, making astron
 
 ---
 
-## 🌌 Core Problem Solved
-
-**The Challenge:** Astronomy is inspiring, but access to engaging, localized space data is limited. Existing apps are too technical or static, and amateurs want to observe, log, and share celestial events easily.
-
-**Our Solution:** StellarSense bridges this gap by providing:
-- Date-specific historical astronomy events that automatically update based on the current date
-- Interactive sky observation tools with real-time weather integration
-- Community-driven platform for sharing and discovering celestial observations
-- Educational storytelling that makes complex astronomical concepts accessible
-- AI-powered insights for enhanced user experience
-
----
-
-## ✨ Key Features
+## 🌟 **Most Important Features**
 
 ### 🗓️ Astronomical Calendar & Date Explorer
 *Displays historical events for the current date, with rich storytelling, images, and interactive timelines. Browse decades of space exploration milestones by category.  
@@ -65,8 +64,8 @@ Click on any object to learn about its name, type, orbital parameters, and more.
 
 ---
 
-## 💬 Live Comments (Not a Chatbot)
-
+### 💬 Live Comments (Not a Chatbot)
+> **A standout feature!**  
 The "Live Comments" feature (`chatbot.html`) is a real-time public chat system, not a traditional AI chatbot.  
 - **Real-Time Messaging:** Users can send and receive messages instantly across devices, similar to a group chat.
 - **WebSocket Powered:** Built using Django Channels and WebSockets for instant delivery.
@@ -75,6 +74,17 @@ The "Live Comments" feature (`chatbot.html`) is a real-time public chat system, 
 - **Info Panel:** Users can view chat guidelines and how the system works.
 
 ![Live Comments](https://drive.google.com/uc?id=1dnJdOA3-90J5cAm1K2sENlFe_wxi5Cti)
+
+---
+
+### 🆕 Social Astronomy Feed (Instagram/Facebook-like Posting)
+> **A unique, community-driven feature!**
+>
+> Users can **create accounts and post their own astronomy observations, discoveries, or thoughts**—just like on Instagram or Facebook, but tailored for astronomy.  
+> Each post is presented in a way that's easy for anyone to understand, with clear explanations, images, and interactive elements.  
+> This makes sharing and learning about the cosmos accessible and engaging for all ages and backgrounds.
+
+![Social Astronomy Feed](https://drive.google.com/uc?id=1Cr7Imq3t-DDghhD0JIL871IgQ3vlCQ8H)
 
 ---
 
@@ -90,13 +100,13 @@ The "Live Comments" feature (`chatbot.html`) is a real-time public chat system, 
 - Tailwind CSS, React.js
 
 **Database & Storage:**  
-- SQLite3(local testing), postgresql(deploying) Pillow, Whitenoise
+- SQLite3 (local testing), PostgreSQL (deploying), Pillow, Whitenoise
 
 **APIs & External Services:**  
 - NASA APOD API, NASA NeoWs API, Open Meteo API, Google Generative AI
 
 **Development Tools:**  
-- python-dotenv, python-dateutil, django-widget-tweaks
+- renderer, nvim, postman
 
 ### Architecture Overview
 
@@ -165,7 +175,7 @@ The "Live Comments" feature (`chatbot.html`) is a real-time public chat system, 
 - pip
 - Git
 
-### Installation
+### Installation (linux)
 
 ```bash
 git clone https://github.com/Kaileshwar16/stellarX.git
@@ -173,6 +183,16 @@ cd stellarX
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+```
+### Installation (windows)
+
+```bash
+git clone https://github.com/Kaileshwar16/stellarX.git
+cd stellarX
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+
 ```
 
 ### Environment Setup
@@ -197,6 +217,16 @@ python manage.py runserver
 ```
 
 Visit: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+
+---
+
+## ⚡️ **Important Note About Website Loading Time**
+
+> **StellarSense is deployed on [Render](https://render.com/) using their free plan.**  
+> Because we use both a backend server and multiple APIs, **the website may take up to 3 minutes to load the very first time you visit it** (this is due to the server "waking up" from sleep on the free tier).  
+> **This delay happens only on the first visit after a period of inactivity. Subsequent visits will be fast.**
+>
+> **If you run the project locally, there is no such delay and everything works instantly and smoothly.**
 
 ---
 
@@ -232,4 +262,3 @@ StellarSense transforms everyday curiosity into cosmic discovery. By integrating
 ---
 
 *Feature images are linked from Google Drive. For best results on GitHub, upload images to your repository or use a dedicated image hosting service.*
-
