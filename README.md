@@ -1,13 +1,5 @@
 # StellarSense
 
-**Team Name:** Jane Streeter  
-**Members:**  
-- Kaileshwar  
-- Gomathi Nayagam S R
-
-**Live URL:** [https://stellarx.onrender.com/](https://stellarx.onrender.com/)  
-**GitHub:** [https://github.com/Kaileshwar16/stellarX](https://github.com/Kaileshwar16/stellarX)
-
 ---
 
 ## 🚨 **Admin Access **
