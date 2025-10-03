@@ -9,4 +9,3 @@ python-dotenv
 python-dateutil
 google-generativeai
 razorpay
-requests>=2.28.0

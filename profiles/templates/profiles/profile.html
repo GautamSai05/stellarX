@@ -12,44 +12,6 @@
     </div>
 
     {% if user == request.user %}
-    <!-- Profile Settings Section -->
-    <div class="bg-black rounded-xl shadow-xl p-8 border border-gray-700">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-3xl font-semibold text-white">Alert Preferences</h2>
-            <a href="{% url 'profile_settings' %}" class="inline-block 
-                bg-white text-black 
-                hover:bg-black hover:text-white 
-                font-bold py-2 px-6 rounded-full 
-                transition duration-300 ease-in-out 
-                shadow-lg transform hover:scale-105
-                hover:shadow-[0_0_0_4px_white]">
-                Edit Settings
-            </a>
-        </div>
-        <div class="space-y-4">
-            <div class="flex items-center justify-between bg-[#0F0F10] p-4 rounded-lg border border-gray-600">
-                <div>
-                    <p class="text-gray-400 text-sm">My Interest / Profession</p>
-                    <p class="text-white text-xl font-semibold mt-1">{{ profile.get_profession_display }}</p>
-                </div>
-                <div class="text-right">
-                    <p class="text-gray-400 text-sm">Space Weather Alerts</p>
-                    <p class="{% if profile.receive_alerts %}text-green-400{% else %}text-red-400{% endif %} text-xl font-semibold mt-1">
-                        {% if profile.receive_alerts %}✓ Enabled{% else %}✗ Disabled{% endif %}
-                    </p>
-                </div>
-            </div>
-            {% if profile.receive_alerts %}
-            <div class="bg-blue-900 bg-opacity-30 border border-blue-600 p-4 rounded-lg">
-                <p class="text-blue-200 text-sm">
-                    🔔 You're receiving targeted space weather alerts for {{ profile.get_profession_display|lower }}s. 
-                    Alerts will appear at the top of the page when relevant events are detected.
-                </p>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-
     <div class="bg-black rounded-xl shadow-xl p-8 border border-gray-700">
         <h2 class="text-3xl font-semibold mb-6 text-white"> Stargazing Conditions</h2>
         <button id="get-stargazing-conditions" class="inline-block bg-white text-black font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out shadow-lg transform hover:scale-105">
