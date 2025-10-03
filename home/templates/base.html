@@ -121,7 +121,57 @@
 
 <div id="sidebar-overlay" class="fixed inset-0 bg-black opacity-0 pointer-events-none transition-opacity duration-300 z-40"></div>
 
-<main class="p-6 max-w-6xl mx-auto animate-fade-in pt-24">
+<!-- Space Weather Alert Banner -->
+{% if active_alerts %}
+<div class="fixed top-20 left-0 right-0 z-40 px-6 animate-slide-down">
+    <div class="max-w-6xl mx-auto space-y-2">
+        {% for alert_data in active_alerts %}
+            <div id="alert-{{ alert_data.alert.id }}" class="
+                {% if alert_data.color == 'red' %}bg-red-900 border-red-600
+                {% elif alert_data.color == 'yellow' %}bg-yellow-900 border-yellow-600
+                {% elif alert_data.color == 'purple' %}bg-purple-900 border-purple-600
+                {% else %}bg-blue-900 border-blue-600{% endif %}
+                bg-opacity-95 border-2 rounded-lg shadow-2xl p-4 flex items-start justify-between backdrop-blur-sm">
+                <div class="flex-1 flex items-start space-x-4">
+                    <div class="flex-shrink-0 mt-1">
+                        {% if alert_data.color == 'red' %}
+                            <svg class="w-6 h-6 text-red-300" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                        {% elif alert_data.color == 'yellow' %}
+                            <svg class="w-6 h-6 text-yellow-300" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                            </svg>
+                        {% else %}
+                            <svg class="w-6 h-6 text-blue-300" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/>
+                            </svg>
+                        {% endif %}
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-bold {% if alert_data.color == 'red' %}text-red-100{% elif alert_data.color == 'yellow' %}text-yellow-100{% elif alert_data.color == 'purple' %}text-purple-100{% else %}text-blue-100{% endif %} mb-1">
+                            {{ alert_data.alert.title }}
+                        </h3>
+                        <p class="text-sm {% if alert_data.color == 'red' %}text-red-200{% elif alert_data.color == 'yellow' %}text-yellow-200{% elif alert_data.color == 'purple' %}text-purple-200{% else %}text-blue-200{% endif %} leading-relaxed">
+                            {{ alert_data.message }}
+                        </p>
+                        <p class="text-xs {% if alert_data.color == 'red' %}text-red-300{% elif alert_data.color == 'yellow' %}text-yellow-300{% elif alert_data.color == 'purple' %}text-purple-300{% else %}text-blue-300{% endif %} mt-2">
+                            Detected: {{ alert_data.alert.detected_at|timesince }} ago
+                        </p>
+                    </div>
+                </div>
+                <button onclick="dismissAlert('alert-{{ alert_data.alert.id }}')" class="flex-shrink-0 ml-4 text-white hover:text-gray-300 transition-colors">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                </button>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<main class="p-6 max-w-6xl mx-auto animate-fade-in {% if active_alerts %}pt-32{% else %}pt-24{% endif %}">
     {% block content %}{% endblock %}
 </main>
 
@@ -130,7 +180,12 @@
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
+@keyframes slide-down {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 .animate-fade-in { animation: fade-in 0.8s ease-out forwards; }
+.animate-slide-down { animation: slide-down 0.5s ease-out forwards; }
 </style>
 
 <script>
@@ -211,6 +266,26 @@ sidebarToggle.addEventListener('click', openSidebar);
 sidebarClose.addEventListener('click', closeSidebar);
 sidebarOverlay.addEventListener('click', closeSidebar);
 document.querySelectorAll('#sidebar a').forEach(link => link.addEventListener('click', closeSidebar));
+
+// Function to dismiss alert banners
+function dismissAlert(alertId) {
+    const alertElement = document.getElementById(alertId);
+    if (alertElement) {
+        alertElement.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
+        alertElement.style.opacity = '0';
+        alertElement.style.transform = 'translateY(-20px)';
+        setTimeout(() => {
+            alertElement.remove();
+            // Adjust main padding if no more alerts
+            const alertContainer = document.querySelector('.animate-slide-down');
+            if (alertContainer && alertContainer.children[0].children.length === 0) {
+                const main = document.querySelector('main');
+                main.classList.remove('pt-32');
+                main.classList.add('pt-24');
+            }
+        }, 300);
+    }
+}
 </script>
 
 {% block extra_body_content %}{% endblock %}
