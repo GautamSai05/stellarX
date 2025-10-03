@@ -1,0 +1,29 @@
+{% if active_alert %}
+<div id="alert-banner" class="fixed top-16 left-1/2 transform -translate-x-1/2 w-[95%] md:w-[720px] z-40">
+  <div class="bg-yellow-200 text-black border border-yellow-400 rounded-xl shadow-2xl p-4 flex items-start justify-between">
+    <div class="pr-4">
+      <div class="font-bold mb-1">{{ active_alert.title }}</div>
+      <div class="text-sm leading-relaxed">{{ active_alert.message }}</div>
+    </div>
+    <button id="alert-dismiss" class="ml-4 text-black font-bold">×</button>
+  </div>
+</div>
+<script>
+  (function(){
+    const key = 'alert-dismissed-' + '{{ active_alert.source_id }}';
+    if (localStorage.getItem(key)) {
+      const el = document.getElementById('alert-banner');
+      if (el) el.style.display = 'none';
+      return;
+    }
+    const btn = document.getElementById('alert-dismiss');
+    if (btn) {
+      btn.addEventListener('click', function(){
+        const el = document.getElementById('alert-banner');
+        if (el) el.style.display = 'none';
+        localStorage.setItem(key, '1');
+      });
+    }
+  })();
+  </script>
+{% endif %}
