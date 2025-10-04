@@ -32,6 +32,22 @@ def calculator(request):
     """Render the astronomical calculator tools page."""
     return render(request, 'home/calculator.html')
 
+def museum(request):
+    """Render the virtual space museum page."""
+    return render(request, 'home/museum.html')
+
+def starmap(request):
+    """Render the interactive star map page."""
+    return render(request, 'home/starmap.html')
+
+def videogallery(request):
+    """Render the video gallery page."""
+    return render(request, 'home/videogallery.html')
+
+def photogallery(request):
+    """Render the photo gallery page."""
+    return render(request, 'home/photogallery.html')
+
 def signup_view(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)

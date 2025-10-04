@@ -30,6 +30,159 @@ The eye observes what space conceals—reflections born in stardust wheels; ligh
 <div class="w-full max-w-5xl mx-auto space-y-10 pr-0 lg:pr-16 mt-10">
 
     <!-- NASA APOD -->
+    <!-- Solar system quick preview (converted from React/Framer Motion into HTML + vanilla JS) -->
+    <section id="solar-preview" class="w-full mb-8">
+      <div class="relative w-full h-96 rounded-xl overflow-hidden border border-white/10 bg-gradient-to-b from-transparent to-black/30">
+        <!-- Shooting stars container -->
+        <div id="shooting-stars" class="absolute inset-0 pointer-events-none"></div>
+
+        <!-- Sun -->
+        <div id="sun" class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 rounded-full shadow-2xl" aria-hidden="true"></div>
+
+        <!-- Orbits & Planets container -->
+        <div id="orbits" class="absolute inset-0 flex items-center justify-center"></div>
+
+        <!-- Hover info panel -->
+        <div id="planet-hover" class="hidden absolute top-4 left-4 bg-black/80 backdrop-blur-md rounded-xl p-4 border border-white/20 max-w-sm z-20"></div>
+
+        <!-- Planet details modal -->
+        <div id="planet-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div id="planet-modal-card" class="bg-gray-900/90 backdrop-blur-md rounded-2xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto border border-white/20 relative">
+            <button id="planet-modal-close" class="absolute top-4 right-4 p-2 bg-red-600/20 hover:bg-red-600/30 rounded-lg">✕</button>
+            <div id="planet-modal-content"></div>
+          </div>
+        </div>
+      </div>
+
+      <style>
+      /* Solar preview styles */
+      #sun { width: 96px; height: 96px; background-image: linear-gradient(90deg,#fbbf24,#fb923c); box-shadow: 0 0 40px rgba(251,191,36,0.45); animation: sunPulse 3s ease-in-out infinite; border-radius: 9999px; }
+      @keyframes sunPulse { 0% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.08); box-shadow: 0 0 60px rgba(251,191,36,0.7);} 100% { transform: translate(-50%, -50%) scale(1);} }
+
+      .shooting-star { position:absolute; width:6px; height:2px; background: linear-gradient(90deg, transparent, #fff, transparent); border-radius:2px; opacity:0; transform: translateX(-120px) translateY(0); }
+      @keyframes shoot {
+        0% { opacity: 0; transform: translateX(-100px) translateY(0) rotate(-12deg); }
+        10% { opacity: 1; }
+        80% { opacity: 1; }
+        100% { opacity: 0; transform: translateX(600px) translateY(300px) rotate(-12deg); }
+      }
+
+      .orbit-ring { position:absolute; border-radius:9999px; border:1px solid rgba(255,255,255,0.06); }
+      .orbit-rotation { position: absolute; left:50%; top:50%; transform: translate(-50%,-50%); }
+      .planet { position: absolute; border-radius:9999px; box-shadow: 0 6px 18px rgba(0,0,0,0.6); cursor:pointer; }
+      .planet-tooltip { position:absolute; top:-2rem; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.8); color:#fff; padding:6px 8px; border-radius:8px; font-size:12px; opacity:0; pointer-events:none; transition:opacity .18s; white-space:nowrap; }
+      .planet:hover .planet-tooltip { opacity:1; }
+      </style>
+
+      <script>
+      (function(){
+        // Shooting stars: random positions and delays
+        const shootingStarsEl = document.getElementById('shooting-stars');
+        const shootingStars = [];
+        for(let i=0;i<8;i++){ const s = { id:i, x: Math.random()*100, y: Math.random()*40 + 5, delay: Math.random()*6 }; shootingStars.push(s); }
+        shootingStars.forEach(star =>{
+          const el = document.createElement('div');
+          el.className = 'shooting-star';
+          el.style.left = star.x + '%';
+          el.style.top = star.y + '%';
+          el.style.animation = `shoot 3s linear ${star.delay}s infinite`; 
+          shootingStarsEl.appendChild(el);
+        });
+
+        // Planets data (simple sample — extend as desired)
+        const planets = [
+          { id: 'mercury', name:'Mercury', size:10, color:'bg-gray-400', orbitRadius:60, speed:6, type:'Terrestrial', description:'Small rocky world closest to the Sun.', facts:[{label:'Radius', value:'2,439 km'},{label:'Orbital period', value:'88 days'}], funFacts:['No substantial atmosphere.'] },
+          { id: 'venus', name:'Venus', size:14, color:'bg-yellow-500', orbitRadius:100, speed:9, type:'Terrestrial', description:'Dense CO2 atmosphere and sulfuric clouds.', facts:[{label:'Radius', value:'6,051 km'},{label:'Orbital period', value:'225 days'}], funFacts:['Hottest planet due to greenhouse effect.'] },
+          { id: 'earth', name:'Earth', size:16, color:'bg-blue-600', orbitRadius:150, speed:12, type:'Terrestrial', description:'Our home world.', facts:[{label:'Radius', value:'6,371 km'},{label:'Orbital period', value:'365 days'}], funFacts:['Only known life-bearing planet.'] },
+          { id: 'mars', name:'Mars', size:12, color:'bg-red-600', orbitRadius:200, speed:18, type:'Terrestrial', description:'The red planet with the largest volcano in the solar system.', facts:[{label:'Radius', value:'3,390 km'},{label:'Orbital period', value:'687 days'}], funFacts:['Hosts Olympus Mons.'] }
+        ];
+
+        const orbitsEl = document.getElementById('orbits');
+        planets.forEach((planet, idx)=>{
+          // orbit ring
+          const ring = document.createElement('div');
+          ring.className = 'orbit-ring';
+          ring.style.width = (planet.orbitRadius*2) + 'px';
+          ring.style.height = (planet.orbitRadius*2) + 'px';
+          ring.style.left = '50%'; ring.style.top = '50%'; ring.style.transform = 'translate(-50%,-50%)';
+          orbitsEl.appendChild(ring);
+
+          // rotation wrapper
+          const rotation = document.createElement('div');
+          rotation.className = 'orbit-rotation';
+          rotation.style.width = (planet.orbitRadius*2) + 'px';
+          rotation.style.height = (planet.orbitRadius*2) + 'px';
+          rotation.style.animation = `rotateOrbit ${planet.speed}s linear infinite`;
+          rotation.style.transformOrigin = '50% 50%';
+
+          // planet element
+          const pWrap = document.createElement('div');
+          pWrap.style.position = 'absolute';
+          pWrap.style.left = '50%'; pWrap.style.top = '50%'; pWrap.style.transform = 'translate(-50%,-50%)';
+
+          const p = document.createElement('div');
+          p.className = `planet ${planet.color}`;
+          p.style.width = planet.size + 'px'; p.style.height = planet.size + 'px';
+          p.style.transform = `translateX(${planet.orbitRadius}px)`;
+          p.setAttribute('data-planet-id', planet.id);
+          p.setAttribute('role','button');
+
+          // tooltip
+          const tip = document.createElement('div'); tip.className = 'planet-tooltip'; tip.textContent = planet.name;
+          p.appendChild(tip);
+
+          p.addEventListener('mouseenter', ()=> showHover(planet));
+          p.addEventListener('mouseleave', ()=> hideHover());
+          p.addEventListener('click', (e)=> { e.stopPropagation(); showModal(planet); });
+
+          pWrap.appendChild(p);
+          rotation.appendChild(pWrap);
+          orbitsEl.appendChild(rotation);
+        });
+
+        // rotate keyframes inserted dynamically so durations are respected
+        const styleSheet = document.createElement('style');
+        styleSheet.innerHTML = `@keyframes rotateOrbit { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`;
+        document.head.appendChild(styleSheet);
+
+        // Hover panel logic
+        const hoverEl = document.getElementById('planet-hover');
+        function showHover(planet){
+          hoverEl.innerHTML = `<div class="flex items-center space-x-3 mb-2"><div class="w-8 h-8 rounded-full ${planet.color}"></div><div><h3 class="text-lg font-bold text-white">${planet.name}</h3><p class="text-sm text-gray-400">${planet.type}</p></div></div><p class="text-gray-300 text-sm">${planet.description.substring(0,100)}...</p>`;
+          hoverEl.classList.remove('hidden');
+        }
+        function hideHover(){ hoverEl.classList.add('hidden'); }
+
+        // Modal logic
+        const modal = document.getElementById('planet-modal');
+        const modalContent = document.getElementById('planet-modal-content');
+        document.getElementById('planet-modal-close').addEventListener('click', ()=> closeModal());
+        modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModal(); });
+        function showModal(planet){
+          const factsHtml = planet.facts.map(f=>`<div class="bg-white/5 rounded-lg p-3 mb-2"><h4 class="font-semibold text-purple-300 mb-1">${f.label}</h4><p class="text-white">${f.value}</p></div>`).join('');
+          const funFacts = (planet.funFacts||[]).map(f=>`<li class="text-gray-300">• ${f}</li>`).join('');
+          modalContent.innerHTML = `
+            <div class="flex items-center justify-between mb-4"><div class="flex items-center space-x-4"><div class="w-16 h-16 rounded-full ${planet.color}"></div><div><h2 class="text-2xl font-bold text-white">${planet.name}</h2><p class="text-gray-400">${planet.type}</p></div></div><div class="flex space-x-2"><button id="voice-btn" class="p-2 bg-blue-600/20 hover:bg-blue-600/30 rounded-lg">🔊</button><button id="close-btn" class="p-2 bg-red-600/20 hover:bg-red-600/30 rounded-lg">✕</button></div></div>
+            <div class="space-y-4"><div><h3 class="text-xl font-semibold mb-2 text-blue-300">Overview</h3><p class="text-gray-300 leading-relaxed">${planet.description}</p></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4">${factsHtml}</div>${planet.funFacts?`<div><h3 class="text-xl font-semibold mb-2 text-green-300">Fun Facts</h3><ul class="space-y-2">${funFacts}</ul></div>`:''}</div>
+          `;
+          modal.classList.remove('hidden');
+          // voice
+          document.getElementById('voice-btn').addEventListener('click', ()=>{
+            if(window.speechSynthesis){
+              const msg = new SpeechSynthesisUtterance(`${planet.name}. ${planet.description}`);
+              window.speechSynthesis.cancel(); window.speechSynthesis.speak(msg);
+            }
+          });
+          document.getElementById('close-btn').addEventListener('click', ()=> closeModal());
+        }
+        function closeModal(){ modal.classList.add('hidden'); modalContent.innerHTML=''; if(window.speechSynthesis) window.speechSynthesis.cancel(); }
+
+        // Click outside to close hover
+        document.addEventListener('click', ()=> hideHover());
+      })();
+      </script>
+
+    </section>
 <div>
   <h2 class="text-3xl font-semibold mb-6 text-white">NASA Astronomy Picture of the Day</h2>
   

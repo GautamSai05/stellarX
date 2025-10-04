@@ -6,5 +6,9 @@ urlpatterns = [
     path('home/', views.home_view, name='home'),
     path('timeline/', views.timeline, name='timeline'),
     path('calculator/', views.calculator, name='calculator'),
+    path('videos/', views.videogallery, name='videogallery'),
+    path('photos/', views.photogallery, name='photogallery'),
+    path('museum/', views.museum, name='museum'),
+    path('starmap/', views.starmap, name='starmap'),
     path('stellarium/', views.stellarium, name='stellarium'),
 ]

@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block title %}Star Map - StellarSense{% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-4 min-h-screen">
+  <div class="mb-8">
+    <h2 class="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-2">Dynamic Star Map</h2>
+    <p class="text-gray-400">Explore how the night sky changes across different locations and times</p>
+  </div>
+
+  <!-- Controls -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+    <div class="bg-gray-900/60 backdrop-blur-md rounded-xl p-4 border border-white/10">
+      <label class="block text-sm font-semibold text-gray-300 mb-2">Date</label>
+      <input id="star-date" type="date" class="w-full bg-black/20 border border-white/20 rounded-lg px-3 py-2 text-white focus:border-blue-500 focus:outline-none" />
+    </div>
+
+    <div class="bg-gray-900/60 backdrop-blur-md rounded-xl p-4 border border-white/10">
+      <label class="block text-sm font-semibold text-gray-300 mb-2">Location</label>
+      <select id="star-location" class="w-full bg-black/20 border border-white/20 rounded-lg px-3 py-2 text-white focus:border-blue-500 focus:outline-none">
+        <option value="New York">New York, USA</option>
+        <option value="London">London, UK</option>
+        <option value="Tokyo">Tokyo, Japan</option>
+        <option value="Sydney">Sydney, Australia</option>
+      </select>
+      <p id="location-desc" class="text-xs text-gray-400 mt-1"></p>
+    </div>
+
+    <div class="bg-gray-900/60 backdrop-blur-md rounded-xl p-4 border border-white/10">
+      <label class="block text-sm font-semibold text-gray-300 mb-2">Time: <span id="time-label">20:00</span></label>
+      <input id="star-time" type="range" min="0" max="23" value="20" class="w-full" />
+      <div class="flex justify-between text-xs text-gray-400 mt-1">
+        <span>00:00</span>
+        <span>12:00</span>
+        <span>23:00</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="lg:col-span-2">
+      <div id="star-canvas" class="bg-gradient-to-b from-gray-900 to-black rounded-2xl p-8 border border-white/10 relative overflow-hidden h-96"></div>
+    </div>
+
+    <div id="constellations" class="space-y-4"></div>
+  </div>
+</div>
+
+<style>
+  .star { position:absolute; border-radius:9999px; box-shadow:0 0 6px rgba(255,255,255,0.2); }
+  .const-card { padding:1rem; border-radius:0.75rem; }
+</style>
+
+<script>
+(function(){
+  // Utilities
+  function formatDateIso(d){ const dt = new Date(d); const y = dt.getFullYear(); const m = String(dt.getMonth()+1).padStart(2,'0'); const day = String(dt.getDate()).padStart(2,'0'); return `${y}-${m}-${day}`; }
+
+  const locationDesc = {
+    'New York': 'Northern Hemisphere view with classic constellations like Orion and the Big Dipper.',
+    'London': 'European sky featuring circumpolar constellations and seasonal variations.',
+    'Tokyo': 'East Asian perspective with unique visibility of summer triangle constellations.',
+    'Sydney': 'Southern Hemisphere sky showcasing the Southern Cross and Magellanic Clouds.'
+  };
+
+  function getConstellationsForLocation(location, timeOfDay){
+    const constellationData = {
+      'New York': [
+        { name: 'Ursa Major', stars: 7, visible: true, brightness: 85, season: 'Spring' },
+        { name: 'Orion', stars: 8, visible: (timeOfDay >= 18 || timeOfDay <= 6), brightness: 92, season: 'Winter' },
+        { name: 'Cassiopeia', stars: 5, visible: true, brightness: 78, season: 'Fall' },
+        { name: 'Leo', stars: 6, visible: (timeOfDay >= 20 || timeOfDay <= 4), brightness: 65, season: 'Spring' },
+        { name: 'Cygnus', stars: 9, visible: (timeOfDay >= 19 || timeOfDay <= 5), brightness: 72, season: 'Summer' },
+        { name: 'Boötes', stars: 8, visible: (timeOfDay >= 21 || timeOfDay <= 3), brightness: 68, season: 'Spring' },
+      ],
+      'London': [
+        { name: 'Ursa Major', stars: 7, visible: true, brightness: 80, season: 'Spring' },
+        { name: 'Orion', stars: 8, visible: (timeOfDay >= 17 || timeOfDay <= 7), brightness: 88, season: 'Winter' },
+        { name: 'Cassiopeia', stars: 5, visible: true, brightness: 82, season: 'Fall' },
+        { name: 'Draco', stars: 9, visible: true, brightness: 70, season: 'Summer' },
+        { name: 'Perseus', stars: 7, visible: (timeOfDay >= 18 || timeOfDay <= 6), brightness: 75, season: 'Fall' },
+        { name: 'Andromeda', stars: 6, visible: (timeOfDay >= 19 || timeOfDay <= 5), brightness: 65, season: 'Fall' },
+      ],
+      'Tokyo': [
+        { name: 'Orion', stars: 8, visible: (timeOfDay >= 18 || timeOfDay <= 6), brightness: 85, season: 'Winter' },
+        { name: 'Scorpius', stars: 12, visible: (timeOfDay >= 20 || timeOfDay <= 4), brightness: 90, season: 'Summer' },
+        { name: 'Sagittarius', stars: 10, visible: (timeOfDay >= 21 || timeOfDay <= 3), brightness: 88, season: 'Summer' },
+        { name: 'Cassiopeia', stars: 5, visible: true, brightness: 75, season: 'Fall' },
+        { name: 'Vega (Lyra)', stars: 5, visible: (timeOfDay >= 19 || timeOfDay <= 5), brightness: 92, season: 'Summer' },
+        { name: 'Altair (Aquila)', stars: 6, visible: (timeOfDay >= 20 || timeOfDay <= 4), brightness: 80, season: 'Summer' },
+      ],
+      'Sydney': [
+        { name: 'Southern Cross', stars: 5, visible: true, brightness: 95, season: 'All Year' },
+        { name: 'Centaurus', stars: 11, visible: true, brightness: 88, season: 'Autumn/Winter' },
+        { name: 'Scorpius', stars: 12, visible: (timeOfDay >= 18 || timeOfDay <= 6), brightness: 92, season: 'Winter' },
+        { name: 'Sagittarius', stars: 10, visible: (timeOfDay >= 19 || timeOfDay <= 5), brightness: 85, season: 'Winter' },
+        { name: 'Orion', stars: 8, visible: (timeOfDay >= 20 || timeOfDay <= 4), brightness: 80, season: 'Summer' },
+        { name: 'Carina', stars: 9, visible: true, brightness: 78, season: 'Summer' },
+      ]
+    };
+    return constellationData[location] || constellationData['New York'];
+  }
+
+  function generateStars(locationName){
+    const stars = [];
+    const starCount = locationName === 'Sydney' ? 250 : 200;
+    for(let i=0;i<starCount;i++){
+      stars.push({ id:i, x: Math.random()*100, y: Math.random()*100, size: Math.random()*3+1, opacity: Math.random()*0.8+0.2, twinkleDelay: Math.random()*2, color: Math.random()>0.8?'#bfdbfe':Math.random()>0.6?'#fef08a':'#ffffff' });
+    }
+    return stars;
+  }
+
+  // Elements
+  const dateInput = document.getElementById('star-date');
+  const locationSelect = document.getElementById('star-location');
+  const timeRange = document.getElementById('star-time');
+  const timeLabel = document.getElementById('time-label');
+  const canvas = document.getElementById('star-canvas');
+  const constContainer = document.getElementById('constellations');
+  const locDesc = document.getElementById('location-desc');
+
+  // State
+  let selectedDate = new Date();
+  dateInput.value = formatDateIso(selectedDate);
+  let selectedLocation = { lat:40.7128, lng:-74.0060, name: 'New York' };
+  locationSelect.value = selectedLocation.name;
+  locDesc.textContent = locationDesc[selectedLocation.name];
+  let timeOfDay = 20; timeRange.value = String(timeOfDay); timeLabel.textContent = timeOfDay + ':00';
+  let stars = generateStars(selectedLocation.name);
+
+  function renderStars(){
+    // clear
+    canvas.innerHTML = '';
+    stars.forEach(s=>{
+      const el = document.createElement('div'); el.className='star'; el.style.left = s.x + '%'; el.style.top = s.y + '%'; el.style.width = s.size + 'px'; el.style.height = s.size + 'px'; el.style.background = s.color; el.style.opacity = s.opacity; el.style.transition = 'opacity 1.5s';
+      // simple twinkle
+      setTimeout(()=>{ el.style.opacity = s.opacity*0.3; setTimeout(()=> el.style.opacity = s.opacity, 800); }, s.twinkleDelay*1000);
+      canvas.appendChild(el);
+    });
+  }
+
+  function renderConste(){
+    constContainer.innerHTML = '';
+    const consts = getConstellationsForLocation(selectedLocation.name, timeOfDay);
+    consts.forEach(c=>{
+      const card = document.createElement('div'); card.className = 'const-card rounded-xl border p-4 ' + (c.visible? 'bg-green-900/20 border-green-500/30':'bg-gray-900/20 border-gray-500/30');
+      card.innerHTML = `<div class="flex items-center justify-between mb-2"><h4 class="font-semibold text-white">${c.name}</h4><div class="flex items-center space-x-1"><span class="text-sm text-gray-400">${c.stars}</span></div></div><div class="flex items-center justify-between mb-2"><span class="text-sm ${c.visible? 'text-green-400':'text-gray-500'}">${c.visible? 'Visible':'Below Horizon'}</span><div class="text-sm text-gray-400">${c.brightness}% brightness</div></div><div class="text-xs text-purple-300">Best Season: ${c.season}</div>`;
+      constContainer.appendChild(card);
+    });
+  }
+
+  // Initial render
+  renderStars(); renderConste();
+
+  // Handlers
+  dateInput.addEventListener('change', (e)=>{ selectedDate = new Date(e.target.value); renderConste(); });
+  locationSelect.addEventListener('change', (e)=>{ const locs = { 'New York':{lat:40.7128,lng:-74.0060,name:'New York'}, 'London':{lat:51.5074,lng:-0.1278,name:'London'}, 'Tokyo':{lat:35.6762,lng:139.6503,name:'Tokyo'}, 'Sydney':{lat:-33.8688,lng:151.2093,name:'Sydney'} }; selectedLocation = locs[e.target.value]; locDesc.textContent = locationDesc[selectedLocation.name]; stars = generateStars(selectedLocation.name); renderStars(); renderConste(); });
+  timeRange.addEventListener('input', (e)=>{ timeOfDay = parseInt(e.target.value); timeLabel.textContent = timeOfDay + ':00'; renderConste(); });
+
+})();
+</script>
+
+{% endblock %}

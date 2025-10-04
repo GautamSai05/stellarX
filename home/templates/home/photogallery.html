@@ -1,0 +1,291 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Photo Gallery - StellarSense{% endblock %}
+
+{% block content %}
+<main class="container mx-auto p-4 min-h-screen" aria-labelledby="pageTitle">
+  <div class="mb-6">
+    <h2 id="pageTitle" class="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-2">Space Photo Gallery</h2>
+    <p class="text-gray-400">Explore stunning images of astronauts, launches and missions. Keyboard: Tab navigate, Enter open, Esc close.</p>
+  </div>
+
+  <div class="mb-6 flex flex-col md:flex-row md:items-center md:space-x-4 space-y-4 md:space-y-0">
+    <label for="searchInput" class="sr-only">Search photos</label>
+    <div class="relative flex-1">
+      <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35"></path><circle cx="11" cy="11" r="6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></circle></svg>
+      <input id="searchInput" type="search" inputmode="search" placeholder="Search photos or tags..." aria-label="Search photos" class="w-full pl-10 pr-4 py-3 bg-gray-900/60 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none" />
+    </div>
+
+    <div class="flex items-center space-x-2">
+      <label for="categorySelect" class="sr-only">Filter by category</label>
+      <select id="categorySelect" class="px-4 py-3 bg-gray-900/60 border border-white/20 rounded-xl text-white focus:border-blue-500 focus:outline-none"></select>
+    </div>
+  </div>
+
+  <div id="resultCount" class="text-sm text-gray-400 mb-4"></div>
+
+  <section id="photoGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" aria-live="polite"></section>
+
+  <!-- Photo Modal -->
+  <div id="photoModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true" aria-hidden="true">
+    <div id="photoModalContent" class="bg-gray-900/90 backdrop-blur-md rounded-2xl overflow-hidden max-w-4xl w-full max-h-[90vh] border border-white/20">
+      <div class="relative" id="modalImageWrap">
+        <button id="photoModalClose" aria-label="Close photo" class="absolute top-4 right-4 p-2 bg-black/50 hover:bg-black/70 rounded-lg transition-colors z-10 text-white">✕</button>
+      </div>
+      <div class="p-6">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex-1">
+            <h2 id="photoModalTitle" class="text-2xl font-bold text-white mb-2"></h2>
+            <div id="photoModalMeta" class="flex items-center space-x-4 text-gray-400 mb-3"></div>
+          </div>
+          <span id="photoModalCategory" class="px-3 py-1 rounded-full text-sm bg-gray-700 text-white">Category</span>
+        </div>
+        <p id="photoModalDesc" class="text-gray-300 leading-relaxed"></p>
+        <div id="photoModalTags" class="flex flex-wrap gap-2 mt-4"></div>
+        <div class="flex items-center justify-between pt-4 border-t border-white/10">
+          <div id="photoModalStats" class="flex items-center space-x-4 text-gray-400"></div>
+          <div class="flex space-x-2">
+            <button id="likeBtn" class="flex items-center space-x-2 px-4 py-2 rounded-lg bg-white/10 text-gray-300 hover:bg-white/20">❤️ <span id="likeCount"></span></button>
+            <button id="downloadBtn" class="flex items-center space-x-2 px-4 py-2 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 rounded-lg">⬇️ <span>Download</span></button>
+            <button id="shareBtn" class="flex items-center space-x-2 px-4 py-2 bg-green-600/20 hover:bg-green-600/30 text-green-300 rounded-lg">🔗 <span>Share</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+const photos = [
+  { id: '1', title: 'Apollo 11 Crew Portrait', description: 'Historic portrait of Neil Armstrong, Buzz Aldrin, and Michael Collins before their historic Moon landing mission.', photographer: 'NASA', date: '1969-07-16', category: 'Astronauts', tags: ['apollo','moon','crew','historic'], image: 'https://www.nasa.gov/wp-content/uploads/2023/03/s69-31739orig.jpg', likes: 15420, downloads: 8932 },
+  { id: '2', title: 'SpaceX Falcon Heavy Launch', description: "The spectacular maiden flight of SpaceX's Falcon Heavy rocket, the most powerful operational rocket in the world.", photographer: 'SpaceX', date: '2018-02-06', category: 'Rocket Launches', tags: ['spacex','falcon heavy','launch','rockets'], image: 'https://cdn.mos.cms.futurecdn.net/NMwasUPmRFzY3ayztk55yS.jpg', likes: 23156, downloads: 12847 },
+  { id: '3', title: 'Valentina Tereshkova in Training', description: 'The first woman in space during her intensive training program before the historic Vostok 6 mission.', photographer: 'Soviet Space Program', date: '1963-06-16', category: 'Astronauts', tags: ['valentina','first woman','vostok','training'], image: 'https://starcity-tours.com/wp-content/gallery/tereshkova/02.jpg', likes: 9876, downloads: 5432 },
+  { id: '4', title: 'Space Shuttle Atlantis Final Landing', description: 'The emotional final landing of Space Shuttle Atlantis, marking the end of the Space Shuttle program.', photographer: 'NASA', date: '2011-07-21', category: 'Rocket Launches', tags: ['atlantis','shuttle','final','landing'], image: 'https://cdn.mos.cms.futurecdn.net/LSBkLRYiDn2yQ4itVBDux8.jpg', likes: 18743, downloads: 9654 },
+  { id: '5', title: 'ISS Crew Expedition 64', description: 'International crew aboard the International Space Station representing global cooperation in space exploration.', photographer: 'NASA', date: '2021-04-17', category: 'Astronauts', tags: ['iss','crew','international','cooperation'], image: 'https://www.nasa.gov/wp-content/uploads/2023/03/iss064e020858.jpg?w=1041', likes: 12389, downloads: 7123 },
+  { id: '6', title: 'Saturn V Rocket Assembly', description: 'The massive Saturn V rocket being assembled in the Vehicle Assembly Building for the Apollo missions.', photographer: 'NASA', date: '1968-12-15', category: 'Rocket Launches', tags: ['saturn v','apollo','assembly','vab'], image: 'https://cdn-imgix.headout.com/media/images/67c24d22de5566d20d06f870470f7a2b-This%20is%20a%20Photograph%20of%20Saturn%20V%20Rocket.jpg?auto=format&w=1222.3999999999999&h=687.6&q=90&ar=16%3A9&crop=faces&fit=crop', likes: 16754, downloads: 8976 },
+  { id: '7', title: 'Mae Jemison in Space', description: 'Dr. Mae Jemison, the first African American woman astronaut, conducting experiments aboard Space Shuttle Endeavour.', photographer: 'NASA', date: '1992-09-12', category: 'Astronauts', tags: ['mae jemison','endeavour','first','experiments'], image: 'https://images-assets.nasa.gov/image/STS047-37-003/STS047-37-003~large.jpg', likes: 14567, downloads: 6789 },
+  { id: '8', title: 'Perseverance Rover Selfie on Mars', description: "NASA's Perseverance rover takes a selfie on the Martian surface while searching for signs of ancient life.", photographer: 'NASA JPL', date: '2021-04-06', category: 'Space Missions', tags: ['perseverance','mars','rover','selfie'], image: 'https://www.metaltechnews.com/IMG/JjKbxcBkeoWcreshZdYOtxyUtD83t/XPATH/home/cms_data/dfault/photos/stories/id/0/4/1704/s_topXEXT1493x33160is.jpg', likes: 21098, downloads: 11234 },
+  { id: '9', title: 'Blue Origin New Shepard Launch', description: "Blue Origin's New Shepard rocket launches carrying civilian astronauts to the edge of space.", photographer: 'Blue Origin', date: '2021-07-20', category: 'Rocket Launches', tags: ['blue origin','new shepard','civilian','suborbital'], image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR2rNgcqmPBoTtQUl0m4rx9hIOy8z9MyIdSjw&s', likes: 13456, downloads: 7890 },
+  { id: '10', title: 'Sunita Williams Spacewalk', description: 'Astronaut Sunita Williams conducting a spacewalk outside the International Space Station.', photographer: 'NASA', date: '2007-01-31', category: 'Astronauts', tags: ['sunita williams','spacewalk','eva','iss'], image: 'https://c.ndtvimg.com/2025-03/2ej5tah8_sunita-williams_625x300_10_March_25.jpg?im=FitAndFill,algorithm=dnn,width=1200,height=738', likes: 17234, downloads: 9123 },
+  { id: '11', title: 'James Webb Space Telescope Deployment', description: 'The James Webb Space Telescope unfolds its golden mirror segments in space, ready to observe the universe.', photographer: 'NASA', date: '2022-01-08', category: 'Space Missions', tags: ['james webb','telescope','deployment','mirror'], image: 'https://static.scientificamerican.com/sciam/cache/file/48248979-B95D-4B9F-A5A565B5C810FFE5_source.jpg', likes: 25678, downloads: 14567 },
+  { id: '12', title: 'Artemis I Launch', description: "NASA's Artemis I mission launches, beginning humanity's return journey to the Moon.", photographer: 'NASA', date: '2022-11-16', category: 'Rocket Launches', tags: ['artemis','sls','moon','launch'], image: 'https://bgr.com/wp-content/uploads/2020/08/AdobeStock_155258329-Recovered-Recovered-1.jpg?quality=82&strip=all', likes: 19876, downloads: 10543 }
+];
+
+const categories = ['all','Astronauts','Rocket Launches','Space Missions'];
+
+const categorySelect = document.getElementById('categorySelect');
+const searchInput = document.getElementById('searchInput');
+const photoGrid = document.getElementById('photoGrid');
+const photoModal = document.getElementById('photoModal');
+const modalImageWrap = document.getElementById('modalImageWrap');
+const photoModalTitle = document.getElementById('photoModalTitle');
+const photoModalDesc = document.getElementById('photoModalDesc');
+const photoModalMeta = document.getElementById('photoModalMeta');
+const photoModalCategory = document.getElementById('photoModalCategory');
+const photoModalTags = document.getElementById('photoModalTags');
+const photoModalStats = document.getElementById('photoModalStats');
+const photoModalClose = document.getElementById('photoModalClose');
+const likeBtn = document.getElementById('likeBtn');
+const likeCount = document.getElementById('likeCount');
+const downloadBtn = document.getElementById('downloadBtn');
+const shareBtn = document.getElementById('shareBtn');
+const resultCount = document.getElementById('resultCount');
+
+const likedPhotos = new Set();
+let selectedCategory = 'all';
+let searchTerm = '';
+let currentPhoto = null;
+
+function renderCategories() {
+  categorySelect.innerHTML = '';
+  categories.forEach(cat => {
+    const opt = document.createElement('option');
+    opt.value = cat;
+    opt.textContent = cat === 'all' ? 'All Categories' : cat;
+    categorySelect.appendChild(opt);
+  });
+}
+
+function filterPhotos() {
+  return photos.filter(photo => {
+    const matchesCategory = selectedCategory === 'all' || photo.category === selectedCategory;
+    const q = searchTerm.toLowerCase();
+    const matchesSearch = photo.title.toLowerCase().includes(q) || photo.description.toLowerCase().includes(q) || photo.tags.some(t => t.toLowerCase().includes(q));
+    return matchesCategory && matchesSearch;
+  });
+}
+
+function renderGrid() {
+  photoGrid.innerHTML = '';
+  const filtered = filterPhotos();
+  resultCount.textContent = `${filtered.length} photos`;
+
+  if (filtered.length === 0) {
+    photoGrid.innerHTML = '<div class="col-span-full text-center text-gray-400">No photos match your search.</div>';
+    return;
+  }
+
+  filtered.forEach(photo => {
+    const card = document.createElement('article');
+    card.className = 'bg-gray-900/60 border border-white/10 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition cursor-pointer';
+    card.tabIndex = 0;
+
+    const imgWrap = document.createElement('div');
+    imgWrap.className = 'aspect-[16/10] bg-gray-800/40 overflow-hidden';
+    const img = document.createElement('img');
+    img.src = photo.image;
+    img.alt = photo.title;
+    img.className = 'w-full h-full object-cover transform hover:scale-105 transition duration-300';
+    img.loading = 'lazy';
+    imgWrap.appendChild(img);
+
+    const body = document.createElement('div');
+    body.className = 'p-4';
+    const title = document.createElement('h3');
+    title.className = 'text-lg font-semibold text-white';
+    title.textContent = photo.title;
+    const meta = document.createElement('div');
+    meta.className = 'text-sm text-gray-400 mt-2 flex items-center justify-between';
+    meta.innerHTML = `<span>${photo.photographer} • ${photo.date}</span><span class="text-xs">${photo.category}</span>`;
+
+    body.appendChild(title);
+    body.appendChild(meta);
+
+    card.appendChild(imgWrap);
+    card.appendChild(body);
+
+    // Open modal on click or Enter
+    const openHandler = () => openModal(photo);
+    card.addEventListener('click', openHandler);
+    card.addEventListener('keydown', (e) => { if (e.key === 'Enter') openHandler(); });
+
+    photoGrid.appendChild(card);
+  });
+}
+
+function openModal(photo) {
+  currentPhoto = photo;
+  // Clear previous image
+  modalImageWrap.innerHTML = '';
+  const img = document.createElement('img');
+  img.src = photo.image;
+  img.alt = photo.title;
+  img.className = 'w-full h-auto max-h-[60vh] object-contain bg-black';
+  modalImageWrap.appendChild(img);
+
+  photoModalTitle.textContent = photo.title;
+  photoModalDesc.textContent = photo.description;
+  photoModalCategory.textContent = photo.category;
+
+  // Meta
+  photoModalMeta.innerHTML = `<span>By ${photo.photographer}</span> <span>•</span> <span>${photo.date}</span>`;
+
+  // Tags
+  photoModalTags.innerHTML = '';
+  photo.tags.forEach(t => {
+    const chip = document.createElement('span');
+    chip.className = 'px-2 py-1 text-sm bg-white/5 text-gray-200 rounded';
+    chip.textContent = t;
+    photoModalTags.appendChild(chip);
+  });
+
+  // Stats
+  photoModalStats.innerHTML = `
+    <span>❤️ ${photo.likes.toLocaleString()}</span>
+    <span>⬇️ ${photo.downloads.toLocaleString()}</span>
+  `;
+
+  likeCount.textContent = likedPhotos.has(photo.id) ? (photo.likes + 1).toLocaleString() : photo.likes.toLocaleString();
+
+  // Show modal
+  photoModal.classList.remove('hidden');
+  photoModal.setAttribute('aria-hidden', 'false');
+  // trap focus lightly
+  photoModalClose.focus();
+}
+
+function closeModal() {
+  photoModal.classList.add('hidden');
+  photoModal.setAttribute('aria-hidden', 'true');
+  currentPhoto = null;
+}
+
+// Like button
+likeBtn.addEventListener('click', () => {
+  if (!currentPhoto) return;
+  if (likedPhotos.has(currentPhoto.id)) {
+    likedPhotos.delete(currentPhoto.id);
+    likeCount.textContent = currentPhoto.likes.toLocaleString();
+  } else {
+    likedPhotos.add(currentPhoto.id);
+    likeCount.textContent = (currentPhoto.likes + 1).toLocaleString();
+  }
+});
+
+// Download button
+downloadBtn.addEventListener('click', () => {
+  if (!currentPhoto) return;
+  // Try to trigger download
+  const a = document.createElement('a');
+  a.href = currentPhoto.image;
+  a.download = '';
+  a.target = '_blank';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+});
+
+// Share button
+shareBtn.addEventListener('click', async () => {
+  if (!currentPhoto) return;
+  const url = currentPhoto.image;
+  const text = `${currentPhoto.title} — ${currentPhoto.description}`;
+  if (navigator.share) {
+    try { await navigator.share({ title: currentPhoto.title, text, url }); }
+    catch (e) { /* user cancelled */ }
+  } else if (navigator.clipboard) {
+    try { await navigator.clipboard.writeText(url); alert('Photo link copied to clipboard'); }
+    catch (e) { window.open(url, '_blank'); }
+  } else {
+    window.open(url, '_blank');
+  }
+});
+
+photoModalClose.addEventListener('click', closeModal);
+
+// Close when clicking outside content
+photoModal.addEventListener('click', (e) => {
+  if (e.target === photoModal) closeModal();
+});
+
+// Keyboard support
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !photoModal.classList.contains('hidden')) closeModal();
+});
+
+// Debounce helper
+function debounce(fn, wait=250) {
+  let t;
+  return (...args) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, args), wait); };
+}
+
+// Event listeners for filters
+categorySelect.addEventListener('change', (e) => {
+  selectedCategory = e.target.value;
+  renderGrid();
+});
+
+searchInput.addEventListener('input', debounce((e) => {
+  searchTerm = e.target.value.trim();
+  renderGrid();
+}, 200));
+
+// Init
+renderCategories();
+renderGrid();
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,315 @@
+{% extends 'base.html' %}
+
+{% block title %}Space Museum - StellarSense{% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-4 min-h-screen">
+  <div class="mb-8">
+    <h2 class="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-2">Virtual Space Museum</h2>
+    <p class="text-gray-400">Explore interactive models and detailed information about spacecraft and satellites</p>
+  </div>
+
+  <!-- Gallery -->
+  <div id="museum-gallery" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"></div>
+
+  <!-- Modal -->
+  <div id="museum-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div id="museum-modal-card" class="bg-gray-900/90 backdrop-blur-md rounded-2xl p-6 max-w-6xl w-full max-h-[90vh] overflow-y-auto border border-white/20 relative">
+      <button id="museum-modal-close" class="absolute top-4 right-4 p-2 bg-red-600/20 hover:bg-red-600/30 rounded-lg">✕</button>
+      <div id="museum-modal-content"></div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .exhibit-card { background: rgba(17,24,39,0.6); border: 1px solid rgba(255,255,255,0.06); padding:1rem; border-radius:1rem; cursor:pointer }
+  .exhibit-card img { width:100%; height:12rem; object-fit:cover; border-radius:0.75rem }
+</style>
+
+<script>
+(function(){
+  // Full exhibits data
+  const exhibits = [
+  {
+    id: 'apollo-csm',
+    name: 'Apollo Command Service Module',
+    type: 'Spacecraft',
+    era: '1960s-1970s',
+    description: 'The Apollo Command and Service Module was the spacecraft that carried astronauts to and from the Moon during the Apollo program. It consisted of two main parts: the Command Module (crew compartment) and the Service Module (propulsion and life support).',
+    image: 'https://bamax.es/php/files/uploads/271/apollo-orbiter-command-service-module-3d-model-aX13Uldb_200.jpg',
+    specifications: [
+      { label: 'Height', value: '11.4 meters' },
+      { label: 'Diameter', value: '3.9 meters' },
+      { label: 'Mass', value: '30,320 kg' },
+      { label: 'Crew Capacity', value: '3 astronauts' },
+      { label: 'Mission Duration', value: 'Up to 14 days' },
+      { label: 'Heat Shield', value: 'Ablative honeycomb' }
+    ],
+    achievements: [
+      'Successfully completed 11 crewed missions to the Moon',
+      'Transported 24 astronauts to lunar orbit',
+      'Enabled 12 astronauts to walk on the Moon',
+      'Demonstrated precision re-entry and splashdown capabilities'
+    ]
+  },
+  {
+    id: 'space-shuttle',
+    name: 'Space Shuttle Orbiter',
+    type: 'Reusable Spacecraft',
+    era: '1980s-2010s',
+    description: 'The Space Shuttle was a reusable orbital spacecraft that served as NASA\'s flagship program for 30 years. It could carry crews and cargo to low Earth orbit and return to land like an airplane.',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Shuttle_profiles.jpg/960px-Shuttle_profiles.jpg',
+    specifications: [
+      { label: 'Length', value: '37.2 meters' },
+      { label: 'Wingspan', value: '23.8 meters' },
+      { label: 'Mass', value: '78,000 kg (empty)' },
+      { label: 'Crew Capacity', value: 'Up to 8 astronauts' },
+      { label: 'Cargo Bay', value: '18.3 x 4.6 meters' },
+      { label: 'Orbital Altitude', value: '185-643 km' }
+    ],
+    achievements: [
+      'Completed 135 missions over 30 years',
+      'Built the International Space Station',
+      'Deployed and serviced the Hubble Space Telescope',
+      'Conducted numerous scientific experiments in microgravity'
+    ]
+  },
+  {
+    id: 'voyager',
+    name: 'Voyager Spacecraft',
+    type: 'Deep Space Probe',
+    era: '1970s-Present',
+    description: 'The twin Voyager spacecraft were launched in 1977 to explore the outer solar system. They provided the first close-up images of Jupiter, Saturn, Uranus, and Neptune, and continue their journey into interstellar space.',
+    image: 'https://science.nasa.gov/wp-content/uploads/2024/03/instruments-3.jpg',
+    specifications: [
+      { label: 'Mass', value: '825 kg' },
+      { label: 'Power Source', value: 'Radioisotope generators' },
+      { label: 'Communication', value: '3.7-meter high-gain antenna' },
+      { label: 'Instruments', value: '11 scientific instruments' },
+      { label: 'Speed', value: '17 km/s (Voyager 1)' },
+      { label: 'Current Distance', value: '>20 billion km from Earth' }
+    ],
+    achievements: [
+      'First spacecraft to enter interstellar space',
+      'Discovered active volcanism on Jupiter\'s moon Io',
+      'Revealed complex ring systems around gas giants',
+      'Carries the Golden Record with sounds and images from Earth'
+    ]
+  },
+  {
+    id: 'mars-rover',
+    name: 'Mars Exploration Rover',
+    type: 'Planetary Rover',
+    era: '2000s-Present',
+    description: 'The Mars Exploration Rovers, Spirit and Opportunity, were designed for 90-day missions but operated for years, revolutionizing our understanding of Mars geology and climate history.',
+    image: 'https://assets.science.nasa.gov/dynamicimage/assets/science/psd/mars/resources/detail_files/8/8896_mer-instruments-diagram-full2.png',
+    specifications: [
+      { label: 'Mass', value: '185 kg' },
+      { label: 'Dimensions', value: '1.6 x 2.3 x 1.5 meters' },
+      { label: 'Power', value: 'Solar panels (140 watts)' },
+      { label: 'Top Speed', value: '5 cm/second' },
+      { label: 'Range', value: '100 meters per day' },
+      { label: 'Instruments', value: '9 scientific instruments' }
+    ],
+    achievements: [
+      'Opportunity operated for 14 years (planned 90 days)',
+      'Discovered evidence of past water activity on Mars',
+      'Analyzed thousands of rock and soil samples',
+      'Traveled over 45 kilometers on the Martian surface'
+    ]
+  },
+  {
+    id: 'hubble-telescope',
+    name: 'Hubble Space Telescope',
+    type: 'Space Observatory',
+    era: '1990s-Present',
+    description: 'The Hubble Space Telescope has been humanity\'s window to the universe for over 30 years, providing breathtaking images and groundbreaking discoveries about galaxies, nebulae, and the expansion of the universe.',
+    image: 'https://cdn.britannica.com/32/1332-004-5D2096C6/Cutaway-spacecraft-NASA-Hubble-Space-Telescope-heart.jpg',
+    specifications: [
+      { label: 'Length', value: '13.2 meters' },
+      { label: 'Mirror Diameter', value: '2.4 meters' },
+      { label: 'Mass', value: '11,110 kg' },
+      { label: 'Orbit Altitude', value: '547 km' },
+      { label: 'Resolution', value: '0.1 arcseconds' },
+      { label: 'Wavelength Range', value: 'UV to near-infrared' }
+    ],
+    achievements: [
+      'Determined the age of the universe (13.8 billion years)',
+      'Discovered that the universe\'s expansion is accelerating',
+      'Captured images of galaxies over 13 billion light-years away',
+      'Helped confirm the existence of supermassive black holes'
+    ]
+  },
+  {
+    id: 'iss-module',
+    name: 'International Space Station Module',
+    type: 'Space Station',
+    era: '1990s-Present',
+    description: 'The International Space Station is humanity\'s laboratory in space, where astronauts from around the world conduct scientific experiments in microgravity and test technologies for future deep space missions.',
+    image: 'https://www.nasa.gov/wp-content/uploads/2023/05/iss-blowout-updated-view-2023-300.png',
+    specifications: [
+      { label: 'Total Length', value: '73 meters' },
+      { label: 'Width', value: '109 meters' },
+      { label: 'Mass', value: '420,000 kg' },
+      { label: 'Crew Capacity', value: '3-6 astronauts' },
+      { label: 'Orbit Altitude', value: '408 km' },
+      { label: 'Speed', value: '28,000 km/h' }
+    ],
+    achievements: [
+      'Continuous human presence in space since 2000',
+      'Over 3,000 scientific experiments conducted',
+      'Platform for testing life support systems for Mars missions',
+      'International cooperation between 15 countries'
+    ]
+  },
+  {
+    id: 'james-webb',
+    name: 'James Webb Space Telescope',
+    type: 'Next-Gen Observatory',
+    era: '2020s-Present',
+    description: 'The James Webb Space Telescope is the most powerful space telescope ever built, designed to observe the universe in infrared light and peer back to the earliest galaxies formed after the Big Bang.',
+    image: 'https://ichef.bbci.co.uk/ace/standard/624/cpsprodpb/13A53/production/_84576408_jwst_labelled_624in.jpg',
+    specifications: [
+      { label: 'Mirror Diameter', value: '6.5 meters' },
+      { label: 'Mass', value: '6,200 kg' },
+      { label: 'Orbit', value: 'L2 Lagrange Point' },
+      { label: 'Distance from Earth', value: '1.5 million km' },
+      { label: 'Operating Temperature', value: '-223°C' },
+      { label: 'Wavelength Range', value: '0.6-28.5 micrometers' }
+    ],
+    achievements: [
+      'Captured the deepest infrared images of the universe',
+      'Analyzed atmospheres of distant exoplanets',
+      'Observed galaxies from 13.4 billion years ago',
+      'Revolutionized our understanding of early universe formation'
+    ]
+  },
+  {
+    id: 'perseverance-rover',
+    name: 'Perseverance Mars Rover',
+    type: 'Advanced Planetary Rover',
+    era: '2020s-Present',
+    description: 'NASA\'s Perseverance rover is searching for signs of ancient microbial life on Mars while collecting rock samples for future return to Earth. It also carries the first helicopter to fly on another planet.',
+    image: 'https://science.nasa.gov/wp-content/uploads/2024/04/mars-2020-cameras-labeled-web-full2.jpg?w=1536',
+    specifications: [
+      { label: 'Mass', value: '1,025 kg' },
+      { label: 'Dimensions', value: '3.0 x 2.7 x 3.2 meters' },
+      { label: 'Power', value: 'Nuclear RTG (110 watts)' },
+      { label: 'Top Speed', value: '4.2 cm/second' },
+      { label: 'Instruments', value: '7 scientific instruments' },
+      { label: 'Sample Capacity', value: '43 sample tubes' }
+    ],
+    achievements: [
+      'First rover to search for signs of ancient life on Mars',
+      'Successfully collected multiple rock samples',
+      'Deployed Ingenuity helicopter for powered flight',
+      'Produced oxygen from Martian atmosphere'
+    ]
+  }
+];
+
+  const gallery = document.getElementById('museum-gallery');
+  const modal = document.getElementById('museum-modal');
+  const modalContent = document.getElementById('museum-modal-content');
+  const closeBtn = document.getElementById('museum-modal-close');
+
+  function createCard(ex){
+    const div = document.createElement('div');
+    div.className = 'exhibit-card';
+    div.innerHTML = `
+      <div class="relative mb-3 overflow-hidden rounded-xl">
+        <img src="${ex.image}" alt="${ex.name}" />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+      </div>
+      <h3 class="text-lg font-semibold text-white">${ex.name}</h3>
+      <p class="text-sm text-gray-400 mb-2">${ex.type} • ${ex.era}</p>
+      <p class="text-gray-300 text-sm line-clamp-3">${ex.description}</p>
+    `;
+    div.addEventListener('click', ()=> openModal(ex));
+    return div;
+  }
+
+  function openModal(ex){
+    const specs = (ex.specifications || []).map(s => `<div class="bg-white/5 rounded-lg p-3 mb-2"><div class="text-purple-300 font-semibold text-sm">${s.label}</div><div class="text-white font-mono">${s.value}</div></div>`).join('');
+    const achievements = (ex.achievements || []).map(a => `<div class="bg-green-600/10 border border-green-600/20 rounded-lg p-3 mb-2"><div class="text-gray-300">🏆 ${a}</div></div>`).join('');
+    modalContent.innerHTML = `
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div>
+          <h2 class="text-2xl font-bold text-white mb-4">${ex.name}</h2>
+          <div class="relative bg-gradient-to-br from-gray-800 to-black rounded-xl overflow-hidden mb-4">
+            <div style="display:flex;align-items:center;justify-content:center;padding:1rem;">
+              <img id="modal-image" src="${ex.image}" alt="${ex.name}" style="max-width:100%;max-height:320px;object-fit:contain;transform:scale(1);transition:transform .25s ease;" />
+            </div>
+            <div class="absolute bottom-4 right-4 flex space-x-2">
+              <button id="zoom-in" class="p-2 bg-black/50 hover:bg-black/70 rounded-lg text-white">Zoom +</button>
+              <button id="zoom-reset" class="p-2 bg-black/50 hover:bg-black/70 rounded-lg text-white">1:1</button>
+            </div>
+            
+          </div>
+          <div class="bg-white/5 rounded-lg p-3">
+            <div class="text-center text-gray-400 text-sm space-y-1">
+              <div>🔍 Click zoom to magnify</div>
+              <div id="zoom-level">🔎 Zoom: 100%</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <span class="bg-blue-600/20 text-blue-300 px-3 py-1 rounded-full text-sm">${ex.type}</span>
+              <span class="bg-purple-600/20 text-purple-300 px-3 py-1 rounded-full text-sm">${ex.era}</span>
+            </div>
+            <div>
+              <button id="read-btn" class="p-2 bg-blue-600/20 rounded-lg">🔊</button>
+            </div>
+          </div>
+          <p class="text-gray-300 leading-relaxed mb-4">${ex.description}</p>
+          <div>${specs}</div>
+          <div class="mt-4">${achievements}</div>
+        </div>
+      </div>
+    `;
+
+    // wire voice button
+    const readBtn = document.getElementById('read-btn');
+    if(readBtn){
+      readBtn.addEventListener('click', ()=>{
+        if(window.speechSynthesis){
+          speechSynthesis.cancel();
+          const u = new SpeechSynthesisUtterance(`${ex.name}: ${ex.description}`);
+          u.rate = 0.95; u.volume = 0.9; speechSynthesis.speak(u);
+        }
+      });
+    }
+
+    // wire zoom controls
+    const modalImage = document.getElementById('modal-image');
+    const zoomLevelLabel = document.getElementById('zoom-level');
+    let zoom = 1;
+    const zoomInBtn = document.getElementById('zoom-in');
+    const zoomResetBtn = document.getElementById('zoom-reset');
+    if(zoomInBtn){
+      zoomInBtn.addEventListener('click', ()=>{
+        zoom = Math.min(zoom + 0.2, 2);
+        if(modalImage) modalImage.style.transform = `scale(${zoom})`;
+        if(zoomLevelLabel) zoomLevelLabel.textContent = `🔎 Zoom: ${Math.round(zoom*100)}%`;
+      });
+    }
+    if(zoomResetBtn){
+      zoomResetBtn.addEventListener('click', ()=>{
+        zoom = 1; if(modalImage) modalImage.style.transform = `scale(1)`; if(zoomLevelLabel) zoomLevelLabel.textContent = `🔎 Zoom: 100%`;
+      });
+    }
+
+    modal.classList.remove('hidden');
+  }
+
+  closeBtn.addEventListener('click', ()=>{ modal.classList.add('hidden'); modalContent.innerHTML=''; if(window.speechSynthesis) speechSynthesis.cancel(); });
+  modal.addEventListener('click', (e)=>{ if(e.target===modal) { modal.classList.add('hidden'); modalContent.innerHTML=''; if(window.speechSynthesis) speechSynthesis.cancel(); } });
+
+  // Build gallery
+  exhibits.forEach(e => gallery.appendChild(createCard(e)));
+})();
+</script>
+
+{% endblock %}

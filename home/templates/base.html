@@ -18,46 +18,43 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
         </svg>
     </button>
-    <div class="hidden md:flex items-center space-x-6">
-        <a href="{% url 'home' %}">
-        <h1 class="text-xl font-bold text-white hover:text-gray-300 transition duration-300 ease-in-out">HOME</h1>
-    </a>
-  <a href="{% url 'stellarium' %}"
-     class="relative text-base font-bold transition duration-300 hover:text-gray-300
-            after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:bg-white after:transition-all after:duration-300
-            {% if request.resolver_match.url_name == 'stellarium' %}text-white after:w-full{% else %}text-white after:w-0{% endif %}">
-     AROUND EARTH
-  </a>
-  <a href="{% url 'calender' %}"
-     class="relative text-base font-bold transition duration-300 hover:text-gray-300
-            after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:bg-white after:transition-all after:duration-300
-            {% if request.resolver_match.url_name == 'calender' %}text-white after:w-full{% else %}text-white after:w-0{% endif %}">
-     CALENDER
-  </a>
-  <a href="{% url 'timeline' %}"
-      class="relative text-base font-bold transition duration-300 hover:text-gray-300
-                after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:bg-white after:transition-all after:duration-300
-                {% if request.resolver_match.url_name == 'timeline' %}text-white after:w-full{% else %}text-white after:w-0{% endif %}">
-      TIMELINE
-  </a>
-    <a href="{% url 'calculator' %}"
+        <div class="hidden md:flex items-center space-x-6">
+                <a href="{% url 'home' %}">
+                <h1 class="text-xl font-bold text-white hover:text-gray-300 transition duration-300 ease-in-out">HOME</h1>
+        </a>
+
+        <!-- Group: Explore (Timeline, Calendar, Museum, Star Map) -->
+        <div class="relative group">
+            <button aria-haspopup="true" aria-expanded="false" class="text-base font-bold text-white hover:text-gray-300 focus:outline-none">EXPLORE ▾</button>
+            <div class="absolute left-0 mt-2 w-56 bg-black/95 border border-white/10 rounded-lg py-2 shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity">
+                <a href="{% url 'calender' %}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-white/5 {% if request.resolver_match.url_name == 'calender' %}font-semibold text-white{% endif %}">CALENDAR</a>
+                <a href="{% url 'timeline' %}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-white/5 {% if request.resolver_match.url_name == 'timeline' %}font-semibold text-white{% endif %}">TIMELINE</a>
+                <a href="{% url 'museum' %}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-white/5 {% if request.resolver_match.url_name == 'museum' %}font-semibold text-white{% endif %}">MUSEUM</a>
+                <a href="{% url 'starmap' %}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-white/5 {% if request.resolver_match.url_name == 'starmap' %}font-semibold text-white{% endif %}">STAR MAP</a>
+            </div>
+        </div>
+
+        <!-- Group: Gallery (Photo, Video) -->
+        <div class="relative group">
+            <button aria-haspopup="true" aria-expanded="false" class="text-base font-bold text-white hover:text-gray-300 focus:outline-none">GALLERY ▾</button>
+            <div class="absolute left-0 mt-2 w-48 bg-black/95 border border-white/10 rounded-lg py-2 shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity">
+                <a href="{% url 'photogallery' %}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-white/5 {% if request.resolver_match.url_name == 'photogallery' %}font-semibold text-white{% endif %}">Photos</a>
+                <a href="{% url 'videogallery' %}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-white/5 {% if request.resolver_match.url_name == 'videogallery' %}font-semibold text-white{% endif %}">Videos</a>
+            </div>
+        </div>
+
+        <a href="{% url 'gravity_simulation' %}"
          class="relative text-base font-bold transition duration-300 hover:text-gray-300
                         after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:bg-white after:transition-all after:duration-300
-                        {% if request.resolver_match.url_name == 'calculator' %}text-white after:w-full{% else %}text-white after:w-0{% endif %}">
-         CALCULATOR
-    </a>
-  <a href="{% url 'gravity_simulation' %}"
-     class="relative text-base font-bold transition duration-300 hover:text-gray-300
-            after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:bg-white after:transition-all after:duration-300
-            {% if request.resolver_match.url_name == 'gravity_simulation' %}text-white after:w-full{% else %}text-white after:w-0{% endif %}">
-     GRAVITY
-  </a>
-  <a href="{% url 'admin:index' %}"
-     class="relative text-base font-bold transition duration-300 hover:text-gray-300
-            after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:bg-white after:transition-all after:duration-300
-            {% if request.resolver_match.url_name == 'admin:index' %}text-white after:w-full{% else %}text-white after:w-0{% endif %}">
-     ADMIN
-  </a>
+                        {% if request.resolver_match.url_name == 'gravity_simulation' %}text-white after:w-full{% else %}text-white after:w-0{% endif %}">
+         GRAVITY
+        </a>
+        <a href="{% url 'admin:index' %}"
+         class="relative text-base font-bold transition duration-300 hover:text-gray-300
+                        after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:bg-white after:transition-all after:duration-300
+                        {% if request.resolver_match.url_name == 'admin:index' %}text-white after:w-full{% else %}text-white after:w-0{% endif %}">
+         ADMIN
+        </a>
   {% if user.is_authenticated %}
     <a href="{% url 'profile' user.username %}"
        class="relative text-base font-bold transition duration-300 hover:text-gray-300
@@ -112,16 +109,32 @@
         </button>
     </div>
     <nav class="flex flex-col p-4 space-y-4">
+        <!-- Collapsible Explore -->
+        <div>
+            <button class="w-full flex items-center justify-between text-left text-white font-bold px-2 py-3" aria-expanded="false" id="mobile-explore-toggle">EXPLORE ▾</button>
+            <div id="mobile-explore" class="mt-2 pl-2 hidden">
+                <a href="{% url 'calender' %}" class="block text-gray-300 hover:text-white py-2">CALENDAR</a>
+                <a href="{% url 'timeline' %}" class="block text-gray-300 hover:text-white py-2">TIMELINE</a>
+                <a href="{% url 'museum' %}" class="block text-gray-300 hover:text-white py-2">MUSEUM</a>
+                <a href="{% url 'starmap' %}" class="block text-gray-300 hover:text-white py-2">STAR MAP</a>
+            </div>
+        </div>
 
-        <a href="{% url 'calender' %}" class="text-white hover:text-gray-300 text-base font-bold">CALENDER</a>
-    <a href="{% url 'timeline' %}" class="text-white hover:text-gray-300 text-base font-bold">TIMELINE</a>
-    <a href="{% url 'calculator' %}" class="text-white hover:text-gray-300 text-base font-bold">CALCULATOR</a>
+        <!-- Collapsible Gallery -->
+        <div>
+            <button class="w-full flex items-center justify-between text-left text-white font-bold px-2 py-3" aria-expanded="false" id="mobile-gallery-toggle">GALLERY ▾</button>
+            <div id="mobile-gallery" class="mt-2 pl-2 hidden">
+                <a href="{% url 'photogallery' %}" class="block text-gray-300 hover:text-white py-2">Photos</a>
+                <a href="{% url 'videogallery' %}" class="block text-gray-300 hover:text-white py-2">Videos</a>
+            </div>
+        </div>
+
+        <a href="{% url 'calculator' %}" class="text-white hover:text-gray-300 text-base font-bold">CALCULATOR</a>
         <a href="{% url 'gravity_simulation' %}" class="text-white hover:text-gray-300 text-base font-bold">GRAVITY</a>
         <a href="{% url 'admin:index' %}" class="text-white hover:text-gray-300 text-base font-bold">ADMIN</a>
         <a href="{% url 'stellarium' %}" class="text-white hover:text-gray-300 text-base font-bold">STUFF</a>
         {% if user.is_authenticated %}
             <a href="{% url 'profile' user.username %}" class="text-white hover:text-gray-300 text-base font-bold">PROFILE</a>
-         
             <form action="{% url 'logout' %}" method="post">
                 {% csrf_token %}
                 <button type="submit" class="text-white hover:text-gray-400 text-base font-bold">Logout</button>
@@ -226,6 +239,47 @@ sidebarToggle.addEventListener('click', openSidebar);
 sidebarClose.addEventListener('click', closeSidebar);
 sidebarOverlay.addEventListener('click', closeSidebar);
 document.querySelectorAll('#sidebar a').forEach(link => link.addEventListener('click', closeSidebar));
+
+// Navbar dropdowns (desktop) additional keyboard support
+document.querySelectorAll('header .group > button').forEach(btn => {
+    btn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            const expanded = btn.getAttribute('aria-expanded') === 'true';
+            btn.setAttribute('aria-expanded', String(!expanded));
+            // toggle sibling menu visibility
+            const menu = btn.nextElementSibling;
+            if (menu) {
+                menu.classList.toggle('opacity-100');
+                menu.classList.toggle('pointer-events-auto');
+                menu.classList.toggle('opacity-0');
+                menu.classList.toggle('pointer-events-none');
+            }
+        }
+    });
+});
+
+// Mobile collapsibles
+const mobileExploreToggle = document.getElementById('mobile-explore-toggle');
+const mobileExplore = document.getElementById('mobile-explore');
+const mobileGalleryToggle = document.getElementById('mobile-gallery-toggle');
+const mobileGallery = document.getElementById('mobile-gallery');
+
+if (mobileExploreToggle && mobileExplore) {
+    mobileExploreToggle.addEventListener('click', () => {
+        const open = !mobileExplore.classList.contains('hidden');
+        mobileExplore.classList.toggle('hidden');
+        mobileExploreToggle.setAttribute('aria-expanded', String(!open));
+    });
+}
+
+if (mobileGalleryToggle && mobileGallery) {
+    mobileGalleryToggle.addEventListener('click', () => {
+        const open = !mobileGallery.classList.contains('hidden');
+        mobileGallery.classList.toggle('hidden');
+        mobileGalleryToggle.setAttribute('aria-expanded', String(!open));
+    });
+}
 </script>
 
 {% block extra_body_content %}{% endblock %}
