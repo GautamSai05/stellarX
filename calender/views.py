@@ -9,7 +9,7 @@ from django.http import JsonResponse
 load_dotenv()
 
 # n8n webhook URL
-N8N_WEBHOOK_URL = "https://sample18102.app.n8n.cloud/webhook/6a7a1a2f-2d23-4780-bb5a-9b38413507b3/chat"
+N8N_WEBHOOK_URL = "https://sample18102.app.n8n.cloud/webhook-test/908356a2-02e0-4050-b891-46eb1dd3c4fe"
 
 def query_n8n_webhook(message, session_id="calendar_chat"):
     """
