@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from observations.models import Observation
 from .models import UserProfile
+from django.http import JsonResponse
+from django.db.models import Count
 
 def profile_view(request, username):
     user = get_object_or_404(User, username=username)
@@ -28,3 +30,17 @@ def profile_view(request, username):
         'logs': logs,
         'profile': profile,
     })
+
+
+def user_search(request):
+    """Return up to 10 users matching the `q` query as JSON with post counts."""
+    q = request.GET.get('q', '').strip()
+    if not q:
+        return JsonResponse({'results': []})
+
+    # annotate with post counts (Observation's default reverse name is 'observation_set')
+    users = User.objects.filter(username__icontains=q).annotate(post_count=Count('observation_set')).order_by('-post_count')[:10]
+    results = []
+    for u in users:
+        results.append({'username': u.username, 'post_count': getattr(u, 'post_count', 0)})
+    return JsonResponse({'results': results})

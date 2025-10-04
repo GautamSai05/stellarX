@@ -9,6 +9,7 @@
         <p class="text-xl text-gray-400 leading-relaxed">
             Explore all celestial observations logged by {{ user.username }}.
         </p>
+        <p class="text-sm text-gray-400 mt-2">Total posts: <strong class="text-white">{{ logs|length }}</strong></p>
     </div>
 
     {% if user == request.user %}

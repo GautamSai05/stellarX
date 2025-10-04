@@ -20,9 +20,18 @@ def splash(request):
     return render(request,'home/splash.html')
 
 def home_view(request):
-        logs = Observation.objects.all().order_by('-created_at')[:10]
-        today_events = AstronomicalEvent.objects.filter(date=date.today())
-        return render(request, 'home/home.html', {'logs': logs, 'nasa_api_key': os.getenv('NASA_API_KEY'), 'today_events': today_events})
+    # Home page now shows hero/preview and APOD only; feeds moved to their own page
+    return render(request, 'home/home.html', {'nasa_api_key': os.getenv('NASA_API_KEY')})
+
+def feeds(request):
+    """Render the Feeds page containing today's events and recent logs."""
+    username = request.GET.get('user') or request.GET.get('username')
+    if username:
+        logs = Observation.objects.filter(user__username=username).order_by('-created_at')[:50]
+    else:
+        logs = Observation.objects.all().order_by('-created_at')[:50]
+    today_events = AstronomicalEvent.objects.filter(date=date.today())
+    return render(request, 'home/feeds.html', {'logs': logs, 'today_events': today_events})
 
 def timeline(request):
     """Render the interactive space timeline page."""

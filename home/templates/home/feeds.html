@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Feeds - StellarSense{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto py-8">
+  <div class="mb-6">
+    <h1 class="text-4xl font-extrabold text-white">FEEDS</h1>
+    <p class="text-gray-400">Explore daily celestial wonders and recent sky logs from fellow stargazers.</p>
+  </div>
+
+  {% if today_events %}
+    <section class="mb-8">
+      <h2 class="text-2xl font-semibold text-white mb-3">Today's Astronomical Events</h2>
+      <ul class="list-disc list-inside text-white/80 space-y-2">
+        {% for event in today_events %}
+          <li>{{ event.description }}</li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+
+  <section class="mb-8">
+    <div class="flex items-center justify-between">
+      <div class="flex-1 pr-4">
+        <h2 class="text-2xl font-semibold text-white">Recent Celestial Logs</h2>
+        <p class="text-sm text-gray-400">Search users to view their posts (Instagram-like feed).</p>
+      </div>
+      <div class="w-96">
+        <label for="user-search" class="sr-only">Search users</label>
+        <div class="relative flex items-center">
+          <input id="user-search" type="search" placeholder="Search users..." autocomplete="off" class="flex-1 bg-gray-800 text-white rounded-l-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500" />
+          <button id="user-search-btn" type="button" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-r-lg text-sm">Search</button>
+          <ul id="user-suggestions" class="absolute left-0 right-0 mt-10 bg-black/90 border border-white/10 rounded-lg max-h-56 overflow-auto hidden z-40"></ul>
+        </div>
+      </div>
+      {% if user.is_authenticated %}
+        
+<a href="{% url 'log_create' %}" 
+   class="ml-4 px-4 py-2 text-sm text-white/90 
+          bg-white/10 backdrop-blur-md 
+          border border-white/20 
+          rounded-lg 
+          shadow-md 
+          hover:bg-white/20 hover:text-white 
+          transition">
+  + Create New Log
+</a>
+ {% endif %}
+    </div>
+
+    {% if logs %}
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+        {% for log in logs %}
+          <article class="bg-gray-900/60 rounded-2xl p-4 border border-white/10">
+            <div class="flex items-start gap-4">
+              <div class="w-24 h-24 bg-gray-800 rounded-lg overflow-hidden flex-shrink-0">
+                {% if log.photo %}
+                  <img src="{{ log.photo.url }}" alt="{{ log.title }}" class="w-full h-full object-cover">
+                {% else %}
+                  <div class="w-full h-full flex items-center justify-center text-white/30">No Image</div>
+                {% endif %}
+              </div>
+              <div class="flex-1">
+                <h3 class="text-lg font-bold text-white">{{ log.title }}</h3>
+                <p class="text-sm text-white/70 line-clamp-3">{{ log.description }}</p>
+                <div class="mt-2 text-xs text-white/60">By <a href="{% url 'profile' log.user.username %}" class="underline">{{ log.user.username }}</a> • {{ log.created_at|date:"F d, Y" }}</div>
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-white/70 mt-4">No logs yet. {% if user.is_authenticated %}<a href="{% url 'log_create' %}" class="underline">Add one</a>{% else %} <a href="{% url 'login' %}" class="underline">Log in</a> to add a log.{% endif %}</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}
+
+  {% block extra_body_content %}
+  <script>
+  (() => {
+    const input = document.getElementById('user-search');
+    const list = document.getElementById('user-suggestions');
+    let timeout = null;
+
+    function clearSuggestions() { list.innerHTML = ''; list.classList.add('hidden'); }
+
+    function renderSuggestions(items) {
+      list.innerHTML = '';
+      if (!items || items.length === 0) { clearSuggestions(); return; }
+      items.forEach(it => {
+        const li = document.createElement('li');
+        li.className = 'px-3 py-2 hover:bg-white/5 cursor-pointer flex justify-between items-center';
+        li.dataset.username = it._noresult ? '' : it.username;
+        li.innerHTML = `<span class="text-sm text-white">${it.username}</span><span class="text-xs text-gray-400">${it.post_count} posts</span>`;
+        li.addEventListener('click', () => { if (li.dataset.username) window.location.search = `?user=${encodeURIComponent(li.dataset.username)}`; });
+        list.appendChild(li);
+      });
+      list.classList.remove('hidden');
+    }
+
+    input.addEventListener('input', (e) => {
+      const q = e.target.value.trim();
+      if (timeout) clearTimeout(timeout);
+      if (!q) { clearSuggestions(); return; }
+      timeout = setTimeout(async () => {
+      try {
+        const url = `{% url 'profile_user_search' %}` + `?q=${encodeURIComponent(q)}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Network error');
+        const json = await res.json();
+        renderSuggestions(json.results || []);
+      } catch (err) { console.error(err); clearSuggestions(); }
+    }, 220);
+    });
+
+    // hide suggestions on outside click
+    document.addEventListener('click', (e) => {
+      if (!input.contains(e.target) && !list.contains(e.target)) clearSuggestions();
+    });
+
+  // perform a search query against the profiles search endpoint
+  async function performSearch(q) {
+    if (!q) return;
+    const url = `{% url 'profile_user_search' %}` + `?q=${encodeURIComponent(q)}`;
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Network error');
+      const json = await res.json();
+      const results = json.results || [];
+      if (results.length === 1) {
+        // direct match -> show that user's posts
+        window.location.search = `?user=${encodeURIComponent(results[0].username)}`;
+      } else if (results.length > 1) {
+        // show suggestions (best effort)
+        renderSuggestions(results);
+      } else {
+        // no results: show a tiny no-results entry
+        renderSuggestions([{ username: 'No users found', post_count: 0, _noresult: true }]);
+      }
+    } catch (err) {
+      console.error(err);
+      clearSuggestions();
+    }
+  }
+
+  // Enter key triggers performSearch
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      performSearch(input.value.trim());
+    }
+  });
+
+  // Search button click
+  const searchBtn = document.getElementById('user-search-btn');
+  if (searchBtn) searchBtn.addEventListener('click', () => {
+    performSearch(input.value.trim());
+  });
+  })();
+  </script>
+  {% endblock %}
