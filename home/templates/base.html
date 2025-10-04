@@ -31,6 +31,7 @@
                 <a href="{% url 'timeline' %}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-white/5 {% if request.resolver_match.url_name == 'timeline' %}font-semibold text-white{% endif %}">TIMELINE</a>
                 <a href="{% url 'museum' %}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-white/5 {% if request.resolver_match.url_name == 'museum' %}font-semibold text-white{% endif %}">MUSEUM</a>
                 <a href="{% url 'starmap' %}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-white/5 {% if request.resolver_match.url_name == 'starmap' %}font-semibold text-white{% endif %}">STAR MAP</a>
+                <a href="{% url 'whatif' %}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-white/5 {% if request.resolver_match.url_name == 'whatif' %}font-semibold text-white{% endif %}">WHAT IF SIMULATOR</a>
             </div>
         </div>
 
@@ -117,6 +118,7 @@
                 <a href="{% url 'timeline' %}" class="block text-gray-300 hover:text-white py-2">TIMELINE</a>
                 <a href="{% url 'museum' %}" class="block text-gray-300 hover:text-white py-2">MUSEUM</a>
                 <a href="{% url 'starmap' %}" class="block text-gray-300 hover:text-white py-2">STAR MAP</a>
+                <a href="{% url 'whatif' %}" class="block text-gray-300 hover:text-white py-2">WHAT IF SIMULATOR</a>
             </div>
         </div>
 
@@ -240,24 +242,71 @@ sidebarClose.addEventListener('click', closeSidebar);
 sidebarOverlay.addEventListener('click', closeSidebar);
 document.querySelectorAll('#sidebar a').forEach(link => link.addEventListener('click', closeSidebar));
 
-// Navbar dropdowns (desktop) additional keyboard support
-document.querySelectorAll('header .group > button').forEach(btn => {
-    btn.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            const expanded = btn.getAttribute('aria-expanded') === 'true';
-            btn.setAttribute('aria-expanded', String(!expanded));
-            // toggle sibling menu visibility
-            const menu = btn.nextElementSibling;
-            if (menu) {
-                menu.classList.toggle('opacity-100');
-                menu.classList.toggle('pointer-events-auto');
-                menu.classList.toggle('opacity-0');
-                menu.classList.toggle('pointer-events-none');
-            }
+// Desktop navbar dropdowns: open on hover, stay open while pointer/focus inside,
+// and preserve keyboard toggle. Small close delay avoids flicker when moving
+// between button and menu.
+(() => {
+    const groups = document.querySelectorAll('header .relative.group');
+    groups.forEach(g => {
+        const btn = g.querySelector('button');
+        // the dropdown menu is the next element sibling in this markup
+        const menu = btn ? btn.nextElementSibling : null;
+        let closeTimer = null;
+
+        function openMenu() {
+            if (!btn || !menu) return;
+            btn.setAttribute('aria-expanded', 'true');
+            menu.classList.remove('opacity-0', 'pointer-events-none');
+            menu.classList.add('opacity-100', 'pointer-events-auto');
+            if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
+        }
+
+        function closeMenu() {
+            if (!btn || !menu) return;
+            btn.setAttribute('aria-expanded', 'false');
+            menu.classList.remove('opacity-100', 'pointer-events-auto');
+            menu.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        // mouse interactions
+        g.addEventListener('mouseenter', openMenu);
+        g.addEventListener('mouseleave', () => {
+            // close after a short delay so users can move the pointer into the menu
+            closeTimer = setTimeout(closeMenu, 180);
+        });
+
+        // keyboard/focus interactions
+        g.addEventListener('focusin', openMenu);
+        g.addEventListener('focusout', (e) => {
+            // if focus moved outside the group, schedule close
+            if (!g.contains(e.relatedTarget)) closeTimer = setTimeout(closeMenu, 180);
+        });
+
+        // button: click/keyboard toggle (keeps existing behavior but uses helper fns)
+        if (btn) {
+            btn.addEventListener('click', (e) => {
+                // toggle on click for accessibility and small screens with pointer
+                e.preventDefault();
+                const expanded = btn.getAttribute('aria-expanded') === 'true';
+                if (expanded) closeMenu(); else openMenu();
+            });
+
+            btn.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    const expanded = btn.getAttribute('aria-expanded') === 'true';
+                    if (expanded) closeMenu(); else openMenu();
+                }
+                // allow ArrowDown to jump into first menu item
+                if (e.key === 'ArrowDown' && menu) {
+                    e.preventDefault();
+                    const first = menu.querySelector('a, button');
+                    if (first) first.focus();
+                }
+            });
         }
     });
-});
+})();
 
 // Mobile collapsibles
 const mobileExploreToggle = document.getElementById('mobile-explore-toggle');

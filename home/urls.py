@@ -10,5 +10,7 @@ urlpatterns = [
     path('photos/', views.photogallery, name='photogallery'),
     path('museum/', views.museum, name='museum'),
     path('starmap/', views.starmap, name='starmap'),
+    path('whatif/', views.whatif, name='whatif'),
+    path('women-in-space/', views.women_in_space, name='women_in_space'),
     path('stellarium/', views.stellarium, name='stellarium'),
 ]

@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Women in Space - StellarSense{% endblock %}
+
+{% block content %}
+<main class="container mx-auto p-4 min-h-screen" aria-labelledby="pageTitle">
+  <div class="mb-8">
+    <h2 id="pageTitle" class="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-2">Women in Space Spotlight</h2>
+    <p class="text-gray-400">Celebrating the pioneering women who broke barriers in space exploration</p>
+  </div>
+
+  <div id="featured" class="mb-8"></div>
+  <div id="allWomen" class="mb-8"></div>
+
+  <!-- Modal -->
+  <div id="womanModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true">
+    <div id="womanModalContent" class="bg-gray-900/90 backdrop-blur-md rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-white/20"></div>
+  </div>
+</main>
+
+<script>
+const spaceWomen = [
+  { id: '1', name: 'Valentina Tereshkova', title: 'First Woman in Space', achievement: 'First woman to fly in space aboard Vostok 6 in 1963', biography: 'Valentina Vladimirovna Tereshkova is a Russian former cosmonaut and the first woman to have flown in space. She spent almost three days in space and orbited Earth 48 times in her space capsule. Before her recruitment as a cosmonaut, she was a textile factory worker and an amateur skydiver.', quote: 'A bird cannot fly with one wing only. Human space flight cannot develop any further without the active participation of women.', missions: ['Vostok 6 (1963)'], firsts: ['First woman in space','First civilian to fly in space','Youngest woman to fly in space (26 years old)'], image: 'https://cdn.mos.cms.futurecdn.net/UMrJ6JarwgPzBPCrL3Tcnn.jpg', birthYear: 1937, nationality: 'Soviet Union/Russia', field: 'Cosmonaut' },
+  { id: '2', name: 'Sally Ride', title: 'First American Woman in Space', achievement: 'First American woman to fly in space aboard Space Shuttle Challenger in 1983', biography: 'Sally Kristen Ride was an American astronaut and physicist. She joined NASA in 1978 and became the first American woman in space in 1983. After her NASA career, she led two public outreach companies focused on making science and engineering fun and accessible for students, particularly girls.', quote: "The thing that I'll remember most about the flight is that it was fun. In fact, I'm sure it was the most fun that I'll ever have in my life.", missions: ['STS-7 (1983)','STS-41-G (1984)'], firsts: ['First American woman in space','Youngest American astronaut to fly in space','First woman to use the robotic arm in space'], image: 'https://static01.nyt.com/images/2012/07/24/science/24ride1/24ride1-superJumbo.jpg', birthYear: 1951, nationality: 'United States', field: 'Astronaut/Physicist' },
+  { id: '3', name: 'Mae Jemison', title: 'First African American Woman in Space', achievement: 'First African American woman to travel to space aboard Space Shuttle Endeavour in 1992', biography: 'Mae Carol Jemison is an American engineer, physician, and former NASA astronaut. She became the first African American woman to travel to space when she served as a mission specialist aboard the Space Shuttle Endeavour. She is also a trained dancer and holds degrees in chemical engineering and medicine.', quote: 'Never be limited by other people\'s limited imaginations. If you adopt their attitudes, then the possibility won\'t exist because you\'ll have already shut it out.', missions: ['STS-47 (1992)'], firsts: ['First African American woman in space','First astronaut who was also a professional dancer','First physician-astronaut to conduct medical experiments in space'], image: 'https://images.newscientist.com/wp-content/uploads/2021/07/16120548/mae_jemison2exd3p7.jpg', birthYear: 1956, nationality: 'United States', field: 'Astronaut/Physician/Engineer' },
+  { id: '4', name: 'Eileen Collins', title: 'First Female Space Shuttle Pilot and Commander', achievement: 'First woman to pilot and command a Space Shuttle mission', biography: 'Eileen Marie Collins is a retired NASA astronaut and United States Air Force colonel. She was the first woman to pilot a Space Shuttle and the first to command a Space Shuttle mission. Collins logged over 872 hours in space and was instrumental in advancing opportunities for women in aerospace.', quote: 'I think it\'s important for young girls to see that you can be feminine and be in command.', missions: ['STS-63 (1995)','STS-84 (1997)','STS-93 (1999)','STS-114 (2005)'], firsts: ['First woman to pilot a Space Shuttle','First woman to command a Space Shuttle','First woman to command a space mission'], image: 'https://cdn.britannica.com/48/211148-050-E24BD688/Eileen-Collins-training-course-NASA-Vance-Air-Force-Base-Oklahoma.jpg', birthYear: 1956, nationality: 'United States', field: 'Astronaut/Air Force Colonel' },
+  { id: '5', name: 'Sunita Williams', title: 'Record-Breaking Spacewalker', achievement: 'Held the record for longest spaceflight by a woman and most spacewalks by a woman', biography: 'Sunita Lyn Williams is an American astronaut and United States Navy officer. She formerly held the records for most spacewalks by a woman (seven) and most spacewalk time for a woman. Williams has spent a total of 322 days in space and has been a long-duration resident of the International Space Station.', quote: "I think the space station is absolutely amazing. It's a testament to what we can do when we work together internationally.", missions: ['Expedition 14/15 (2006-2007)','Expedition 32/33 (2012)','Boeing Starliner CFT (2024)'], firsts: ['Most spacewalks by a woman (7)','Longest single spaceflight by a woman (195 days)','First person to run a marathon in space'], image: 'https://media-cldnry.s-nbcnews.com/image/upload/t_nbcnews-fp-1200-630,f_auto,q_auto:best/rockcms/2024-06/240605-sunita-williams-ch-1203-4bd0e0.jpg', birthYear: 1965, nationality: 'United States', field: 'Astronaut/Navy Officer' },
+  { id: '6', name: 'Peggy Whitson', title: 'Most Experienced Female Astronaut', achievement: 'Holds the record for most time in space by a woman and oldest woman in space', biography: 'Peggy Annette Whitson is an American biochemist and retired NASA astronaut. She has spent more time in space than any other woman, and holds the record for oldest woman to fly in space. Whitson was the first woman to command the International Space Station and served as NASA\'s Chief Astronaut.', quote: 'I do think that it\'s extremely important to have role models, and to see that it is possible.', missions: ['Expedition 5 (2002)','Expedition 16 (2007-2008)','Expedition 50/51/52 (2016-2017)','Axiom Mission 2 (2023)'], firsts: ['Most time in space by a woman (665 days)','First woman to command the ISS','Oldest woman in space (57 years old)'], image: 'https://ichef.bbci.co.uk/images/ic/1920xn/p0j1h2b6.jpg', birthYear: 1960, nationality: 'United States', field: 'Astronaut/Biochemist' },
+  { id: '7', name: 'Liu Yang', title: 'First Chinese Woman in Space', achievement: 'First Chinese woman to travel to space aboard Shenzhou 9 in 2012', biography: 'Liu Yang is a Chinese pilot and astronaut who became the first Chinese woman to travel to space. She served as a crew member on the Shenzhou 9 mission in 2012, which was China\'s first manned mission to dock with the Tiangong-1 space laboratory. She later flew on Shenzhou 14 in 2022.', quote: 'As China\'s first female astronaut, I feel proud and honored to represent Chinese women in space exploration.', missions: ['Shenzhou 9 (2012)','Shenzhou 14 (2022)'], firsts: ['First Chinese woman in space','First Chinese woman to dock with a space station','First woman to visit China\'s space station'], image: 'https://cdn.i-scmp.com/sites/default/files/styles/1020x680/public/d8/images/canvas/2024/05/26/a54fe7d5-70c2-4699-bb41-4930da8fcee6_68913e26.jpg?itok=UJ-OGMVf&v=1716689324', birthYear: 1978, nationality: 'China', field: 'Astronaut/Pilot' }
+];
+
+let currentWoman = 0;
+let selectedWoman = null;
+let autoRotateInterval = null;
+
+function renderFeatured() {
+  const root = document.getElementById('featured');
+  root.innerHTML = '';
+  const wrapper = document.createElement('div');
+  wrapper.className = 'bg-gradient-to-r from-purple-900/50 to-pink-900/50 backdrop-blur-md rounded-3xl p-8 border border-white/10';
+
+  const header = document.createElement('div');
+  header.className = 'flex items-center justify-between mb-6';
+  header.innerHTML = `<div class="flex items-center space-x-3"><div class="p-3 bg-purple-800/30 rounded-xl"><svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v18m9-9H3"></path></svg></div><div><h3 class="text-2xl font-bold text-white mb-0.5">Featured Pioneer</h3><p class="text-gray-400">Spotlight on space exploration heroes</p></div></div>`;
+
+const controls = document.createElement('div');
+controls.className = 'flex space-x-2';
+controls.innerHTML = `<button id="prevWoman" class="p-2 bg-white/10 hover:bg-white/20 rounded-lg">◀</button><button id="speakBtn" class="p-2 bg-blue-600/20 hover:bg-blue-600/30 rounded-lg">🔊</button><button id="nextWoman" class="p-2 bg-white/10 hover:bg-white/20 rounded-lg">▶</button>`;
+header.appendChild(controls);
+wrapper.appendChild(header);
+
+const grid = document.createElement('div');
+grid.className = 'grid grid-cols-1 lg:grid-cols-2 gap-8';
+
+const left = document.createElement('div');
+left.className = 'relative group';
+left.innerHTML = `<img id="featuredImg" src="${spaceWomen[currentWoman].image}" alt="${spaceWomen[currentWoman].name}" class="w-full h-80 object-cover rounded-2xl shadow-2xl" /><div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-2xl"></div>`;
+
+const right = document.createElement('div');
+right.className = 'space-y-6';
+right.innerHTML = `<div><h4 id="featuredName" class="text-3xl font-bold text-white mb-2">${spaceWomen[currentWoman].name}</h4><p id="featuredTitle" class="text-xl text-purple-300 mb-4">${spaceWomen[currentWoman].title}</p><p id="featuredAchievement" class="text-gray-300">${spaceWomen[currentWoman].achievement}</p></div><div class="bg-white/5 rounded-xl p-4"><div class="text-4xl text-purple-400 mb-2">"</div><blockquote id="featuredQuote" class="text-lg text-white italic leading-relaxed">${spaceWomen[currentWoman].quote}</blockquote></div><div class="flex flex-wrap gap-2"><span id="featuredNat" class="bg-purple-600/20 text-purple-300 px-3 py-1 rounded-full text-sm">${spaceWomen[currentWoman].nationality}</span><span id="featuredField" class="bg-blue-600/20 text-blue-300 px-3 py-1 rounded-full text-sm">${spaceWomen[currentWoman].field}</span><span id="featuredBorn" class="bg-green-600/20 text-green-300 px-3 py-1 rounded-full text-sm">Born ${spaceWomen[currentWoman].birthYear}</span></div><button id="learnMore" class="w-full py-3 bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 rounded-xl transition-colors font-semibold">Learn More</button>`;
+
+grid.appendChild(left);
+grid.appendChild(right);
+wrapper.appendChild(grid);
+root.appendChild(wrapper);
+
+// controls
+document.getElementById('prevWoman').addEventListener('click', () => { prevWoman(); });
+document.getElementById('nextWoman').addEventListener('click', () => { nextWoman(); });
+document.getElementById('speakBtn').addEventListener('click', () => { speakCurrent(); });
+document.getElementById('learnMore').addEventListener('click', () => { openModal(spaceWomen[currentWoman]); });
+}
+
+function renderAllGrid() {
+  const root = document.getElementById('allWomen');
+  root.innerHTML = '';
+  const heading = document.createElement('h3');
+  heading.className = 'text-2xl font-bold text-white mb-6';
+  heading.textContent = 'All Space Pioneers';
+  root.appendChild(heading);
+
+  const grid = document.createElement('div');
+  grid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
+
+  spaceWomen.forEach((w, idx) => {
+    const card = document.createElement('div');
+    card.className = 'bg-gray-900/60 backdrop-blur-md rounded-2xl p-6 border cursor-pointer transition-all';
+    card.tabIndex = 0;
+    card.innerHTML = `<div class="flex items-start space-x-4 mb-4"><img src="${w.image}" alt="${w.name}" class="w-16 h-16 object-cover rounded-full" /><div class="flex-1"><h4 class="text-lg font-semibold text-white mb-1">${w.name}</h4><p class="text-sm text-purple-300 mb-2">${w.title}</p><p class="text-xs text-gray-400">${w.nationality} • ${w.birthYear}</p></div></div><p class="text-gray-400 text-sm line-clamp-2 mb-4">${w.achievement}</p><div class="flex items-center justify-between"><div class="flex space-x-1"></div><span class="text-xs text-gray-500">${w.missions.length} mission${w.missions.length !== 1 ? 's' : ''}</span></div>`;
+    card.addEventListener('click', () => openModal(w));
+    card.addEventListener('keydown', (e) => { if (e.key === 'Enter') openModal(w); });
+    grid.appendChild(card);
+  });
+
+  root.appendChild(grid);
+}
+
+function prevWoman() { currentWoman = (currentWoman - 1 + spaceWomen.length) % spaceWomen.length; updateFeatured(); }
+function nextWoman() { currentWoman = (currentWoman + 1) % spaceWomen.length; updateFeatured(); }
+
+function updateFeatured() {
+  document.getElementById('featuredImg').src = spaceWomen[currentWoman].image;
+  document.getElementById('featuredImg').alt = spaceWomen[currentWoman].name;
+  document.getElementById('featuredName').textContent = spaceWomen[currentWoman].name;
+  document.getElementById('featuredTitle').textContent = spaceWomen[currentWoman].title;
+  document.getElementById('featuredAchievement').textContent = spaceWomen[currentWoman].achievement;
+  document.getElementById('featuredQuote').textContent = spaceWomen[currentWoman].quote;
+  document.getElementById('featuredNat').textContent = spaceWomen[currentWoman].nationality;
+  document.getElementById('featuredField').textContent = spaceWomen[currentWoman].field;
+  document.getElementById('featuredBorn').textContent = 'Born ' + spaceWomen[currentWoman].birthYear;
+}
+
+function speakCurrent() {
+  const s = spaceWomen[currentWoman];
+  const text = `${s.name}: ${s.achievement}. ${s.quote}`;
+  if ('speechSynthesis' in window) {
+    const u = new SpeechSynthesisUtterance(text);
+    speechSynthesis.speak(u);
+  } else {
+    alert(text);
+  }
+}
+
+function openModal(woman) {
+  selectedWoman = woman;
+  const modal = document.getElementById('womanModal');
+  const content = document.getElementById('womanModalContent');
+  content.innerHTML = '';
+
+  const grid = document.createElement('div');
+  grid.className = 'grid grid-cols-1 lg:grid-cols-2 gap-8';
+
+  const left = document.createElement('div');
+  left.innerHTML = `<img src="${woman.image}" alt="${woman.name}" class="w-full h-80 object-cover rounded-2xl mb-6" />`;
+  const leftExtras = document.createElement('div');
+  leftExtras.className = 'space-y-4';
+  leftExtras.innerHTML = `<div><h4 class="font-semibold text-purple-300 mb-2">Missions</h4><div class="space-y-2">${woman.missions.map(m => `<div class="flex items-center space-x-2"><svg class="w-4 h-4 text-blue-400"><!-- icon --></svg><span class="text-gray-300 text-sm">${m}</span></div>`).join('')}</div></div><div><h4 class="font-semibold text-yellow-300 mb-2">Historic Firsts</h4><div class="space-y-2">${woman.firsts.map(f => `<div class="flex items-center space-x-2"><svg class="w-4 h-4 text-yellow-400"></svg><span class="text-gray-300 text-sm">${f}</span></div>`).join('')}</div></div>`;
+  left.appendChild(leftExtras);
+
+  const right = document.createElement('div');
+  right.className = 'space-y-6';
+  right.innerHTML = `<div class="flex items-start justify-between"><div><h2 class="text-3xl font-bold text-white mb-2">${woman.name}</h2><p class="text-xl text-purple-300 mb-4">${woman.title}</p></div><button id="modalSpeak" class="p-2 bg-blue-600/20 hover:bg-blue-600/30 rounded-lg">🔊</button></div><div class="bg-white/5 rounded-xl p-4"><h4 class="font-semibold text-green-300 mb-2">Achievement</h4><p class="text-gray-300 text-sm">${woman.achievement}</p></div><div><h4 class="font-semibold text-blue-300 mb-2">Biography</h4><p class="text-gray-300 leading-relaxed text-sm">${woman.biography}</p></div><div class="bg-purple-600/10 border border-purple-500/30 rounded-xl p-4"><div class="text-3xl text-purple-400 mb-2">"</div><blockquote class="text-white italic leading-relaxed">${woman.quote}</blockquote></div><div class="flex flex-wrap gap-2"><span class="bg-purple-600/20 text-purple-300 px-3 py-1 rounded-full text-sm">${woman.nationality}</span><span class="bg-blue-600/20 text-blue-300 px-3 py-1 rounded-full text-sm">${woman.field}</span><span class="bg-green-600/20 text-green-300 px-3 py-1 rounded-full text-sm">Born ${woman.birthYear}</span></div><button id="closeModal" class="w-full py-3 bg-red-600/20 hover:bg-red-600/30 text-red-300 rounded-xl transition-colors">Close</button>`;
+
+  grid.appendChild(left);
+  grid.appendChild(right);
+  content.appendChild(grid);
+
+  modal.classList.remove('hidden');
+  modal.focus();
+
+  document.getElementById('closeModal').addEventListener('click', closeModal);
+  document.getElementById('modalSpeak').addEventListener('click', () => {
+    if ('speechSynthesis' in window) {
+      const u = new SpeechSynthesisUtterance(`${woman.name}: ${woman.biography}`);
+      speechSynthesis.speak(u);
+    }
+  });
+}
+
+function closeModal() {
+  const modal = document.getElementById('womanModal');
+  modal.classList.add('hidden');
+  selectedWoman = null;
+}
+
+function startAutoRotate() {
+  if (autoRotateInterval) clearInterval(autoRotateInterval);
+  autoRotateInterval = setInterval(() => { nextWoman(); }, 10000);
+}
+
+function stopAutoRotate() {
+  if (autoRotateInterval) clearInterval(autoRotateInterval);
+}
+
+// init
+renderFeatured();
+renderAllGrid();
+startAutoRotate();
+
+// stop on visibility change (nice to have)
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) stopAutoRotate(); else startAutoRotate();
+});
+
+</script>
+
+{% endblock %}

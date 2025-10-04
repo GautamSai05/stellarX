@@ -48,6 +48,14 @@ def photogallery(request):
     """Render the photo gallery page."""
     return render(request, 'home/photogallery.html')
 
+def whatif(request):
+    """Render the What-If Simulator page."""
+    return render(request, 'home/whatif.html')
+
+def women_in_space(request):
+    """Render the Women in Space spotlight page."""
+    return render(request, 'home/women_in_space.html')
+
 def signup_view(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
