@@ -66,7 +66,8 @@
             <div id="chat-window" class="p-4 h-96 overflow-y-auto space-y-4 text-white">
                 <div class="border border-white/20 p-3 rounded-xl w-fit max-w-xs">
                     <p class="text-sm">Hi! Ask me what happened on a date like <span class="text-[#38bdf8]">April 1</span> 🌌</p>
-                    <p class="text-xs text-gray-400 mt-2">💫 Ask about <span class="text-[#38bdf8]">space weather, auroras, solar flares</span> for special insights!</p>
+                    <p class="text-xs text-gray-400 mt-2">📅 <span class="text-[#38bdf8]">Date queries</span> → Historical events</p>
+                    <p class="text-xs text-gray-400">💬 <span class="text-[#38bdf8]">Other questions</span> → AI Assistant</p>
                 </div>
             </div>
 
@@ -156,7 +157,7 @@
             
             // Determine source badge
             const sourceBadge = data.source === 'n8n' 
-                ? '<span class="inline-block text-xs bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full mb-1">🌌 Space Weather AI</span><br>' 
+                ? '<span class="inline-block text-xs bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full mb-1">🤖 AI Assistant</span><br>' 
                 : '<span class="inline-block text-xs bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded-full mb-1">🔭 Astronomical Events</span><br>';
             
             // Animate text appearance with typewriter effect
@@ -265,7 +266,7 @@
             
             // Determine source badge
             const sourceBadge = data.source === 'n8n' 
-                ? '<span class="inline-block text-xs bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full mb-1">🌌 Space Weather AI</span><br>' 
+                ? '<span class="inline-block text-xs bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full mb-1">🤖 AI Assistant</span><br>' 
                 : '<span class="inline-block text-xs bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded-full mb-1">🔭 Astronomical Events</span><br>';
             
             botBubble.innerHTML = sourceBadge + `<p class="text-sm whitespace-pre-line">${data.description}</p>`;
