@@ -14,8 +14,9 @@ load_dotenv()
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 gemini_model = genai.GenerativeModel("models/gemini-2.5-flash")
 
-# n8n webhook URL
+# n8n webhook URLs
 N8N_WEBHOOK_URL = "https://sample18102.app.n8n.cloud/webhook/6a7a1a2f-2d23-4780-bb5a-9b38413507b3/chat"
+N8N_GENERAL_WEBHOOK_URL = "https://sample18102.app.n8n.cloud/webhook-test/908356a2-02e0-4050-b891-46eb1dd3c4fe"
 
 def is_astrology_query(user_input):
     """
@@ -80,16 +81,6 @@ def calendar_chatbot(request):
         if not user_message:
             return JsonResponse({"description": "❌ Please enter a message."})
 
-        # Check if this is an astrology-related query
-        if is_astrology_query(user_message):
-            # Route to n8n webhook for astrology queries
-            session_id = request.session.session_key or "calendar_chat"
-            reply = query_n8n_webhook(user_message, session_id)
-            return JsonResponse({
-                "description": reply,
-                "source": "n8n"
-            })
-        
         # Try to parse as a date for historical astronomical events
         try:
             parsed_date = parse(user_message).date()
@@ -98,21 +89,56 @@ def calendar_chatbot(request):
             is_date = False
 
         if is_date:
-            # Query Gemini API for historical astronomical events on this date
+            # Date query - Query Gemini API for historical astronomical events on this date
             prompt = f"Search for notable astronomical, astrophysical, or space-related historical events that occurred on {user_message}, ignoring the year. These can include celestial discoveries, spacecraft launches, astronaut milestones, telescope deployments, or landmark scientific findings. Present each event as a short, engaging story suitable for astronomy enthusiasts visiting a homepage. Be educational, accurate, and use a touch of creativity. If nothing important happened, state it clearly but positively."
+            
+            try:
+                response = gemini_model.generate_content(prompt)
+                reply = response.text.strip() if response.text else "No information available from Gemini API."
+                return JsonResponse({
+                    "description": reply,
+                    "source": "gemini"
+                })
+            except Exception as e:
+                return JsonResponse({"description": f"❌ Gemini API Error: {e}"})
         else:
-            # General astronomy query - use Gemini
-            prompt = user_message
-        
-        try:
-            response = gemini_model.generate_content(prompt)
-            reply = response.text.strip() if response.text else "No information available from Gemini API."
-            return JsonResponse({
-                "description": reply,
-                "source": "gemini"
-            })
-        except Exception as e:
-            return JsonResponse({"description": f"❌ Gemini API Error: {e}"})
+            # Non-date query - Route to n8n webhook
+            try:
+                payload = {
+                    "chatInput": user_message
+                }
+                
+                response = requests.post(
+                    N8N_GENERAL_WEBHOOK_URL,
+                    json=payload,
+                    timeout=30
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    # Extract the response from n8n webhook
+                    if isinstance(data, dict):
+                        reply = data.get('output', data.get('text', data.get('response', str(data))))
+                    else:
+                        reply = str(data)
+                else:
+                    reply = f"❌ n8n webhook returned status code: {response.status_code}"
+                
+                return JsonResponse({
+                    "description": reply,
+                    "source": "n8n"
+                })
+                
+            except requests.Timeout:
+                return JsonResponse({
+                    "description": "❌ Request to n8n webhook timed out. Please try again.",
+                    "source": "n8n"
+                })
+            except Exception as e:
+                return JsonResponse({
+                    "description": f"❌ Error connecting to n8n webhook: {str(e)}",
+                    "source": "n8n"
+                })
 
     return render(request, 'calender/calender.html', {
         'GEMINI_API_KEY': os.getenv('GEMINI_API_KEY')  # optional
