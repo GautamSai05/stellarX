@@ -65,15 +65,15 @@
             <!-- Chat Window -->
             <div id="chat-window" class="p-4 h-96 overflow-y-auto space-y-4 text-white">
                 <div class="border border-white/20 p-3 rounded-xl w-fit max-w-xs">
-                    <p class="text-sm">Hi! Ask me what happened on a date like <span class="text-[#38bdf8]">April 1</span> 🌌</p>
-                    <p class="text-xs text-gray-400 mt-2">💫 Ask about <span class="text-[#38bdf8]">space weather, auroras, solar flares</span> for special insights!</p>
+                    <p class="text-sm">Hi! I'm your Space Weather AI assistant 🌌</p>
+                    <p class="text-xs text-gray-400 mt-2">💫 Ask me about <span class="text-[#38bdf8]">space weather, auroras, solar flares</span>, or click any date!</p>
                 </div>
             </div>
 
             <!-- Input -->
             <form id="chat-form" class="flex border-t border-white/20 p-3">
                 {% csrf_token %}
-                <input type="text" id="chat-input" placeholder="Ask about April 1, 2024..." class="flex-grow bg-transparent border border-white/20 text-white placeholder-gray-400 px-4 py-2 rounded-l-xl focus:outline-none focus:ring-1 focus:ring-white" />
+                <input type="text" id="chat-input" placeholder="Ask about space weather or any date..." class="flex-grow bg-transparent border border-white/20 text-white placeholder-gray-400 px-4 py-2 rounded-l-xl focus:outline-none focus:ring-1 focus:ring-white" />
                 <button type="submit" class="bg-white text-black hover:bg-black hover:text-white hover:border hover:border-white px-4 py-2 rounded-r-xl font-semibold transition-all duration-300">Send</button>
             </form>
         </div>
@@ -81,32 +81,7 @@
 </div>
 
 <script>
-    const GEMINI_API_KEY = "{{ GEMINI_API_KEY }}";
-    const endpoint = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent";
-
-    async function fetchGeminiReply(prompt) {
-        try {
-            const response = await fetch(`${endpoint}?key=${GEMINI_API_KEY}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }]
-                })
-            });
-
-            const data = await response.json();
-            if (data?.candidates?.length > 0) {
-                return data.candidates[0].content.parts[0].text;
-            } else {
-                return "No event found. Try another date or ask differently.";
-            }
-        } catch (error) {
-            console.error("Gemini API Error:", error);
-            return `❌ Gemini API Error: ${error.message}`;
-        }
-    }
-
-    // Original chatbot functionality
+    // Chatbot functionality
     const chatForm = document.getElementById("chat-form");
     const chatInput = document.getElementById("chat-input");
     const chatWindow = document.getElementById("chat-window");
@@ -142,7 +117,7 @@
         chatWindow.scrollTop = chatWindow.scrollHeight;
 
         try {
-            // Send to Django backend which will route to appropriate service
+            // Send to Django backend which routes to n8n
             const response = await fetch("", {
                 method: "POST",
                 headers: {
@@ -154,13 +129,8 @@
 
             const data = await response.json();
             
-            // Determine source badge
-            const sourceBadge = data.source === 'n8n' 
-                ? '<span class="inline-block text-xs bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full mb-1">🌌 Space Weather AI</span><br>' 
-                : '<span class="inline-block text-xs bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded-full mb-1">🔭 Astronomical Events</span><br>';
-            
-            // Animate text appearance with typewriter effect
-            botBubble.innerHTML = sourceBadge + `<p class="text-sm whitespace-pre-line typing-text">${data.description}</p>`;
+            // Display response with smooth animation
+            botBubble.innerHTML = `<p class="text-sm whitespace-pre-line typing-text">${data.description}</p>`;
             
             // Add smooth fade-in animation
             botBubble.style.opacity = '0';
@@ -251,7 +221,7 @@
         chatWindow.scrollTop = chatWindow.scrollHeight;
 
         try {
-            // Send date to Django backend
+            // Send date to Django backend which routes to n8n
             const response = await fetch("", {
                 method: "POST",
                 headers: {
@@ -263,12 +233,8 @@
 
             const data = await response.json();
             
-            // Determine source badge
-            const sourceBadge = data.source === 'n8n' 
-                ? '<span class="inline-block text-xs bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full mb-1">🌌 Space Weather AI</span><br>' 
-                : '<span class="inline-block text-xs bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded-full mb-1">🔭 Astronomical Events</span><br>';
-            
-            botBubble.innerHTML = sourceBadge + `<p class="text-sm whitespace-pre-line">${data.description}</p>`;
+            // Display response with smooth animation
+            botBubble.innerHTML = `<p class="text-sm whitespace-pre-line">${data.description}</p>`;
             
             // Add smooth fade-in animation
             botBubble.style.opacity = '0';

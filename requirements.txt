@@ -7,6 +7,5 @@ django-widget-tweaks>=1.4.12
 whitenoise
 python-dotenv
 python-dateutil
-google-generativeai
 razorpay
 requests>=2.31.0
