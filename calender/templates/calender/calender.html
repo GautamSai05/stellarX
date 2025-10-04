@@ -111,6 +111,21 @@
     const chatWindow = document.getElementById("chat-window");
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
+    function typeIntoElement(element, fullText) {
+        element.innerHTML = "";
+        let i = 0;
+        const interval = 15; // ms per char
+        return new Promise(resolve => {
+            const timer = setInterval(() => {
+                element.innerHTML = fullText.slice(0, i++);
+                if (i > fullText.length) {
+                    clearInterval(timer);
+                    resolve();
+                }
+            }, interval);
+        });
+    }
+
     chatForm.addEventListener("submit", async function (e) {
         e.preventDefault();
         const userMsg = chatInput.value.trim();
@@ -132,26 +147,27 @@
         chatWindow.scrollTop = chatWindow.scrollHeight;
 
         try {
-            const isDate = /\d{1,2}[\/\- ]\d{1,2}[\/\- ]\d{2,4}|(january|february|march|april|may|june|july|august|september|october|november|december)/i.test(userMsg);
+            const isDate = /\b(\d{1,2}[\/\- ]\d{1,2}([\/\- ]\d{2,4})?)\b|\b(january|february|march|april|may|june|july|august|september|october|november|december)\b/i.test(userMsg);
 
-            if (isDate) {
-                // Send date to Django backend, which will then query Gemini
-                const response = await fetch("", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded",
-                        "X-CSRFToken": csrfToken
-                    },
-                    body: `date=${userMsg}`
-                });
+            // Decide payload key: date for calendar queries, message for astrology/freeform
+            const body = isDate ? `date=${encodeURIComponent(userMsg)}` : `message=${encodeURIComponent(userMsg)}`;
 
-                const data = await response.json();
-                botBubble.innerHTML = `<p class="text-sm whitespace-pre-line">${data.description}</p>`;
-            } else {
-                // Freeform Gemini response for non-date queries
-                const reply = await fetchGeminiReply(userMsg);
-                botBubble.innerHTML = `<p class="text-sm whitespace-pre-line">${reply}</p>`;
-            }
+            const response = await fetch("", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": csrfToken
+                },
+                body
+            });
+
+            const data = await response.json();
+            const text = (data && data.description) ? String(data.description) : "No response.";
+            const p = document.createElement('p');
+            p.className = 'text-sm whitespace-pre-line';
+            botBubble.innerHTML = "";
+            botBubble.appendChild(p);
+            await typeIntoElement(p, text);
         } catch (err) {
             botBubble.innerHTML = `<p class="text-sm text-red-400">⚠️ ${err.message}</p>`;
         }
@@ -231,11 +247,16 @@
                     "Content-Type": "application/x-www-form-urlencoded",
                     "X-CSRFToken": csrfToken
                 },
-                body: `date=${dateString}`
+                body: `date=${encodeURIComponent(dateString)}`
             });
 
             const data = await response.json();
-            botBubble.innerHTML = `<p class="text-sm whitespace-pre-line">${data.description}</p>`;
+            const text = (data && data.description) ? String(data.description) : "No response.";
+            const p = document.createElement('p');
+            p.className = 'text-sm whitespace-pre-line';
+            botBubble.innerHTML = "";
+            botBubble.appendChild(p);
+            await typeIntoElement(p, text);
         } catch (err) {
             botBubble.innerHTML = `<p class="text-sm text-red-400">⚠️ ${err.message}</p>`;
         }
