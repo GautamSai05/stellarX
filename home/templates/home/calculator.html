@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+{% block title %}Calculator - StellarSense{% endblock %}
+
+{% block content %}
+<div class="pt-8">
+  <div class="container mx-auto p-4 min-h-screen">
+    <div class="mb-8">
+      <h2 class="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-2">Astronomical Calculator Tools</h2>
+      <p class="text-gray-400">Calculate your age, weight, and distances across the cosmos</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="space-y-4">
+        <h3 class="text-xl font-semibold text-white mb-4">Choose Calculator</h3>
+        <div id="calc-list" class="space-y-3"></div>
+      </div>
+
+      <div class="lg:col-span-2">
+        <div class="bg-gray-900/60 backdrop-blur-md rounded-2xl p-8 border border-white/10">
+          <div id="calc-header" class="flex items-center space-x-3 mb-6"></div>
+
+          <div id="calc-body"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_body_content %}
+<script>
+(function(){
+  const calculators = [
+    { id: 'age', title: 'Age on Other Planets', description: 'Calculate how old you would be on different planets', color: 'blue' },
+    { id: 'weight', title: 'Weight on Moon/Mars', description: 'Find out how much you would weigh on other celestial bodies', color: 'green' },
+    { id: 'light', title: 'Light Travel Time', description: 'Calculate how long light takes to travel between celestial objects', color: 'yellow' },
+    { id: 'distance', title: 'Space Distance Converter', description: 'Convert between different astronomical distance units', color: 'purple' }
+  ];
+
+  const planets = [
+    { name: 'Mercury', yearLength: 0.24, gravity: 0.378 },
+    { name: 'Venus', yearLength: 0.62, gravity: 0.907 },
+    { name: 'Earth', yearLength: 1.0, gravity: 1.0 },
+    { name: 'Mars', yearLength: 1.88, gravity: 0.377 },
+    { name: 'Jupiter', yearLength: 11.86, gravity: 2.36 },
+    { name: 'Saturn', yearLength: 29.46, gravity: 0.916 },
+    { name: 'Uranus', yearLength: 84.01, gravity: 0.889 },
+    { name: 'Neptune', yearLength: 164.8, gravity: 1.13 }
+  ];
+
+  const celestialBodies = [
+    { name: 'Moon', gravity: 0.166 },
+    { name: 'Mars', gravity: 0.377 },
+    { name: 'Jupiter', gravity: 2.36 },
+    { name: 'Sun', gravity: 27.01 },
+    { name: 'Pluto', gravity: 0.071 }
+  ];
+
+  const lightDistances = [
+    { name: 'Earth to Moon', distance: 1.28, unit: 'light-seconds' },
+    { name: 'Earth to Sun', distance: 8.32, unit: 'light-minutes' },
+    { name: 'Sun to Mars', distance: 12.67, unit: 'light-minutes' },
+    { name: 'Sun to Jupiter', distance: 43.27, unit: 'light-minutes' },
+    { name: 'Sun to Pluto', distance: 5.5, unit: 'light-hours' },
+    { name: 'Sun to Proxima Centauri', distance: 4.24, unit: 'light-years' }
+  ];
+
+  let activeCalculator = 'age';
+  const inputs = { age: '', weight: '', distance: '', lightYears: '' };
+  let results = {};
+
+  function getColorClasses(color){
+    switch(color){
+      case 'blue': return 'bg-blue-600/20 text-blue-300 border-blue-500/30';
+      case 'green': return 'bg-green-600/20 text-green-300 border-green-500/30';
+      case 'yellow': return 'bg-yellow-600/20 text-yellow-300 border-yellow-500/30';
+      case 'purple': return 'bg-purple-600/20 text-purple-300 border-purple-500/30';
+      default: return 'bg-gray-600/20 text-gray-300 border-gray-500/30';
+    }
+  }
+
+  function calculateAge(earthAge){
+    return planets.map(p => ({...p, age: Math.floor(earthAge / p.yearLength)}));
+  }
+  function calculateWeight(earthWeight){
+    return celestialBodies.map(b => ({...b, weight: Math.round(earthWeight * b.gravity * 100)/100}));
+  }
+  function calculateLightTravel(distance, unit){
+    const lightSpeed = 299792458; // m/s
+    let distanceInMeters = 0;
+    switch(unit){
+      case 'km': distanceInMeters = distance*1000; break;
+      case 'au': distanceInMeters = distance*149597870700; break;
+      case 'ly': distanceInMeters = distance*9.461e15; break;
+      default: distanceInMeters = distance;
+    }
+    const timeInSeconds = distanceInMeters / lightSpeed;
+    return { seconds: timeInSeconds, minutes: timeInSeconds/60, hours: timeInSeconds/3600, days: timeInSeconds/86400, years: timeInSeconds/(365.25*86400) };
+  }
+  function convertDistance(distance, fromUnit){
+    let meters = 0;
+    switch(fromUnit){
+      case 'km': meters = distance*1000; break;
+      case 'au': meters = distance*149597870700; break;
+      case 'ly': meters = distance*9.461e15; break;
+      case 'pc': meters = distance*3.086e16; break;
+    }
+    return { km: meters/1000, au: meters/149597870700, ly: meters/9.461e15, pc: meters/3.086e16 };
+  }
+
+  function handleCalculate(){
+    results = {};
+    switch(activeCalculator){
+      case 'age': if(inputs.age) results.ages = calculateAge(parseFloat(inputs.age)); break;
+      case 'weight': if(inputs.weight) results.weights = calculateWeight(parseFloat(inputs.weight)); break;
+      case 'light': if(inputs.distance) results.lightTravel = calculateLightTravel(parseFloat(inputs.distance),'km'); break;
+      case 'distance': if(inputs.lightYears) results.distances = convertDistance(parseFloat(inputs.lightYears),'ly'); break;
+    }
+    renderBody();
+  }
+
+  function setActive(id){ activeCalculator = id; results = {}; renderHeader(); renderBody(); highlightList(); }
+
+  function highlightList(){
+    document.querySelectorAll('#calc-list button').forEach(btn => btn.classList.remove('ring-2','ring-white/20'));
+    const el = document.querySelector('#calc-list button[data-id="'+activeCalculator+'"]');
+    if(el) el.classList.add('ring-2','ring-white/20');
+  }
+
+  function renderList(){
+    const list = document.getElementById('calc-list'); list.innerHTML = '';
+    calculators.forEach(calc=>{
+      const btn = document.createElement('button');
+      btn.type='button'; btn.dataset.id = calc.id;
+      btn.className = `w-full p-4 rounded-xl border transition-all text-left ${activeCalculator===calc.id?getColorClasses(calc.color):'bg-white/5 border-white/10 hover:bg-white/10 text-gray-300'}`;
+      btn.innerHTML = `<div class="flex items-start space-x-3"><div class="p-2 bg-black/10 rounded-lg">🔭</div><div><h4 class="font-semibold mb-1">${calc.title}</h4><p class="text-sm opacity-80">${calc.description}</p></div></div>`;
+      btn.addEventListener('click',()=>setActive(calc.id));
+      list.appendChild(btn);
+    });
+    highlightList();
+  }
+
+  function renderHeader(){
+    const header = document.getElementById('calc-header'); header.innerHTML = '';
+    const calc = calculators.find(c=>c.id===activeCalculator);
+    header.innerHTML = `<div class="p-2 bg-black/10 rounded-lg">🔢</div><h3 class="text-xl font-bold text-white">${calc.title}</h3>`;
+  }
+
+  function renderBody(){
+    const body = document.getElementById('calc-body'); body.innerHTML = '';
+    if(activeCalculator==='age'){
+      body.appendChild(createAgeUI());
+    }else if(activeCalculator==='weight'){
+      body.appendChild(createWeightUI());
+    }else if(activeCalculator==='light'){
+      body.appendChild(createLightUI());
+    }else if(activeCalculator==='distance'){
+      body.appendChild(createDistanceUI());
+    }
+  }
+
+  function createAgeUI(){
+    const wrap = document.createElement('div'); wrap.className='space-y-6';
+    const inputWrap = document.createElement('div');
+    inputWrap.innerHTML = `<label class="block text-white font-semibold mb-2">Your Age (in Earth years)</label>`;
+    const input = document.createElement('input'); input.type='number'; input.className='w-full px-4 py-3 bg-black/20 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none';
+    input.value = inputs.age; input.addEventListener('input',(e)=>{ inputs.age = e.target.value; });
+    inputWrap.appendChild(input);
+    const btn = document.createElement('button'); btn.type='button'; btn.className='w-full py-3 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 rounded-xl transition-colors font-semibold'; btn.textContent='Calculate Ages'; btn.addEventListener('click',handleCalculate);
+    wrap.appendChild(inputWrap); wrap.appendChild(btn);
+
+    if(results.ages){
+      const grid = document.createElement('div'); grid.className='grid grid-cols-2 md:grid-cols-4 gap-4 mt-4';
+      results.ages.forEach(p=>{
+        const card = document.createElement('div'); card.className='bg-white/5 rounded-xl p-4 text-center';
+        card.innerHTML = `<div class="text-2xl font-bold text-white">${p.age}</div><div class="text-sm text-gray-400">${p.name}</div><div class="text-xs text-gray-500">years old</div>`;
+        grid.appendChild(card);
+      });
+      wrap.appendChild(grid);
+    }
+    return wrap;
+  }
+
+  function createWeightUI(){
+    const wrap = document.createElement('div'); wrap.className='space-y-6';
+    const inputWrap = document.createElement('div');
+    inputWrap.innerHTML = `<label class="block text-white font-semibold mb-2">Your Weight (in kg)</label>`;
+    const input = document.createElement('input'); input.type='number'; input.className='w-full px-4 py-3 bg-black/20 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none';
+    input.value = inputs.weight; input.addEventListener('input',(e)=>{ inputs.weight = e.target.value; });
+    inputWrap.appendChild(input);
+    const btn = document.createElement('button'); btn.type='button'; btn.className='w-full py-3 bg-green-600/20 hover:bg-green-600/30 text-green-300 rounded-xl transition-colors font-semibold'; btn.textContent='Calculate Weights'; btn.addEventListener('click',handleCalculate);
+    wrap.appendChild(inputWrap); wrap.appendChild(btn);
+
+    if(results.weights){
+      const grid = document.createElement('div'); grid.className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-4';
+      results.weights.forEach(b=>{
+        const card = document.createElement('div'); card.className='bg-white/5 rounded-xl p-4 flex items-center justify-between';
+        card.innerHTML = `<div><div class="font-semibold text-white">${b.name}</div><div class="text-sm text-gray-400">Gravity: ${b.gravity}g</div></div><div class="text-right"><div class="text-xl font-bold text-white">${b.weight}</div><div class="text-sm text-gray-400">kg</div></div>`;
+        grid.appendChild(card);
+      });
+      wrap.appendChild(grid);
+    }
+    return wrap;
+  }
+
+  function createLightUI(){
+    const wrap = document.createElement('div'); wrap.className='space-y-6';
+    const inputWrap = document.createElement('div');
+    inputWrap.innerHTML = `<label class="block text-white font-semibold mb-2">Distance (in kilometers)</label>`;
+    const input = document.createElement('input'); input.type='number'; input.className='w-full px-4 py-3 bg-black/20 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none';
+    input.value = inputs.distance; input.addEventListener('input',(e)=>{ inputs.distance = e.target.value; });
+    inputWrap.appendChild(input);
+    const btn = document.createElement('button'); btn.type='button'; btn.className='w-full py-3 bg-yellow-600/20 hover:bg-yellow-600/30 text-yellow-300 rounded-xl transition-colors font-semibold'; btn.textContent='Calculate Light Travel Time'; btn.addEventListener('click',handleCalculate);
+    wrap.appendChild(inputWrap); wrap.appendChild(btn);
+
+    if(results.lightTravel){
+      const grid = document.createElement('div'); grid.className='grid grid-cols-2 md:grid-cols-3 gap-4 mt-4';
+      const secCard = document.createElement('div'); secCard.className='bg-white/5 rounded-xl p-4 text-center'; secCard.innerHTML = `<div class="text-lg font-bold text-white">${results.lightTravel.seconds.toFixed(2)}</div><div class="text-sm text-gray-400">Seconds</div>`;
+      const minCard = document.createElement('div'); minCard.className='bg-white/5 rounded-xl p-4 text-center'; minCard.innerHTML = `<div class="text-lg font-bold text-white">${results.lightTravel.minutes.toFixed(2)}</div><div class="text-sm text-gray-400">Minutes</div>`;
+      const hrCard = document.createElement('div'); hrCard.className='bg-white/5 rounded-xl p-4 text-center'; hrCard.innerHTML = `<div class="text-lg font-bold text-white">${results.lightTravel.hours.toFixed(2)}</div><div class="text-sm text-gray-400">Hours</div>`;
+      grid.appendChild(secCard); grid.appendChild(minCard); grid.appendChild(hrCard);
+      wrap.appendChild(grid);
+
+      const common = document.createElement('div'); common.className='bg-blue-600/10 border border-blue-500/30 rounded-xl p-4 mt-4'; common.innerHTML = '<h4 class="font-semibold text-blue-300 mb-2">Common Light Travel Times</h4>';
+      lightDistances.forEach(item=>{ const row = document.createElement('div'); row.className='flex justify-between text-sm'; row.innerHTML = `<span class="text-gray-300">${item.name}</span><span class="text-blue-300">${item.distance} ${item.unit}</span>`; common.appendChild(row); });
+      wrap.appendChild(common);
+    }
+    return wrap;
+  }
+
+  function createDistanceUI(){
+    const wrap = document.createElement('div'); wrap.className='space-y-6';
+    const inputWrap = document.createElement('div');
+    inputWrap.innerHTML = `<label class="block text-white font-semibold mb-2">Distance (in light-years)</label>`;
+    const input = document.createElement('input'); input.type='number'; input.className='w-full px-4 py-3 bg-black/20 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none';
+    input.value = inputs.lightYears; input.addEventListener('input',(e)=>{ inputs.lightYears = e.target.value; });
+    inputWrap.appendChild(input);
+    const btn = document.createElement('button'); btn.type='button'; btn.className='w-full py-3 bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 rounded-xl transition-colors font-semibold'; btn.textContent='Convert Distance'; btn.addEventListener('click',handleCalculate);
+    wrap.appendChild(inputWrap); wrap.appendChild(btn);
+
+    if(results.distances){
+      const grid = document.createElement('div'); grid.className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-4';
+      const km = document.createElement('div'); km.className='bg-white/5 rounded-xl p-4'; km.innerHTML = `<div class="font-semibold text-white mb-1">Kilometers</div><div class="text-lg text-purple-300">${results.distances.km.toExponential(2)}</div>`;
+      const au = document.createElement('div'); au.className='bg-white/5 rounded-xl p-4'; au.innerHTML = `<div class="font-semibold text-white mb-1">Astronomical Units</div><div class="text-lg text-purple-300">${results.distances.au.toFixed(2)}</div>`;
+      const ly = document.createElement('div'); ly.className='bg-white/5 rounded-xl p-4'; ly.innerHTML = `<div class="font-semibold text-white mb-1">Light-years</div><div class="text-lg text-purple-300">${results.distances.ly.toFixed(2)}</div>`;
+      const pc = document.createElement('div'); pc.className='bg-white/5 rounded-xl p-4'; pc.innerHTML = `<div class="font-semibold text-white mb-1">Parsecs</div><div class="text-lg text-purple-300">${results.distances.pc.toFixed(2)}</div>`;
+      grid.appendChild(km); grid.appendChild(au); grid.appendChild(ly); grid.appendChild(pc);
+      wrap.appendChild(grid);
+    }
+    return wrap;
+  }
+
+  // initial render
+  renderList(); renderHeader(); renderBody();
+
+})();
+</script>
+{% endblock %}

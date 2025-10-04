@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% block title %}Timeline - StellarSense{% endblock %}
+
+{% block content %}
+<div class="pt-8">
+  <div class="container mx-auto p-4">
+    <h2 class="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-2">Interactive Space Timeline</h2>
+    <p class="text-gray-400 mb-6">Explore major milestones in space exploration history</p>
+
+    <div class="relative h-[70vh]">
+      <div id="timeline-scroll" class="overflow-x-auto h-full pb-4">
+        <div id="timeline-items" class="flex items-center space-x-8 h-full min-w-max px-8"></div>
+      </div>
+
+      <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center space-x-4 text-gray-400">
+        <span style="display:inline-flex;align-items:center;" aria-hidden>◀</span>
+        <span class="text-sm">Scroll horizontally to explore timeline</span>
+        <span style="display:inline-flex;align-items:center;" aria-hidden>▶</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal container -->
+  <div id="timeline-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+    <div id="timeline-modal-inner" class="bg-gray-900/90 backdrop-blur-md rounded-2xl p-8 max-w-2xl w-full max-h-[80vh] overflow-y-auto border border-white/20"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_body_content %}
+<script>
+// Plain JS timeline using the provided data
+const spaceTimelineEvents = [
+  { id: 'sputnik-1', title: 'Sputnik 1 Launch', description: 'The Soviet Union launches Sputnik 1, the first artificial satellite, marking the beginning of the Space Age.', year: 1957, category: 'satellite', image: 'https://media1.s-nbcnews.com/i/msnbc/Components/Slideshows/_production/ss_071004_sputnik50/ss_071004_sputnik50_11.jpg' },
+  { id: 'first-human-space', title: 'First Human in Space', description: 'Yuri Gagarin becomes the first human to orbit Earth aboard Vostok 1, opening the era of human spaceflight.', year: 1961, category: 'mission', image: 'https://healthimaging.com/sites/default/files/styles/top_stories/public/assets/articles/astronaut_space.jpeg.webp?itok=6EqswHYa' },
+  { id: 'apollo-11', title: 'Apollo 11 Moon Landing', description: 'Neil Armstrong and Buzz Aldrin become the first humans to walk on the Moon while Michael Collins orbits above.', year: 1969, category: 'mission', image: 'https://techstartups.com/staging/wp-content/uploads/2021/11/landing-960x581.jpg' },
+  { id: 'voyager-launch', title: 'Voyager Missions Launch', description: 'NASA launches Voyager 1 and 2 to explore the outer solar system, providing unprecedented views of gas giants.', year: 1977, category: 'launch', image: 'https://cdnph.upi.com/sv/ph/og/i/3361660872230/2022/1/16609131884847/v1.5/45-years-after-launch-NASAs-Voyager-probes-still-blazing-trails-billions-of-miles-away.jpg' },
+  { id: 'hubble-launch', title: 'Hubble Space Telescope Launch', description: 'The Hubble Space Telescope is deployed, revolutionizing our understanding of the universe with stunning images.', year: 1990, category: 'satellite', image: 'https://science.nasa.gov/wp-content/uploads/2023/04/hubble-astronaut-missions-atlantislaunch-jpg.webp' },
+  { id: 'iss-construction', title: 'International Space Station', description: 'Construction begins on the International Space Station, creating a permanent human presence in space.', year: 1998, category: 'mission', image: 'https://www.nasa.gov/wp-content/uploads/2023/05/iss065e373746.jpg?w=1536' },
+  { id: 'mars-rovers', title: 'Mars Exploration Rovers', description: 'Spirit and Opportunity rovers land on Mars, beginning extensive geological surveys of the Red Planet.', year: 2004, category: 'mission', image: 'https://www.sciencelearn.org.nz/_next/image?url=https%3A%2F%2Fwww.datocms-assets.com%2F117510%2F1722389708-slh_news34_curiosity_rover_original.jpg%3Fw%3D1840%26h%3D1034.816&w=1920&q=85&dpl=dpl_79jZSFM8Lm7mxFkCz5tGN2qR3WmU' },
+  { id: 'spacex-falcon-heavy', title: 'Falcon Heavy First Flight', description: 'SpaceX successfully launches the Falcon Heavy, demonstrating the future of reusable heavy-lift rockets.', year: 2018, category: 'launch', image: 'https://nss.org/wp-content/uploads/2019/01/falcon-heavy.jpg' },
+  { id: 'james-webb', title: 'James Webb Space Telescope', description: 'NASA launches the James Webb Space Telescope, the most powerful space telescope ever built.', year: 2021, category: 'satellite', image: 'https://images.theconversation.com/files/672021/original/file-20250603-68-pimc7g.jpg?ixlib=rb-4.1.0&q=45&auto=format&w=1000&fit=clip' },
+  { id: 'artemis-1', title: 'Artemis 1 Mission', description: 'NASA launches Artemis 1, an uncrewed test flight around the Moon as part of the return to lunar exploration.', year: 2022, category: 'mission', image: 'https://images.foxweather.com/static.foxweather.com/www.foxweather.com/content/uploads/2022/08/1024/512/Screen-Shot-2022-08-05-at-11.38.40-AM.png?ve=1&tl=1' }
+];
+
+const icons = {
+  launch: '🚀',
+  satellite: '🛰️',
+  mission: '👥'
+};
+
+function createTimelineItem(event){
+  const wrapper = document.createElement('div');
+  wrapper.className = 'flex-shrink-0 w-80';
+
+  const lineWrap = document.createElement('div');
+  lineWrap.className = 'relative mb-8';
+  lineWrap.innerHTML = '<div style="position:absolute;left:50%;transform:translateX(-50%);width:1px;height:128px;background:linear-gradient(to bottom,#3b82f6,#8b5cf6);"></div>'+
+                       '<div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:24px;height:24px;background:#2563eb;border-radius:9999px;border:4px solid rgba(17,24,39,0.9);"></div>';
+
+  const card = document.createElement('div');
+  card.className = 'bg-gray-900/60 backdrop-blur-md rounded-2xl p-6 border border-white/10 cursor-pointer hover:border-blue-500/50 transition-all';
+  card.style.transition = 'transform 0.15s ease, box-shadow 0.15s ease';
+  card.addEventListener('click', () => showModal(event));
+
+  const header = document.createElement('div');
+  header.className = 'flex items-center justify-between mb-4';
+  header.innerHTML = `<div class="flex items-center space-x-3"><div class="p-2 bg-blue-600/20 rounded-lg">${icons[event.category] || '🚀'}</div><span class="text-sm text-gray-400">${event.year}</span></div><span class="text-xs bg-purple-600/20 text-purple-300 px-2 py-1 rounded-full">${event.category}</span>`;
+
+  const title = document.createElement('h3');
+  title.className = 'text-lg font-semibold text-white mb-2';
+  title.textContent = event.title;
+
+  const desc = document.createElement('p');
+  desc.className = 'text-gray-400 text-sm mb-4';
+  desc.textContent = event.description;
+
+  const imgWrap = document.createElement('div');
+  imgWrap.className = 'w-full h-32 bg-gray-800 rounded-lg overflow-hidden';
+  const img = document.createElement('img');
+  img.src = event.image;
+  img.alt = event.title;
+  img.className = 'w-full h-full object-cover';
+  imgWrap.appendChild(img);
+
+  card.appendChild(header);
+  card.appendChild(title);
+  card.appendChild(desc);
+  card.appendChild(imgWrap);
+
+  wrapper.appendChild(lineWrap);
+  wrapper.appendChild(card);
+  return wrapper;
+}
+
+function renderTimeline(){
+  const container = document.getElementById('timeline-items');
+  spaceTimelineEvents.forEach((ev, idx) => {
+    const item = createTimelineItem(ev);
+    item.style.opacity = 0;
+    item.style.transform = 'translateY(40px)';
+    container.appendChild(item);
+    // simple entrance animation
+    setTimeout(() => { item.style.transition = 'opacity 400ms ease, transform 400ms ease'; item.style.opacity = 1; item.style.transform = 'translateY(0)'; }, idx*100);
+  });
+}
+
+function showModal(event){
+  const modal = document.getElementById('timeline-modal');
+  const inner = document.getElementById('timeline-modal-inner');
+  inner.innerHTML = `
+    <div class="mb-6">
+      <img src="${event.image}" alt="${event.title}" class="w-full h-64 object-cover rounded-xl mb-4" />
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-bold text-white">${event.title}</h2>
+        <span class="text-gray-400">${event.year}</span>
+      </div>
+      <p class="text-gray-300 leading-relaxed">${event.description}</p>
+    </div>
+    <div class="flex flex-wrap gap-2 mb-6">
+      <span class="bg-blue-600/20 text-blue-300 px-3 py-1 rounded-full text-sm">${event.category}</span>
+      <span class="bg-purple-600/20 text-purple-300 px-3 py-1 rounded-full text-sm">${event.year}</span>
+    </div>
+    <button id="timeline-close" class="w-full py-3 bg-red-600/20 hover:bg-red-600/30 text-red-300 rounded-lg transition-colors">Close</button>
+  `;
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  document.getElementById('timeline-close').addEventListener('click', hideModal);
+  modal.addEventListener('click', hideModal);
+  document.getElementById('timeline-modal-inner').addEventListener('click', (e)=> e.stopPropagation());
+}
+
+function hideModal(){
+  const modal = document.getElementById('timeline-modal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderTimeline();
+});
+</script>
+{% endblock %}

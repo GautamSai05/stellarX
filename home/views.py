@@ -24,6 +24,14 @@ def home_view(request):
         today_events = AstronomicalEvent.objects.filter(date=date.today())
         return render(request, 'home/home.html', {'logs': logs, 'nasa_api_key': os.getenv('NASA_API_KEY'), 'today_events': today_events})
 
+def timeline(request):
+    """Render the interactive space timeline page."""
+    return render(request, 'home/timeline.html')
+
+def calculator(request):
+    """Render the astronomical calculator tools page."""
+    return render(request, 'home/calculator.html')
+
 def signup_view(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)

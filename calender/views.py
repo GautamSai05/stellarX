@@ -16,7 +16,7 @@ gemini_model = genai.GenerativeModel("models/gemini-2.5-flash")
 
 # n8n webhook URLs
 N8N_WEBHOOK_URL = "https://sample18102.app.n8n.cloud/webhook/6a7a1a2f-2d23-4780-bb5a-9b38413507b3/chat"
-N8N_GENERAL_WEBHOOK_URL = "https://sample18102.app.n8n.cloud/webhook-test/908356a2-02e0-4050-b891-46eb1dd3c4fe"
+N8N_GENERAL_WEBHOOK_URL = "https://sample18102.app.n8n.cloud/webhook/908356a2-02e0-4050-b891-46eb1dd3c4fe"
 
 def is_astrology_query(user_input):
     """
