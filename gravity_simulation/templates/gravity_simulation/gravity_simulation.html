@@ -465,8 +465,11 @@ Particle.prototype = (function(o) {
 
     function mouseMove(e) {
         var rect = canvas.getBoundingClientRect();
-        var x = e.clientX - rect.left;
-        var y = e.clientY - rect.top;
+        // Account for any scaling by using the actual canvas dimensions
+        var scaleX = canvas.width / rect.width;
+        var scaleY = canvas.height / rect.height;
+        var x = (e.clientX - rect.left) * scaleX;
+        var y = (e.clientY - rect.top) * scaleY;
         mouse.set(x, y);
 
         var i, g, hit = false;
@@ -483,8 +486,11 @@ Particle.prototype = (function(o) {
 
     function mouseDown(e) {
         var rect = canvas.getBoundingClientRect();
-        var x = e.clientX - rect.left;
-        var y = e.clientY - rect.top;
+        // Account for any scaling by using the actual canvas dimensions
+        var scaleX = canvas.width / rect.width;
+        var scaleY = canvas.height / rect.height;
+        var x = (e.clientX - rect.left) * scaleX;
+        var y = (e.clientY - rect.top) * scaleY;
         mouse.set(x, y);
 
         for (var i = gravities.length - 1; i >= 0; i--) {
@@ -510,8 +516,11 @@ Particle.prototype = (function(o) {
 
     function doubleClick(e) {
         var rect = canvas.getBoundingClientRect();
-        var x = e.clientX - rect.left;
-        var y = e.clientY - rect.top;
+        // Account for any scaling by using the actual canvas dimensions
+        var scaleX = canvas.width / rect.width;
+        var scaleY = canvas.height / rect.height;
+        var x = (e.clientX - rect.left) * scaleX;
+        var y = (e.clientY - rect.top) * scaleY;
         mouse.set(x, y);
 
         for (var i = gravities.length - 1; i >= 0; i--) {

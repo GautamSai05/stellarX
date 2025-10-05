@@ -149,58 +149,72 @@
   function selectAnswer(choice, btn){
     const q = state.list[state.idx];
     selectedAnswer = choice;
-    // highlight
-    Array.from(answersWrap.children).forEach(ch => ch.classList.remove('ring-2','ring-offset-2','ring-indigo-500'));
-    if (btn) btn.classList.add('ring-2','ring-offset-2','ring-indigo-500');
-    // compute tentative points for this question based on difficulty but don't add yet
+    // disable all answer buttons to prevent multiple selections
+    Array.from(answersWrap.children).forEach(ch => {
+      ch.disabled = true;
+      ch.classList.remove('hover:bg-gray-700');
+    });
+    
+    // compute points for this question based on difficulty
     const perQuestion = (difficultyEl.value === 'hard' ? 20 : difficultyEl.value === 'medium' ? 10 : 5);
     const correct = (choice === q.correct);
     pendingPoints = correct ? perQuestion : 0;
-    // show immediate feedback and the tentative points
+    
+    // highlight selected answer and show correct answer
+    Array.from(answersWrap.children).forEach((ch, idx) => {
+      if (idx === choice) {
+        if (correct) {
+          ch.classList.add('bg-green-600', 'border-green-400');
+        } else {
+          ch.classList.add('bg-red-600', 'border-red-400');
+        }
+      }
+      // always show the correct answer in green
+      if (idx === q.correct && idx !== choice) {
+        ch.classList.add('bg-green-600', 'border-green-400', 'ring-2', 'ring-green-300');
+      }
+    });
+    
+    // show immediate feedback with the points
     if (correct){
-      resultMsg.textContent = `Correct! (+${pendingPoints})`;
+      resultMsg.textContent = `✓ Correct! (+${pendingPoints})`;
       resultMsg.style.color = '#86efac';
     } else {
-      resultMsg.textContent = `Incorrect (+0)`;
+      resultMsg.textContent = `✗ Incorrect (+0)`;
       resultMsg.style.color = '#fca5a5';
     }
-    // enable Next so user can confirm and apply points
-    nextBtn.disabled = false;
-  }
-
-  nextBtn.addEventListener('click', ()=>{
-    const q = state.list[state.idx];
-    if (selectedAnswer === null || selectedAnswer === undefined) {
-      resultMsg.textContent = 'Please select an answer.';
-      resultMsg.style.color = '#fbbf24';
-      return;
-    }
-    // apply pending points to cumulative score
+    
+    // apply points immediately
     if (pendingPoints) {
       state.score += pendingPoints;
       scoreEl.textContent = state.score;
     }
-    // reset pending
     pendingPoints = 0;
-    // move to next
-    state.idx += 1;
-    if (state.idx >= state.list.length){
-      // finished
-      quizEl.classList.add('hidden');
-      setupEl.classList.remove('hidden');
-      const prevHigh = loadHighscore();
-      const beat = saveHighscore(state.score);
-      if (beat){
-        resultMsg.textContent = `Quiz complete — score: ${state.score} (new highscore!) — previous: ${prevHigh}`;
-        resultMsg.style.color = '#86efac';
-      } else {
-        resultMsg.textContent = `Quiz complete — score: ${state.score}. Highscore: ${prevHigh}`;
-        resultMsg.style.color = '#cbd5e1';
+    
+    // automatically move to next question after 2 seconds
+    setTimeout(() => {
+      state.idx += 1;
+      if (state.idx >= state.list.length){
+        // finished
+        quizEl.classList.add('hidden');
+        setupEl.classList.remove('hidden');
+        const prevHigh = loadHighscore();
+        const beat = saveHighscore(state.score);
+        if (beat){
+          resultMsg.textContent = `Quiz complete — score: ${state.score} (new highscore!) — previous: ${prevHigh}`;
+          resultMsg.style.color = '#86efac';
+        } else {
+          resultMsg.textContent = `Quiz complete — score: ${state.score}. Highscore: ${prevHigh}`;
+          resultMsg.style.color = '#cbd5e1';
+        }
+        return;
       }
-      return;
-    }
-    renderQuestion();
-  });
+      renderQuestion();
+    }, 2000);
+  }
+
+  // Next button is now optional - quiz auto-advances
+  nextBtn.style.display = 'none'; // Hide the next button since quiz auto-advances
 
   hintBtn.addEventListener('click', ()=>{
     const q = state.list[state.idx];
