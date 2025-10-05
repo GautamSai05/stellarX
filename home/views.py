@@ -35,7 +35,8 @@ def feeds(request):
 
 def timeline(request):
     """Render the interactive space timeline page."""
-    return render(request, 'home/timeline.html')
+    events = AstronomicalEvent.objects.all().order_by('date')
+    return render(request, 'home/timeline.html', {'events': events})
 
 def calculator(request):
     """Render the astronomical calculator tools page."""
@@ -64,6 +65,11 @@ def whatif(request):
 def women_in_space(request):
     """Render the Women in Space spotlight page."""
     return render(request, 'home/women_in_space.html')
+
+
+def space_quiz(request):
+    """Render the Space Quiz page."""
+    return render(request, 'home/space_quiz.html')
 
 def space_game(request):
     """Render the interactive space mini game."""
