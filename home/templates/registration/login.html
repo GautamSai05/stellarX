@@ -6,14 +6,30 @@
     <meta charset="UTF-8">
     <title>Login | StellarSense</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="{% static 'home/splash.css' %}">
     <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: auto !important;
+        }
         body {
             background: linear-gradient(to right, #000000, #0f0f0f);
+            min-height: 100vh;
         }
         .glass-card {
             backdrop-filter: blur(14px);
             background-color: rgba(0, 0, 0, 0.6);
+            position: relative;
+            z-index: 10;
+        }
+        input {
+            position: relative;
+            z-index: 10;
+        }
+        button {
+            position: relative;
+            z-index: 10;
+            cursor: pointer;
         }
     </style>
 </head>
