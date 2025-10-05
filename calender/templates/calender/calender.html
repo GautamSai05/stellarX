@@ -155,10 +155,22 @@
                     "Content-Type": "application/x-www-form-urlencoded",
                     "X-CSRFToken": csrfToken
                 },
-                body: `date=${userMsg}`
+                body: `date=${encodeURIComponent(userMsg)}`
             });
 
+            console.log('Chat form response status:', response.status);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
             const data = await response.json();
+            console.log('Chat form response data:', data);
+            
+            // Check if data has description
+            if (!data.description) {
+                throw new Error('No description in response');
+            }
             
             // Determine source badge
             const sourceBadge = data.source === 'n8n' 
@@ -177,6 +189,7 @@
                 botBubble.style.transform = 'translateY(0)';
             }, 50);
         } catch (err) {
+            console.error('Error in chat form submit:', err);
             botBubble.innerHTML = `<p class="text-sm text-red-400">⚠️ ${err.message}</p>`;
         }
 
@@ -264,10 +277,22 @@
                     "Content-Type": "application/x-www-form-urlencoded",
                     "X-CSRFToken": csrfToken
                 },
-                body: `date=${dateString}`
+                body: `date=${encodeURIComponent(dateString)}`
             });
 
+            console.log('Response status:', response.status);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
             const data = await response.json();
+            console.log('Response data:', data);
+            
+            // Check if data has description
+            if (!data.description) {
+                throw new Error('No description in response');
+            }
             
             // Determine source badge
             const sourceBadge = data.source === 'n8n' 
@@ -285,6 +310,7 @@
                 botBubble.style.transform = 'translateY(0)';
             }, 50);
         } catch (err) {
+            console.error('Error in sendDateToChatbot:', err);
             botBubble.innerHTML = `<p class="text-sm text-red-400">⚠️ ${err.message}</p>`;
         }
 

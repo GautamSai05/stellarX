@@ -12,7 +12,7 @@ import json
 # Load .env variables
 load_dotenv()
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-gemini_model = genai.GenerativeModel("models/gemini-2.5-flash")
+gemini_model = genai.GenerativeModel("models/gemini-2.5-pro")
 
 # n8n webhook URLs
 N8N_WEBHOOK_URL = "https://sample18102.app.n8n.cloud/webhook/6a7a1a2f-2d23-4780-bb5a-9b38413507b3/chat"
@@ -94,13 +94,26 @@ def calendar_chatbot(request):
             
             try:
                 response = gemini_model.generate_content(prompt)
-                reply = response.text.strip() if response.text else "No information available from Gemini API."
+                
+                # Proper way to access Gemini API response
+                if hasattr(response, 'text') and response.text:
+                    reply = response.text.strip()
+                elif hasattr(response, 'candidates') and response.candidates:
+                    # Alternative way to access response
+                    reply = response.candidates[0].content.parts[0].text.strip()
+                else:
+                    reply = "No information available from Gemini API."
+                
                 return JsonResponse({
                     "description": reply,
                     "source": "gemini"
                 })
             except Exception as e:
-                return JsonResponse({"description": f"❌ Gemini API Error: {e}"})
+                # Return proper JSON response with source field
+                return JsonResponse({
+                    "description": f"❌ Gemini API Error: {str(e)}",
+                    "source": "gemini"
+                })
         else:
             # Non-date query - Route to n8n webhook
             try:
