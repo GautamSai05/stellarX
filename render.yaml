@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: stellarsense
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "daphne -b 0.0.0.0 -p $PORT StellarSense.asgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.0
+      - key: DATABASE_URL
+        fromDatabase:
+          name: stellarsense-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: False
+
+databases:
+  - name: stellarsense-db
+    databaseName: stellarsense
+    user: stellarsense
