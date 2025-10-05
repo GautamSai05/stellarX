@@ -24,7 +24,12 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                             </svg>
                         </button>
-                        <h3 id="month-year" class="text-lg font-semibold text-white"></h3>
+                        <div class="flex items-center gap-3">
+                            <h3 id="month-year" class="text-lg font-semibold text-white"></h3>
+                            <select id="year-select" class="bg-gray-800 text-white p-1 rounded-lg border border-white/20 focus:border-blue-400 focus:outline-none">
+    <!-- years populated by JS -->
+</select>
+                        </div>
                         <button id="next-month" class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-lg transition-all">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -299,6 +304,30 @@
 
     // Initialize calendar
     renderCalendar(currentDate);
+
+    // Year select: populate with a reasonable range and wire change handler
+    (function setupYearSelect(){
+        const yearSelect = document.getElementById('year-select');
+        if (!yearSelect) return;
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        const start = currentYear - 50; // 50 years back
+        const end = currentYear + 5; // a few years forward
+        for (let y = start; y <= end; y++){
+            const opt = document.createElement('option');
+            opt.value = y;
+            opt.textContent = y;
+            if (y === currentDate.getFullYear()) opt.selected = true;
+            yearSelect.appendChild(opt);
+        }
+
+        yearSelect.addEventListener('change', ()=>{
+            const y = parseInt(yearSelect.value, 10);
+            // keep the month the same, update the year
+            currentDate.setFullYear(y);
+            renderCalendar(currentDate);
+        });
+    })();
 </script>
 
 <style>

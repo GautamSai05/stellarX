@@ -11,7 +11,6 @@ body {
     margin: 0;
     background: black;
     user-select: none;
-    /* overflow: hidden;  <-- Remove this */
 }
 
 canvas {
@@ -101,13 +100,12 @@ canvas {
 <div class="relative w-full h-screen bg-black overflow-hidden">
     <h1 class="text-white text-3xl font-bold text-center pt-6 z-10 relative">Gravity Simulation</h1>
     
-
+    <!-- Single Canvas Element -->
     <canvas id="c" class="absolute top-0 left-0 w-full h-full z-0"></canvas>
 
     <div class="absolute top-1/3 left-6 bg-black/60 text-gray-300 text-sm px-4 py-2 rounded-lg border border-white/10 shadow-md z-10 animate-pulse">
         🖱️ Click anywhere to add a gravity point
     </div>
-    <!-- Scroll Down Indicator -->
 </div>
 
 <!-- Gravity Explanation Section -->
@@ -120,7 +118,7 @@ canvas {
         </p>
     </div>
 </div>
-<canvas id="c"></canvas>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js"></script>
 
 <script>
@@ -466,7 +464,10 @@ Particle.prototype = (function(o) {
     }
 
     function mouseMove(e) {
-        mouse.set(e.clientX, e.clientY);
+        var rect = canvas.getBoundingClientRect();
+        var x = e.clientX - rect.left;
+        var y = e.clientY - rect.top;
+        mouse.set(x, y);
 
         var i, g, hit = false;
         for (i = gravities.length - 1; i >= 0; i--) {
@@ -481,13 +482,18 @@ Particle.prototype = (function(o) {
     }
 
     function mouseDown(e) {
+        var rect = canvas.getBoundingClientRect();
+        var x = e.clientX - rect.left;
+        var y = e.clientY - rect.top;
+        mouse.set(x, y);
+
         for (var i = gravities.length - 1; i >= 0; i--) {
             if (gravities[i].isMouseOver) {
                 gravities[i].startDrag(mouse);
                 return;
             }
         }
-        gravities.push(new GravityPoint(e.clientX, e.clientY, G_POINT_RADIUS, {
+        gravities.push(new GravityPoint(x, y, G_POINT_RADIUS, {
             particles: particles,
             gravities: gravities
         }));
@@ -503,6 +509,11 @@ Particle.prototype = (function(o) {
     }
 
     function doubleClick(e) {
+        var rect = canvas.getBoundingClientRect();
+        var x = e.clientX - rect.left;
+        var y = e.clientY - rect.top;
+        mouse.set(x, y);
+
         for (var i = gravities.length - 1; i >= 0; i--) {
             if (gravities[i].isMouseOver) {
                 gravities[i].collapse();
@@ -601,10 +612,6 @@ Particle.prototype = (function(o) {
         bufferCtx.fillRect(0, 0, screenWidth, screenHeight);
         bufferCtx.restore();
 
-        // パーティクルをバッファに描画
-        // for (i = 0, len = particles.length; i < len; i++) {
-        //     particles[i].render(bufferCtx);
-        // }
         len = particles.length;
         bufferCtx.save();
         bufferCtx.fillStyle = bufferCtx.strokeStyle = '#fff';
@@ -627,7 +634,7 @@ Particle.prototype = (function(o) {
         bufferCtx.fill();
         bufferCtx.restore();
 
-        // バッファをキャンバスに描画
+        // Draw buffer to canvas
         context.drawImage(bufferCvs, 0, 0);
 
         requestAnimationFrame(loop);

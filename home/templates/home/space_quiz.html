@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+
+{% block title %}Space Quiz - StellarSense{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto p-6">
+  <h1 class="text-3xl font-bold mb-2">Space Quiz</h1>
+  <p class="text-gray-400 mb-6">Pick a difficulty, answer questions, and try to beat your high score.</p>
+
+  <div id="quiz-card" class="bg-gray-900/60 p-6 rounded-xl border border-white/10">
+    <div id="setup" class="space-y-4">
+      <label class="block">
+        <span class="text-sm text-gray-300">Choose difficulty</span>
+        <select id="difficulty" class="mt-2 p-2 bg-gray-800 border border-white/5 rounded w-48">
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+      </label>
+
+      <div class="flex items-center gap-3">
+        <button id="start-btn" class="px-4 py-2 bg-blue-600 rounded hover:bg-blue-500">Start Quiz</button>
+        <button id="reset-highscore" class="px-3 py-2 bg-red-600 rounded hover:bg-red-500 text-sm">Reset Highscore</button>
+        <div class="ml-auto text-sm text-gray-300">Highscore: <span id="highscore">0</span></div>
+      </div>
+    </div>
+
+    <div id="quiz" class="hidden mt-6">
+      <div class="flex items-center justify-between mb-4">
+        <div class="text-sm text-gray-300">Question <span id="q-index">1</span>/<span id="q-total">1</span></div>
+        <div class="text-sm text-gray-300">Score: <span id="score">0</span></div>
+      </div>
+
+      <div id="question-card" class="bg-gray-800 p-4 rounded">
+        <h2 id="question-text" class="text-lg font-semibold mb-3">Question text</h2>
+        <div id="answers" class="grid gap-2"></div>
+      </div>
+
+      <div class="flex items-center gap-3 mt-4">
+        <button id="next-btn" class="px-4 py-2 bg-green-600 rounded hover:bg-green-500">Next</button>
+        <button id="hint-btn" class="px-3 py-2 bg-yellow-600 rounded hover:bg-yellow-500 text-sm">Hint</button>
+        <div class="ml-auto text-sm text-gray-400" id="result-msg"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_body_content %}
+<script>
+(() => {
+  // Minimal quiz implementation with three difficulty levels
+  const questionsDB = {
+    easy: [
+      { type: 'mcq', q: 'What was the first artificial satellite launched into orbit?', a: ['Sputnik 1', 'Explorer 1', 'Vostok 1', 'Apollo 11'], correct: 0, hint: 'Soviet Union, 1957' },
+      { type: 'mcq', q: 'Who was the first human to orbit Earth?', a: ['Neil Armstrong', 'Yuri Gagarin', 'Alan Shepard', 'John Glenn'], correct: 1, hint: 'He was Soviet' },
+      { type: 'mcq', q: 'Which telescope was launched in 1990 and revolutionized astronomy?', a: ['Spitzer', 'Hubble', 'Kepler', 'Chandra'], correct: 1, hint: 'It shares its name with an astronomer' }
+    ],
+    medium: [
+      { type: 'mcq', q: 'Which mission first landed humans on the Moon?', a: ['Vostok', 'Gemini', 'Apollo 11', 'Soyuz'], correct: 2, hint: 'Neil Armstrong was on it' },
+      { type: 'mcq', q: 'Which probe launched in 1977 visited the outer planets and is now in interstellar space?', a: ['Pioneer', 'Voyager', 'Galileo', 'Cassini'], correct: 1, hint: 'It is a famous pair of probes' },
+      { type: 'mcq', q: 'Which telescope succeeded Hubble with much greater infrared capability?', a: ['James Webb', 'Spitzer', 'Chandra', 'Kepler'], correct: 0, hint: 'Launched 2021' }
+    ],
+    hard: [
+      { type: 'mcq', q: 'What is the approximate escape velocity from Earth (km/s)?', a: ['7.9', '11.2', '16.7', '3.5'], correct: 1, hint: 'About eleven' },
+      { type: 'mcq', q: 'Which mission returned samples from the asteroid Ryugu?', a: ['Hayabusa2', 'OSIRIS-REx', 'Dawn', 'Rosetta'], correct: 0, hint: 'It is Japanese' },
+      { type: 'mcq', q: 'Which JWST instrument operates in the mid-infrared?', a: ['NIRCam', 'NIRSpec', 'MIRI', 'FGS/NIRISS'], correct: 2, hint: 'Four-letter instrument name' }
+    ]
+  };
+
+  // Elements
+  const startBtn = document.getElementById('start-btn');
+  const resetHigh = document.getElementById('reset-highscore');
+  const difficultyEl = document.getElementById('difficulty');
+  const highscoreEl = document.getElementById('highscore');
+
+  const setupEl = document.getElementById('setup');
+  const quizEl = document.getElementById('quiz');
+  const qIndexEl = document.getElementById('q-index');
+  const qTotalEl = document.getElementById('q-total');
+  const scoreEl = document.getElementById('score');
+  const questionText = document.getElementById('question-text');
+  const answersWrap = document.getElementById('answers');
+  let selectedAnswer = null;
+  const nextBtn = document.getElementById('next-btn');
+  const hintBtn = document.getElementById('hint-btn');
+  const resultMsg = document.getElementById('result-msg');
+
+  let state = {
+    list: [],
+    idx: 0,
+    score: 0,
+  };
+  let pendingPoints = 0; // points for the currently selected answer, applied on Next
+
+  function loadHighscore(){
+    const v = parseInt(localStorage.getItem('space_quiz_highscore') || '0', 10);
+    highscoreEl.textContent = v;
+    return v;
+  }
+
+  function saveHighscore(score){
+    const cur = loadHighscore();
+    if (score > cur) {
+      localStorage.setItem('space_quiz_highscore', String(score));
+      highscoreEl.textContent = score;
+      return true;
+    }
+    return false;
+  }
+
+  function startQuiz(){
+    const lvl = difficultyEl.value || 'easy';
+    // clone and shuffle
+    const pool = questionsDB[lvl].slice();
+    // simple shuffle
+    for (let i = pool.length -1; i>0; i--){ const j = Math.floor(Math.random()*(i+1)); [pool[i],pool[j]] = [pool[j],pool[i]]; }
+    state.list = pool;
+    state.idx = 0;
+    state.score = 0;
+    scoreEl.textContent = state.score;
+    qTotalEl.textContent = state.list.length;
+    setupEl.classList.add('hidden');
+    quizEl.classList.remove('hidden');
+    renderQuestion();
+  }
+
+  function renderQuestion(){
+    resultMsg.textContent = '';
+    const q = state.list[state.idx];
+    qIndexEl.textContent = state.idx + 1;
+    questionText.textContent = q.q;
+    answersWrap.innerHTML = '';
+    selectedAnswer = null;
+    pendingPoints = 0;
+    // MCQ-only flow
+    q.a.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'p-2 text-left bg-gray-800 border border-white/5 rounded w-full hover:bg-gray-700';
+      btn.textContent = opt;
+      btn.type = 'button';
+      btn.addEventListener('click', () => selectAnswer(i, btn));
+      answersWrap.appendChild(btn);
+    });
+    nextBtn.disabled = true;
+  }
+
+  function selectAnswer(choice, btn){
+    const q = state.list[state.idx];
+    selectedAnswer = choice;
+    // highlight
+    Array.from(answersWrap.children).forEach(ch => ch.classList.remove('ring-2','ring-offset-2','ring-indigo-500'));
+    if (btn) btn.classList.add('ring-2','ring-offset-2','ring-indigo-500');
+    // compute tentative points for this question based on difficulty but don't add yet
+    const perQuestion = (difficultyEl.value === 'hard' ? 20 : difficultyEl.value === 'medium' ? 10 : 5);
+    const correct = (choice === q.correct);
+    pendingPoints = correct ? perQuestion : 0;
+    // show immediate feedback and the tentative points
+    if (correct){
+      resultMsg.textContent = `Correct! (+${pendingPoints})`;
+      resultMsg.style.color = '#86efac';
+    } else {
+      resultMsg.textContent = `Incorrect (+0)`;
+      resultMsg.style.color = '#fca5a5';
+    }
+    // enable Next so user can confirm and apply points
+    nextBtn.disabled = false;
+  }
+
+  nextBtn.addEventListener('click', ()=>{
+    const q = state.list[state.idx];
+    if (selectedAnswer === null || selectedAnswer === undefined) {
+      resultMsg.textContent = 'Please select an answer.';
+      resultMsg.style.color = '#fbbf24';
+      return;
+    }
+    // apply pending points to cumulative score
+    if (pendingPoints) {
+      state.score += pendingPoints;
+      scoreEl.textContent = state.score;
+    }
+    // reset pending
+    pendingPoints = 0;
+    // move to next
+    state.idx += 1;
+    if (state.idx >= state.list.length){
+      // finished
+      quizEl.classList.add('hidden');
+      setupEl.classList.remove('hidden');
+      const prevHigh = loadHighscore();
+      const beat = saveHighscore(state.score);
+      if (beat){
+        resultMsg.textContent = `Quiz complete — score: ${state.score} (new highscore!) — previous: ${prevHigh}`;
+        resultMsg.style.color = '#86efac';
+      } else {
+        resultMsg.textContent = `Quiz complete — score: ${state.score}. Highscore: ${prevHigh}`;
+        resultMsg.style.color = '#cbd5e1';
+      }
+      return;
+    }
+    renderQuestion();
+  });
+
+  hintBtn.addEventListener('click', ()=>{
+    const q = state.list[state.idx];
+    resultMsg.textContent = q.hint || 'No hint available';
+    resultMsg.style.color = '#fef3c7';
+  });
+
+  startBtn.addEventListener('click', startQuiz);
+  resetHigh.addEventListener('click', ()=>{ localStorage.removeItem('space_quiz_highscore'); loadHighscore(); });
+
+  // initial
+  loadHighscore();
+
+})();
+</script>
+{% endblock %}

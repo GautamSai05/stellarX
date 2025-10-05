@@ -3,12 +3,19 @@ const ctx = c.getContext('2d');
 const particles = [];
 const gravityPoints = [];
 
-c.width = window.innerWidth;
-c.height = window.innerHeight;
+function resizeCanvas() {
+    const dpr = window.devicePixelRatio || 1;
+    c.style.width = window.innerWidth + 'px';
+    c.style.height = window.innerHeight + 'px';
+    c.width = Math.round(window.innerWidth * dpr);
+    c.height = Math.round(window.innerHeight * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+resizeCanvas();
 
 window.addEventListener('resize', () => {
-    c.width = window.innerWidth;
-    c.height = window.innerHeight;
+    resizeCanvas();
 });
 
 class Particle {
@@ -56,8 +63,9 @@ class GravityPoint {
 
 function createParticles(count) {
     for (let i = 0; i < count; i++) {
-        const x = Math.random() * c.width;
-        const y = Math.random() * c.height;
+        const rect = c.getBoundingClientRect();
+        const x = Math.random() * rect.width;
+        const y = Math.random() * rect.height;
         const vx = (Math.random() - 0.5) * 2;
         const vy = (Math.random() - 0.5) * 2;
         const mass = Math.random() * 5 + 1;
@@ -99,16 +107,21 @@ function calculateGravity() {
     }
 }
 
-c.addEventListener('click', (e) => {
+c.addEventListener('pointerdown', (e) => {
+    // Use CSS pixel coordinates so they match drawing coords after ctx.setTransform(dpr,...)
+    const rect = c.getBoundingClientRect();
+    const cssX = e.clientX - rect.left;
+    const cssY = e.clientY - rect.top;
     const mass = Math.random() * 500 + 100; // Larger mass for gravity points
     const color = `rgba(255, 255, 255, 0.8)`;
-    gravityPoints.push(new GravityPoint(e.clientX, e.clientY, mass, color));
+    gravityPoints.push(new GravityPoint(cssX, cssY, mass, color));
 });
 
 createParticles(100); // Initial particles
 
 function animate() {
-    ctx.clearRect(0, 0, c.width, c.height);
+    const rect = c.getBoundingClientRect();
+    ctx.clearRect(0, 0, rect.width, rect.height);
     // ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; // Fading trail effect
     // ctx.fillRect(0, 0, c.width, c.height);
 
