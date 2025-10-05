@@ -65,6 +65,10 @@ def women_in_space(request):
     """Render the Women in Space spotlight page."""
     return render(request, 'home/women_in_space.html')
 
+def space_game(request):
+    """Render the interactive space mini game."""
+    return render(request, 'home/space_game.html')
+
 def signup_view(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
