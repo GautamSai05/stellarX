@@ -14,4 +14,5 @@ urlpatterns = [
     path('women-in-space/', views.women_in_space, name='women_in_space'),
     path('feeds/', views.feeds, name='feeds'),
     path('stellarium/', views.stellarium, name='stellarium'),
+    path('space-game/', views.space_game, name='space_game'),
 ]
