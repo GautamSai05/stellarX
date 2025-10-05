@@ -1,504 +1,1049 @@
 {% extends 'base.html' %}
 
-{% block title %}Space Explorer - Mini Game | StellarSense{% endblock %}
+{% block title %}NASA Mission Simulator | StellarSense{% endblock %}
 
 {% block content %}
-<div class="min-h-screen flex flex-col items-center justify-center py-8 px-4">
-    <div class="w-full max-w-6xl">
+<div class="min-h-screen py-8 px-4">
+    <div class="w-full max-w-7xl mx-auto">
         <!-- Game Header -->
         <div class="text-center mb-6">
-            <h1 class="text-5xl font-bold text-white mb-4">🚀 SPACE EXPLORER</h1>
-            <p class="text-xl text-gray-400 mb-2">Navigate through the asteroid field!</p>
-            <div class="flex justify-center gap-8 text-white text-lg">
-                <div>Score: <span id="score" class="font-bold text-green-400">0</span></div>
-                <div>High Score: <span id="highScore" class="font-bold text-yellow-400">0</span></div>
-                <div>Lives: <span id="lives" class="font-bold text-red-400">❤️❤️❤️</span></div>
+            <h1 class="text-5xl font-bold text-white mb-3">🛰️ NASA MISSION SIMULATOR</h1>
+            <p class="text-xl text-gray-400 mb-4">Experience real space missions with accurate physics and orbital mechanics</p>
+        </div>
+
+        <!-- Mission Selection Screen -->
+        <div id="missionSelect" class="max-w-4xl mx-auto">
+            <div class="bg-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/10 mb-6">
+                <h2 class="text-3xl font-bold text-white mb-6 text-center">SELECT YOUR MISSION</h2>
+                
+                <div class="grid md:grid-cols-3 gap-6">
+                    <!-- Mission 1: Orbital Mechanics -->
+                    <div class="mission-card bg-gradient-to-br from-blue-900/50 to-purple-900/50 rounded-xl p-6 border-2 border-blue-500/30 hover:border-blue-500 transition cursor-pointer transform hover:scale-105"
+                         onclick="startMission('orbital')">
+                        <div class="text-4xl mb-4">🛰️</div>
+                        <h3 class="text-xl font-bold text-white mb-2">Orbital Mechanics</h3>
+                        <p class="text-sm text-gray-300 mb-4">Master gravitational physics and achieve stable orbits around celestial bodies. Learn about orbital velocity, escape velocity, and Kepler's laws.</p>
+                        <div class="text-xs text-blue-300">
+                            <div>⚡ Difficulty: Advanced</div>
+                            <div>🎓 Learn: Physics, Gravity, Orbits</div>
+                            <div>⏱️ Duration: 5-10 min</div>
+                        </div>
+                    </div>
+
+                    <!-- Mission 2: Mars Landing -->
+                    <div class="mission-card bg-gradient-to-br from-red-900/50 to-orange-900/50 rounded-xl p-6 border-2 border-red-500/30 hover:border-red-500 transition cursor-pointer transform hover:scale-105"
+                         onclick="startMission('mars')">
+                        <div class="text-4xl mb-4">🚀</div>
+                        <h3 class="text-xl font-bold text-white mb-2">Mars Landing</h3>
+                        <p class="text-sm text-gray-300 mb-4">Navigate atmospheric entry, deploy parachutes, and execute a precision landing on Mars. Experience real NASA Perseverance mission challenges.</p>
+                        <div class="text-xs text-red-300">
+                            <div>⚡ Difficulty: Expert</div>
+                            <div>🎓 Learn: Atmospheric Physics, EDL</div>
+                            <div>⏱️ Duration: 3-7 min</div>
+                        </div>
+                    </div>
+
+                    <!-- Mission 3: Exoplanet Discovery -->
+                    <div class="mission-card bg-gradient-to-br from-purple-900/50 to-pink-900/50 rounded-xl p-6 border-2 border-purple-500/30 hover:border-purple-500 transition cursor-pointer transform hover:scale-105"
+                         onclick="startMission('exoplanet')">
+                        <div class="text-4xl mb-4">🔭</div>
+                        <h3 class="text-xl font-bold text-white mb-2">Exoplanet Discovery</h3>
+                        <p class="text-sm text-gray-300 mb-4">Analyze light curves from distant stars to detect exoplanets using the transit method. Learn real techniques used by NASA's TESS mission.</p>
+                        <div class="text-xs text-purple-300">
+                            <div>⚡ Difficulty: Challenging</div>
+                            <div>🎓 Learn: Spectroscopy, Transit Method</div>
+                            <div>⏱️ Duration: 4-8 min</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 p-6 bg-white/5 rounded-xl border border-white/10">
+                    <h3 class="text-lg font-bold text-white mb-3">📚 Educational Features</h3>
+                    <div class="grid md:grid-cols-2 gap-4 text-sm text-gray-300">
+                        <div>✓ Real physics calculations and orbital mechanics</div>
+                        <div>✓ Authentic NASA mission scenarios</div>
+                        <div>✓ Interactive quizzes on space science</div>
+                        <div>✓ Detailed explanations of space phenomena</div>
+                        <div>✓ Historical mission facts and achievements</div>
+                        <div>✓ Current space exploration challenges</div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Game Canvas Container -->
-        <div class="relative">
-            <canvas id="gameCanvas" 
-                    class="mx-auto border-4 border-white/20 rounded-xl shadow-2xl bg-black"
-                    width="800" 
-                    height="600">
-            </canvas>
-            
-            <!-- Game Over Overlay -->
-            <div id="gameOverlay" class="absolute inset-0 flex items-center justify-center bg-black/80 backdrop-blur-sm rounded-xl hidden">
-                <div class="text-center p-8">
-                    <h2 id="overlayTitle" class="text-4xl font-bold text-white mb-4">🚀 SPACE EXPLORER</h2>
-                    <p id="overlayMessage" class="text-xl text-gray-300 mb-6">Use Arrow Keys or WASD to control your spacecraft</p>
-                    <p class="text-lg text-gray-400 mb-6">Dodge asteroids, collect stars, and survive as long as you can!</p>
-                    <button id="startButton" 
-                            class="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-full text-xl transition transform hover:scale-105 shadow-lg">
-                        START MISSION
-                    </button>
+        <!-- Game Container (Hidden Initially) -->
+        <div id="gameContainer" class="hidden">
+            <!-- Stats Panel -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white/10 backdrop-blur-lg rounded-lg p-4 border border-white/20">
+                    <div class="text-gray-400 text-sm">Mission Progress</div>
+                    <div id="progress" class="text-2xl font-bold text-green-400">0%</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-lg rounded-lg p-4 border border-white/20">
+                    <div class="text-gray-400 text-sm">Score</div>
+                    <div id="score" class="text-2xl font-bold text-yellow-400">0</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-lg rounded-lg p-4 border border-white/20">
+                    <div class="text-gray-400 text-sm">Mission Status</div>
+                    <div id="status" class="text-2xl font-bold text-blue-400">Active</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-lg rounded-lg p-4 border border-white/20">
+                    <div class="text-gray-400 text-sm" id="customStatLabel">Fuel</div>
+                    <div id="customStat" class="text-2xl font-bold text-orange-400">100%</div>
                 </div>
             </div>
-        </div>
 
-        <!-- Controls Info -->
-        <div class="mt-6 text-center">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-white">
-                <div class="bg-white/5 p-4 rounded-lg border border-white/10">
-                    <h3 class="font-bold mb-2">🎮 Controls</h3>
-                    <p class="text-sm text-gray-400">Arrow Keys or WASD</p>
-                    <p class="text-sm text-gray-400">Space to Pause</p>
+            <!-- Canvas Container -->
+            <div class="relative mb-6">
+                <canvas id="gameCanvas" 
+                        class="w-full mx-auto border-4 border-white/20 rounded-xl shadow-2xl bg-black"
+                        width="1200" 
+                        height="700">
+                </canvas>
+                
+                <!-- Info Overlay -->
+                <div id="infoOverlay" class="absolute top-4 left-4 bg-black/80 backdrop-blur-md rounded-lg p-4 border border-white/20 max-w-md">
+                    <h3 class="text-lg font-bold text-white mb-2" id="infoTitle">Mission Briefing</h3>
+                    <p class="text-sm text-gray-300" id="infoText">Loading mission parameters...</p>
                 </div>
-                <div class="bg-white/5 p-4 rounded-lg border border-white/10">
-                    <h3 class="font-bold mb-2">⭐ Objectives</h3>
-                    <p class="text-sm text-gray-400">Dodge Asteroids: +10 points</p>
-                    <p class="text-sm text-gray-400">Collect Stars: +50 points</p>
-                </div>
-                <div class="bg-white/5 p-4 rounded-lg border border-white/10">
-                    <h3 class="font-bold mb-2">🎯 NASA Facts</h3>
-                    <p id="nasaFact" class="text-sm text-gray-400">Loading...</p>
+
+                <!-- Controls Info -->
+                <div id="controlsInfo" class="absolute bottom-4 right-4 bg-black/80 backdrop-blur-md rounded-lg p-4 border border-white/20">
+                    <div class="text-sm text-gray-300 space-y-1" id="controlsList">
+                        <div>⌨️ Arrow Keys: Control thrust</div>
+                        <div>Space: Boost / Action</div>
+                        <div>P: Pause mission</div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Back Button -->
-        <div class="mt-8 text-center">
-            <a href="{% url 'home' %}" 
-               class="inline-block bg-white/10 hover:bg-white/20 text-white font-bold py-3 px-6 rounded-full transition border border-white/20">
-                ← Back to Home
-            </a>
+            <!-- Quiz/Education Panel -->
+            <div id="quizPanel" class="hidden bg-gradient-to-r from-purple-900/30 to-blue-900/30 backdrop-blur-lg rounded-xl p-6 border-2 border-purple-500/50 mb-6">
+                <h3 class="text-2xl font-bold text-white mb-4">🎓 Mission Quiz</h3>
+                <p id="quizQuestion" class="text-lg text-gray-200 mb-4">Loading question...</p>
+                <div id="quizOptions" class="space-y-3">
+                    <!-- Options will be inserted here -->
+                </div>
+                <div id="quizFeedback" class="hidden mt-4 p-4 rounded-lg"></div>
+            </div>
+
+            <!-- Mission Facts -->
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="bg-white/5 backdrop-blur-lg rounded-lg p-4 border border-white/10">
+                    <h4 class="font-bold text-white mb-2">🔬 Science Fact</h4>
+                    <p id="scienceFact" class="text-sm text-gray-300">Loading...</p>
+                </div>
+                <div class="bg-white/5 backdrop-blur-lg rounded-lg p-4 border border-white/10">
+                    <h4 class="font-bold text-white mb-2">🚀 NASA History</h4>
+                    <p id="historyFact" class="text-sm text-gray-300">Loading...</p>
+                </div>
+                <div class="bg-white/5 backdrop-blur-lg rounded-lg p-4 border border-white/10">
+                    <h4 class="font-bold text-white mb-2">🌌 Did You Know?</h4>
+                    <p id="funFact" class="text-sm text-gray-300">Loading...</p>
+                </div>
+            </div>
+
+            <!-- Back Button -->
+            <div class="mt-6 text-center">
+                <button onclick="backToMissionSelect()" 
+                        class="bg-white/10 hover:bg-white/20 text-white font-bold py-3 px-6 rounded-full transition border border-white/20">
+                    ← Back to Mission Select
+                </button>
+            </div>
         </div>
     </div>
 </div>
 
 <style>
-    body {
-        overflow: hidden;
+    .mission-card {
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .mission-card:hover {
+        box-shadow: 0 15px 40px rgba(0,0,0,0.5);
     }
     #gameCanvas {
         max-width: 100%;
         height: auto;
     }
-    @media (max-width: 768px) {
-        #gameCanvas {
-            width: 100%;
-            height: auto;
-        }
-    }
 </style>
 
 <script>
-// NASA Fun Facts
-const nasaFacts = [
-    "The International Space Station orbits Earth every 90 minutes!",
-    "Mars rovers have traveled over 50 miles on the Red Planet.",
-    "There are more stars in the universe than grains of sand on Earth.",
-    "A day on Venus is longer than its year!",
-    "The footprints on the Moon will last for millions of years.",
-    "Saturn's rings are made mostly of ice particles.",
-    "The Sun makes up 99.86% of the mass in our solar system.",
-    "Neutron stars can spin 600 times per second!"
-];
-
-// Display random NASA fact
-document.getElementById('nasaFact').textContent = nasaFacts[Math.floor(Math.random() * nasaFacts.length)];
-
-// Game variables
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-const overlay = document.getElementById('gameOverlay');
-const startButton = document.getElementById('startButton');
-
-let gameRunning = false;
-let gamePaused = false;
-let score = 0;
-let highScore = localStorage.getItem('spaceGameHighScore') || 0;
-let lives = 3;
-let difficulty = 1;
-
-// Update high score display
-document.getElementById('highScore').textContent = highScore;
-
-// Player (Spacecraft)
-const player = {
-    x: canvas.width / 2,
-    y: canvas.height - 100,
-    width: 40,
-    height: 40,
-    speed: 5,
-    vx: 0,
-    vy: 0
+// Educational Content Database
+const educationalContent = {
+    scienceFacts: [
+        "Orbital velocity for Low Earth Orbit is approximately 7.8 km/s (17,500 mph). At this speed, you complete one orbit around Earth every 90 minutes.",
+        "The Hohmann transfer is the most fuel-efficient way to travel between two circular orbits. It uses two engine burns to change orbital altitude.",
+        "Escape velocity from Earth is 11.2 km/s. This is the minimum speed needed to break free from Earth's gravitational pull.",
+        "Lagrange points are positions in space where gravitational forces and orbital motion balance perfectly, allowing spacecraft to maintain stable positions.",
+        "The Oberth effect: Rocket engines are more efficient when fired at higher speeds, particularly near periapsis (closest approach to a body).",
+        "Mars' atmosphere is only 1% as dense as Earth's, making landing extremely challenging—too thin for parachutes alone, too thick to ignore.",
+        "The transit method detects exoplanets by measuring tiny dips in a star's brightness as a planet passes in front of it.",
+        "Light takes 8 minutes and 20 seconds to travel from the Sun to Earth, covering 150 million kilometers.",
+    ],
+    historyFacts: [
+        "Apollo 11's lunar module had only 25 seconds of fuel remaining when Neil Armstrong landed on the Moon in 1969.",
+        "Voyager 1, launched in 1977, is now over 14 billion miles from Earth and still transmitting data using a 23-watt transmitter.",
+        "The Hubble Space Telescope orbits Earth at 17,000 mph and has made over 1.5 million observations since 1990.",
+        "Mars Perseverance rover's landing sequence (Seven Minutes of Terror) involved slowing from 12,000 mph to 0 in just 7 minutes.",
+        "The International Space Station travels at 17,500 mph, completing 16 orbits of Earth every 24 hours.",
+        "Cassini spacecraft spent 13 years studying Saturn, discovering liquid methane lakes on Titan and water geysers on Enceladus.",
+        "New Horizons took 9.5 years to reach Pluto, traveling over 3 billion miles at speeds up to 36,000 mph.",
+        "The James Webb Space Telescope orbits the Sun at Lagrange Point 2, 1 million miles from Earth.",
+    ],
+    funFacts: [
+        "Astronauts grow about 2 inches taller in space due to spine elongation in microgravity, but return to normal height on Earth.",
+        "One day on Venus (243 Earth days) is longer than its year (225 Earth days). Venus rotates backwards compared to most planets.",
+        "Neutron stars are so dense that a sugar-cube-sized amount would weigh about 1 billion tons on Earth.",
+        "If you could compress Earth to the size of a marble, it would become a black hole.",
+        "Saturn's moon Titan is the only moon in our solar system with a substantial atmosphere and liquid lakes (methane).",
+        "The cosmic microwave background radiation we observe is light from 380,000 years after the Big Bang.",
+        "There are more possible chess games than atoms in the observable universe—yet orbital calculations require similar complexity.",
+        "Olympus Mons on Mars is the largest volcano in the solar system—nearly three times taller than Mount Everest.",
+    ]
 };
 
-// Game objects
-let asteroids = [];
-let stars = [];
-let particles = [];
-let backgroundStars = [];
-
-// Initialize background stars
-function initBackgroundStars() {
-    backgroundStars = [];
-    for (let i = 0; i < 100; i++) {
-        backgroundStars.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            size: Math.random() * 2,
-            speed: Math.random() * 2 + 1
-        });
-    }
-}
-
-// Create particle effect
-function createParticles(x, y, color) {
-    for (let i = 0; i < 10; i++) {
-        particles.push({
-            x: x,
-            y: y,
-            vx: (Math.random() - 0.5) * 6,
-            vy: (Math.random() - 0.5) * 6,
-            size: Math.random() * 3 + 2,
-            color: color,
-            life: 30
-        });
-    }
-}
-
-// Spawn asteroid
-function spawnAsteroid() {
-    const size = Math.random() * 30 + 20;
-    asteroids.push({
-        x: Math.random() * (canvas.width - size),
-        y: -size,
-        size: size,
-        speed: Math.random() * 2 + 1 + (difficulty * 0.5),
-        rotation: Math.random() * Math.PI * 2,
-        rotationSpeed: (Math.random() - 0.5) * 0.1
-    });
-}
-
-// Spawn collectible star
-function spawnStar() {
-    stars.push({
-        x: Math.random() * (canvas.width - 20),
-        y: -20,
-        size: 15,
-        speed: 2
-    });
-}
-
-// Draw spacecraft
-function drawPlayer() {
-    ctx.save();
-    ctx.translate(player.x, player.y);
-    
-    // Rocket body
-    ctx.fillStyle = '#4A90E2';
-    ctx.beginPath();
-    ctx.moveTo(0, -20);
-    ctx.lineTo(-15, 20);
-    ctx.lineTo(15, 20);
-    ctx.closePath();
-    ctx.fill();
-    
-    // Rocket window
-    ctx.fillStyle = '#87CEEB';
-    ctx.beginPath();
-    ctx.arc(0, -5, 6, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Rocket flames
-    if (Math.random() > 0.5) {
-        ctx.fillStyle = '#FF6B35';
-        ctx.beginPath();
-        ctx.moveTo(-10, 20);
-        ctx.lineTo(-5, 30 + Math.random() * 10);
-        ctx.lineTo(0, 20);
-        ctx.closePath();
-        ctx.fill();
-        
-        ctx.beginPath();
-        ctx.moveTo(0, 20);
-        ctx.lineTo(5, 30 + Math.random() * 10);
-        ctx.lineTo(10, 20);
-        ctx.closePath();
-        ctx.fill();
-    }
-    
-    ctx.restore();
-}
-
-// Draw asteroid
-function drawAsteroid(asteroid) {
-    ctx.save();
-    ctx.translate(asteroid.x, asteroid.y);
-    ctx.rotate(asteroid.rotation);
-    
-    ctx.fillStyle = '#8B4513';
-    ctx.strokeStyle = '#654321';
-    ctx.lineWidth = 2;
-    
-    ctx.beginPath();
-    for (let i = 0; i < 8; i++) {
-        const angle = (Math.PI * 2 / 8) * i;
-        const radius = asteroid.size / 2 + (Math.random() * 5 - 2.5);
-        const x = Math.cos(angle) * radius;
-        const y = Math.sin(angle) * radius;
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-    }
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-    
-    ctx.restore();
-}
-
-// Draw star collectible
-function drawStar(star) {
-    ctx.save();
-    ctx.translate(star.x, star.y);
-    
-    ctx.fillStyle = '#FFD700';
-    ctx.strokeStyle = '#FFA500';
-    ctx.lineWidth = 2;
-    
-    ctx.beginPath();
-    for (let i = 0; i < 5; i++) {
-        const angle = (Math.PI * 2 / 5) * i - Math.PI / 2;
-        const x = Math.cos(angle) * star.size;
-        const y = Math.sin(angle) * star.size;
-        ctx.lineTo(x, y);
-        
-        const innerAngle = angle + Math.PI / 5;
-        const innerX = Math.cos(innerAngle) * star.size / 2;
-        const innerY = Math.sin(innerAngle) * star.size / 2;
-        ctx.lineTo(innerX, innerY);
-    }
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-    
-    // Add glow effect
-    ctx.shadowColor = '#FFD700';
-    ctx.shadowBlur = 10;
-    ctx.fill();
-    
-    ctx.restore();
-}
-
-// Draw background stars
-function drawBackgroundStars() {
-    ctx.fillStyle = '#FFFFFF';
-    backgroundStars.forEach(star => {
-        ctx.globalAlpha = Math.random() * 0.5 + 0.5;
-        ctx.fillRect(star.x, star.y, star.size, star.size);
-    });
-    ctx.globalAlpha = 1;
-}
-
-// Update background stars
-function updateBackgroundStars() {
-    backgroundStars.forEach(star => {
-        star.y += star.speed;
-        if (star.y > canvas.height) {
-            star.y = 0;
-            star.x = Math.random() * canvas.width;
+const quizDatabase = {
+    orbital: [
+        {
+            question: "What is the primary factor that determines orbital velocity?",
+            options: [
+                "The mass of the orbiting object",
+                "The mass of the central body and distance from it",
+                "The color of the planet",
+                "The temperature in space"
+            ],
+            correct: 1,
+            explanation: "Orbital velocity depends on the central body's mass and your distance from it. The formula is v = √(GM/r), where G is gravitational constant, M is central body mass, and r is orbital radius."
+        },
+        {
+            question: "What happens when a spacecraft fires its engines forward (prograde) in orbit?",
+            options: [
+                "It immediately speeds up",
+                "It raises the opposite side of its orbit",
+                "It falls straight down",
+                "Nothing significant happens"
+            ],
+            correct: 1,
+            explanation: "A prograde burn raises the opposite side of your orbit (apoapsis). This counterintuitive result comes from orbital mechanics—you don't simply move faster in a straight line."
+        },
+        {
+            question: "What is a geosynchronous orbit?",
+            options: [
+                "An orbit that takes 90 minutes",
+                "An orbit matching Earth's rotation (24 hours)",
+                "The fastest possible orbit",
+                "An orbit around the Moon"
+            ],
+            correct: 1,
+            explanation: "A geosynchronous orbit has a period of 24 hours, matching Earth's rotation. At ~35,786 km altitude, satellites appear to hover over the same spot—crucial for communications and weather satellites."
         }
-    });
+    ],
+    mars: [
+        {
+            question: "Why is Mars landing particularly challenging?",
+            options: [
+                "Mars has no atmosphere",
+                "Mars atmosphere is too thin for parachutes alone, too thick to ignore",
+                "Mars is too far from the Sun",
+                "Mars has too much gravity"
+            ],
+            correct: 1,
+            explanation: "Mars' atmosphere is only 1% as dense as Earth's—too thin to rely on parachutes alone, but thick enough to require heat shields. This makes EDL (Entry, Descent, Landing) extremely difficult."
+        },
+        {
+            question: "What was innovative about the Perseverance rover's landing system?",
+            options: [
+                "It used bouncing airbags",
+                "It used a sky crane with rockets",
+                "It crash-landed intentionally",
+                "It landed in water"
+            ],
+            correct: 1,
+            explanation: "The sky crane system used a hovering rocket platform to gently lower Perseverance on cables—avoiding dust kicked up by rockets and allowing precision landing in Jezero Crater."
+        },
+        {
+            question: "How long does it take for communications from Mars to reach Earth?",
+            options: [
+                "Instantly",
+                "3-22 minutes depending on orbital positions",
+                "Several hours",
+                "Several days"
+            ],
+            correct: 1,
+            explanation: "Light-speed delay to Mars ranges from 3 minutes (closest approach) to 22 minutes (farthest), making real-time control impossible—rovers must be semi-autonomous."
+        }
+    ],
+    exoplanet: [
+        {
+            question: "How does the transit method detect exoplanets?",
+            options: [
+                "By measuring slight dimming as planet passes in front of star",
+                "By taking pictures of the planet",
+                "By listening for radio signals",
+                "By measuring the planet's temperature"
+            ],
+            correct: 0,
+            explanation: "The transit method detects the tiny brightness dip (often <1%) when a planet passes in front of its star. Kepler and TESS missions have discovered thousands of exoplanets this way."
+        },
+        {
+            question: "What is the 'habitable zone'?",
+            options: [
+                "Any orbit around a star",
+                "The region where liquid water could exist on a planet's surface",
+                "Inside a planet's atmosphere",
+                "Near black holes"
+            ],
+            correct: 1,
+            explanation: "The habitable zone (Goldilocks zone) is the orbital distance where temperatures allow liquid water—not too hot, not too cold. Its location depends on the star's size and temperature."
+        },
+        {
+            question: "How many confirmed exoplanets have been discovered as of 2024?",
+            options: [
+                "Less than 100",
+                "Around 500",
+                "Over 5,000",
+                "Over 50,000"
+            ],
+            correct: 2,
+            explanation: "As of 2024, over 5,000 exoplanets have been confirmed, with thousands more candidates. NASA's TESS mission continues discovering new worlds, revolutionizing our understanding of planetary systems."
+        }
+    ]
+};
+
+// Game State
+let currentMission = null;
+let gameRunning = false;
+let score = 0;
+let progress = 0;
+let quizAnswered = false;
+
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+// Update educational content
+function updateEducationalContent() {
+    document.getElementById('scienceFact').textContent = 
+        educationalContent.scienceFacts[Math.floor(Math.random() * educationalContent.scienceFacts.length)];
+    document.getElementById('historyFact').textContent = 
+        educationalContent.historyFacts[Math.floor(Math.random() * educationalContent.historyFacts.length)];
+    document.getElementById('funFact').textContent = 
+        educationalContent.funFacts[Math.floor(Math.random() * educationalContent.funFacts.length)];
 }
 
-// Update particles
-function updateParticles() {
-    particles = particles.filter(p => {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.life--;
-        
-        if (p.life > 0) {
-            ctx.fillStyle = p.color;
-            ctx.globalAlpha = p.life / 30;
-            ctx.fillRect(p.x, p.y, p.size, p.size);
-            ctx.globalAlpha = 1;
-            return true;
-        }
-        return false;
+// Show quiz
+function showQuiz(missionType) {
+    if (quizAnswered) return;
+    
+    const quizzes = quizDatabase[missionType];
+    const quiz = quizzes[Math.floor(Math.random() * quizzes.length)];
+    
+    document.getElementById('quizQuestion').textContent = quiz.question;
+    const optionsContainer = document.getElementById('quizOptions');
+    optionsContainer.innerHTML = '';
+    
+    quiz.options.forEach((option, index) => {
+        const button = document.createElement('button');
+        button.className = 'w-full text-left bg-white/10 hover:bg-white/20 p-4 rounded-lg border border-white/20 transition';
+        button.textContent = `${String.fromCharCode(65 + index)}. ${option}`;
+        button.onclick = () => checkAnswer(index, quiz.correct, quiz.explanation);
+        optionsContainer.appendChild(button);
     });
+    
+    document.getElementById('quizPanel').classList.remove('hidden');
 }
 
-// Collision detection
-function checkCollision(obj1, obj2) {
-    const dx = (obj1.x || obj1.x) - (obj2.x || obj2.x);
-    const dy = (obj1.y || obj1.y) - (obj2.y || obj2.y);
-    const distance = Math.sqrt(dx * dx + dy * dy);
-    const minDistance = ((obj1.size || obj1.width) / 2) + ((obj2.size || obj2.width) / 2);
-    return distance < minDistance;
-}
-
-// Update game
-function update() {
-    if (!gameRunning || gamePaused) return;
+// Check quiz answer
+function checkAnswer(selected, correct, explanation) {
+    quizAnswered = true;
+    const feedback = document.getElementById('quizFeedback');
     
-    // Update player position
-    player.x += player.vx;
-    player.y += player.vy;
-    
-    // Boundary checking
-    player.x = Math.max(player.width / 2, Math.min(canvas.width - player.width / 2, player.x));
-    player.y = Math.max(player.height / 2, Math.min(canvas.height - player.height / 2, player.y));
-    
-    // Update asteroids
-    asteroids.forEach((asteroid, index) => {
-        asteroid.y += asteroid.speed;
-        asteroid.rotation += asteroid.rotationSpeed;
-        
-        // Check collision with player
-        if (checkCollision(player, asteroid)) {
-            createParticles(asteroid.x, asteroid.y, '#FF0000');
-            asteroids.splice(index, 1);
-            lives--;
-            document.getElementById('lives').textContent = '❤️'.repeat(lives);
-            
-            if (lives <= 0) {
-                gameOver();
-            }
-        }
-        
-        // Remove if off screen and add score
-        if (asteroid.y > canvas.height + asteroid.size) {
-            asteroids.splice(index, 1);
-            score += 10;
-            difficulty = Math.floor(score / 200) + 1;
-            updateScore();
-        }
-    });
-    
-    // Update stars
-    stars.forEach((star, index) => {
-        star.y += star.speed;
-        
-        // Check collision with player
-        if (checkCollision(player, star)) {
-            createParticles(star.x, star.y, '#FFD700');
-            stars.splice(index, 1);
-            score += 50;
-            updateScore();
-        }
-        
-        // Remove if off screen
-        if (star.y > canvas.height + star.size) {
-            stars.splice(index, 1);
-        }
-    });
-    
-    // Spawn new objects
-    if (Math.random() < 0.02 * difficulty) {
-        spawnAsteroid();
+    if (selected === correct) {
+        feedback.className = 'mt-4 p-4 rounded-lg bg-green-500/20 border border-green-500';
+        feedback.innerHTML = `<div class="text-green-400 font-bold mb-2">✓ Correct!</div><div class="text-gray-300">${explanation}</div>`;
+        score += 500;
+        updateScore();
+    } else {
+        feedback.className = 'mt-4 p-4 rounded-lg bg-red-500/20 border border-red-500';
+        feedback.innerHTML = `<div class="text-red-400 font-bold mb-2">✗ Incorrect</div><div class="text-gray-300">${explanation}</div>`;
     }
-    if (Math.random() < 0.005) {
-        spawnStar();
-    }
-}
-
-// Draw game
-function draw() {
-    // Clear canvas
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Draw background stars
-    drawBackgroundStars();
-    updateBackgroundStars();
+    feedback.classList.remove('hidden');
     
-    // Draw game objects
-    asteroids.forEach(drawAsteroid);
-    stars.forEach(drawStar);
-    drawPlayer();
-    updateParticles();
+    // Disable all option buttons
+    document.querySelectorAll('#quizOptions button').forEach(btn => btn.disabled = true);
 }
 
 // Update score
 function updateScore() {
     document.getElementById('score').textContent = score;
-    if (score > highScore) {
-        highScore = score;
-        localStorage.setItem('spaceGameHighScore', highScore);
-        document.getElementById('highScore').textContent = highScore;
+}
+
+// Update progress
+function updateProgress(percent) {
+    progress = percent;
+    document.getElementById('progress').textContent = Math.round(percent) + '%';
+}
+
+// Mission: Orbital Mechanics
+class OrbitalMission {
+    constructor() {
+        this.planet = {
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            radius: 60,
+            mass: 5.972e24 // Earth mass in kg
+        };
+        
+        this.spacecraft = {
+            x: canvas.width / 2 + 200,
+            y: canvas.height / 2,
+            vx: 0,
+            vy: 4,
+            size: 12,
+            fuel: 100,
+            angle: 0
+        };
+        
+        this.trail = [];
+        this.targetOrbit = 250;
+        this.G = 50; // Scaled gravitational constant for visualization
+        this.time = 0;
+        this.orbitsCompleted = 0;
+        this.lastAngle = 0;
+    }
+    
+    update() {
+        // Apply gravity
+        const dx = this.planet.x - this.spacecraft.x;
+        const dy = this.planet.y - this.spacecraft.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const force = this.G / (distance * distance);
+        
+        this.spacecraft.vx += (dx / distance) * force;
+        this.spacecraft.vy += (dy / distance) * force;
+        
+        // Apply thrust based on keys
+        const thrustPower = 0.15;
+        if (keys['ArrowUp'] && this.spacecraft.fuel > 0) {
+            const angle = Math.atan2(this.spacecraft.vy, this.spacecraft.vx);
+            this.spacecraft.vx += Math.cos(angle) * thrustPower;
+            this.spacecraft.vy += Math.sin(angle) * thrustPower;
+            this.spacecraft.fuel -= 0.5;
+        }
+        if (keys['ArrowDown'] && this.spacecraft.fuel > 0) {
+            const angle = Math.atan2(this.spacecraft.vy, this.spacecraft.vx);
+            this.spacecraft.vx -= Math.cos(angle) * thrustPower;
+            this.spacecraft.vy -= Math.sin(angle) * thrustPower;
+            this.spacecraft.fuel -= 0.5;
+        }
+        if (keys['ArrowLeft'] && this.spacecraft.fuel > 0) {
+            const angle = Math.atan2(this.spacecraft.vy, this.spacecraft.vx) - Math.PI / 2;
+            this.spacecraft.vx += Math.cos(angle) * thrustPower * 0.5;
+            this.spacecraft.vy += Math.sin(angle) * thrustPower * 0.5;
+            this.spacecraft.fuel -= 0.3;
+        }
+        if (keys['ArrowRight'] && this.spacecraft.fuel > 0) {
+            const angle = Math.atan2(this.spacecraft.vy, this.spacecraft.vx) + Math.PI / 2;
+            this.spacecraft.vx += Math.cos(angle) * thrustPower * 0.5;
+            this.spacecraft.vy += Math.sin(angle) * thrustPower * 0.5;
+            this.spacecraft.fuel -= 0.3;
+        }
+        
+        // Update position
+        this.spacecraft.x += this.spacecraft.vx;
+        this.spacecraft.y += this.spacecraft.vy;
+        
+        // Calculate angle for orbit counting
+        const angle = Math.atan2(this.spacecraft.y - this.planet.y, this.spacecraft.x - this.planet.x);
+        if (this.lastAngle < -Math.PI / 2 && angle > Math.PI / 2) {
+            this.orbitsCompleted++;
+            if (this.orbitsCompleted > 0 && !quizAnswered) {
+                showQuiz('orbital');
+            }
+        }
+        this.lastAngle = angle;
+        
+        // Add to trail
+        this.trail.push({x: this.spacecraft.x, y: this.spacecraft.y});
+        if (this.trail.length > 200) this.trail.shift();
+        
+        // Check for collision
+        if (distance < this.planet.radius + this.spacecraft.size) {
+            document.getElementById('status').textContent = 'Crashed';
+            document.getElementById('status').className = 'text-2xl font-bold text-red-400';
+            gameRunning = false;
+        }
+        
+        // Update stats
+        document.getElementById('customStatLabel').textContent = 'Fuel';
+        document.getElementById('customStat').textContent = Math.max(0, Math.round(this.spacecraft.fuel)) + '%';
+        
+        // Calculate orbital stability score
+        const orbitDiff = Math.abs(distance - this.planet.radius - this.targetOrbit);
+        const stability = Math.max(0, 100 - orbitDiff / 2);
+        updateProgress(stability);
+        
+        if (stability > 90) {
+            score += 1;
+            updateScore();
+        }
+        
+        this.time++;
+    }
+    
+    draw() {
+        // Clear canvas
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw stars
+        drawBackgroundStars();
+        
+        // Draw target orbit
+        ctx.strokeStyle = 'rgba(0, 255, 0, 0.3)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        ctx.arc(this.planet.x, this.planet.y, this.planet.radius + this.targetOrbit, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        
+        // Draw planet
+        const gradient = ctx.createRadialGradient(this.planet.x, this.planet.y, 0, 
+                                                  this.planet.x, this.planet.y, this.planet.radius);
+        gradient.addColorStop(0, '#4A90E2');
+        gradient.addColorStop(0.7, '#2E5C8A');
+        gradient.addColorStop(1, '#1A3A5A');
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(this.planet.x, this.planet.y, this.planet.radius, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Draw trail
+        ctx.strokeStyle = 'rgba(100, 200, 255, 0.5)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        this.trail.forEach((point, i) => {
+            if (i === 0) ctx.moveTo(point.x, point.y);
+            else ctx.lineTo(point.x, point.y);
+        });
+        ctx.stroke();
+        
+        // Draw spacecraft
+        ctx.save();
+        ctx.translate(this.spacecraft.x, this.spacecraft.y);
+        const velocityAngle = Math.atan2(this.spacecraft.vy, this.spacecraft.vx);
+        ctx.rotate(velocityAngle);
+        
+        // Spacecraft body
+        ctx.fillStyle = '#FFFFFF';
+        ctx.beginPath();
+        ctx.moveTo(15, 0);
+        ctx.lineTo(-10, -8);
+        ctx.lineTo(-10, 8);
+        ctx.closePath();
+        ctx.fill();
+        
+        // Thrust effect
+        if (keys['ArrowUp'] && this.spacecraft.fuel > 0) {
+            ctx.fillStyle = '#FF6B35';
+            ctx.beginPath();
+            ctx.moveTo(-10, -4);
+            ctx.lineTo(-20 - Math.random() * 10, 0);
+            ctx.lineTo(-10, 4);
+            ctx.closePath();
+            ctx.fill();
+        }
+        
+        ctx.restore();
+        
+        // Draw velocity vector
+        ctx.strokeStyle = 'rgba(255, 255, 0, 0.7)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(this.spacecraft.x, this.spacecraft.y);
+        ctx.lineTo(this.spacecraft.x + this.spacecraft.vx * 10, 
+                   this.spacecraft.y + this.spacecraft.vy * 10);
+        ctx.stroke();
+        
+        // Display info
+        ctx.fillStyle = 'white';
+        ctx.font = '16px monospace';
+        const speed = Math.sqrt(this.spacecraft.vx ** 2 + this.spacecraft.vy ** 2);
+        const distance = Math.sqrt((this.spacecraft.x - this.planet.x) ** 2 + 
+                                  (this.spacecraft.y - this.planet.y) ** 2);
+        ctx.fillText(`Velocity: ${speed.toFixed(2)} km/s`, 20, canvas.height - 60);
+        ctx.fillText(`Altitude: ${(distance - this.planet.radius).toFixed(0)} km`, 20, canvas.height - 40);
+        ctx.fillText(`Orbits: ${this.orbitsCompleted}`, 20, canvas.height - 20);
     }
 }
 
-// Game over
-function gameOver() {
-    gameRunning = false;
-    document.getElementById('overlayTitle').textContent = '💥 MISSION FAILED';
-    document.getElementById('overlayMessage').textContent = `Final Score: ${score} | High Score: ${highScore}`;
-    document.getElementById('startButton').textContent = 'TRY AGAIN';
-    overlay.classList.remove('hidden');
-}
-
-// Game loop
-function gameLoop() {
-    if (gameRunning) {
-        update();
-        draw();
-        requestAnimationFrame(gameLoop);
+// Mission: Mars Landing
+class MarsLandingMission {
+    constructor() {
+        this.lander = {
+            x: canvas.width / 2,
+            y: 100,
+            vx: 2,
+            vy: 0,
+            angle: 0,
+            fuel: 100,
+            heatShield: true,
+            parachuteDeployed: false,
+            size: 20
+        };
+        
+        this.mars = {
+            y: canvas.height - 100,
+            landingZoneX: canvas.width / 2 + Math.random() * 200 - 100,
+            landingZoneWidth: 120
+        };
+        
+        this.atmosphere = canvas.height - 400;
+        this.phase = 'entry'; // entry, descent, landing
+        this.altitude = 50000; // meters
+    }
+    
+    update() {
+        // Atmospheric drag
+        if (this.lander.y > this.atmosphere) {
+            const drag = this.lander.heatShield ? 0.02 : 0.05;
+            this.lander.vx *= (1 - drag);
+            this.lander.vy *= (1 - drag);
+            
+            if (this.lander.y > this.atmosphere + 50 && this.lander.heatShield) {
+                // Heat shield jettison
+                this.lander.heatShield = false;
+                score += 200;
+                updateScore();
+            }
+        }
+        
+        // Gravity
+        this.lander.vy += 0.15; // Mars gravity (scaled)
+        
+        // Parachute deployment
+        if (keys[' '] && !this.lander.parachuteDeployed && 
+            this.lander.y > this.atmosphere + 100 && this.lander.vy > 3) {
+            this.lander.parachuteDeployed = true;
+            this.phase = 'descent';
+            score += 300;
+            updateScore();
+            if (!quizAnswered) showQuiz('mars');
+        }
+        
+        // Parachute drag
+        if (this.lander.parachuteDeployed) {
+            this.lander.vy *= 0.95;
+        }
+        
+        // Retro rockets
+        if (keys['ArrowUp'] && this.lander.fuel > 0 && this.lander.y > this.mars.y - 150) {
+            this.lander.vy -= 0.3;
+            this.lander.fuel -= 1;
+            this.phase = 'landing';
+        }
+        if (keys['ArrowLeft'] && this.lander.fuel > 0) {
+            this.lander.vx -= 0.1;
+            this.lander.fuel -= 0.5;
+        }
+        if (keys['ArrowRight'] && this.lander.fuel > 0) {
+            this.lander.vx += 0.1;
+            this.lander.fuel -= 0.5;
+        }
+        
+        // Update position
+        this.lander.x += this.lander.vx;
+        this.lander.y += this.lander.vy;
+        
+        // Calculate altitude
+        this.altitude = Math.max(0, (this.mars.y - this.lander.y) * 100);
+        
+        // Boundary check
+        if (this.lander.x < 0) this.lander.x = canvas.width;
+        if (this.lander.x > canvas.width) this.lander.x = 0;
+        
+        // Landing check
+        if (this.lander.y >= this.mars.y - 10) {
+            const inZone = Math.abs(this.lander.x - this.mars.landingZoneX) < this.mars.landingZoneWidth / 2;
+            const safeSpeed = Math.abs(this.lander.vy) < 2 && Math.abs(this.lander.vx) < 1;
+            
+            if (inZone && safeSpeed) {
+                document.getElementById('status').textContent = 'Success!';
+                document.getElementById('status').className = 'text-2xl font-bold text-green-400';
+                score += 1000;
+                updateScore();
+            } else {
+                document.getElementById('status').textContent = 'Crashed';
+                document.getElementById('status').className = 'text-2xl font-bold text-red-400';
+            }
+            gameRunning = false;
+        }
+        
+        // Update stats
+        document.getElementById('customStatLabel').textContent = 'Fuel';
+        document.getElementById('customStat').textContent = Math.max(0, Math.round(this.lander.fuel)) + '%';
+        updateProgress(Math.max(0, 100 - this.altitude / 500));
+    }
+    
+    draw() {
+        // Clear
+        ctx.fillStyle = '#1a0a0a';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw stars
+        drawBackgroundStars();
+        
+        // Draw atmosphere line
+        ctx.strokeStyle = 'rgba(255, 100, 50, 0.5)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([10, 10]);
+        ctx.beginPath();
+        ctx.moveTo(0, this.atmosphere);
+        ctx.lineTo(canvas.width, this.atmosphere);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        
+        // Draw Mars surface
+        ctx.fillStyle = '#CD5C5C';
+        ctx.fillRect(0, this.mars.y, canvas.width, canvas.height - this.mars.y);
+        
+        // Draw landing zone
+        ctx.fillStyle = 'rgba(0, 255, 0, 0.3)';
+        ctx.fillRect(this.mars.landingZoneX - this.mars.landingZoneWidth / 2, this.mars.y,
+                     this.mars.landingZoneWidth, canvas.height - this.mars.y);
+        ctx.strokeStyle = '#00FF00';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(this.mars.landingZoneX - this.mars.landingZoneWidth / 2, this.mars.y,
+                       this.mars.landingZoneWidth, 10);
+        
+        // Draw lander
+        ctx.save();
+        ctx.translate(this.lander.x, this.lander.y);
+        
+        // Parachute
+        if (this.lander.parachuteDeployed) {
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(0, -40, 30, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(-20, -10);
+            ctx.lineTo(0, -10);
+            ctx.lineTo(20, -10);
+            ctx.stroke();
+        }
+        
+        // Lander body
+        ctx.fillStyle = this.lander.heatShield ? '#8B4513' : '#C0C0C0';
+        ctx.fillRect(-this.lander.size / 2, -this.lander.size / 2, 
+                     this.lander.size, this.lander.size);
+        
+        // Retro rockets
+        if (keys['ArrowUp'] && this.lander.fuel > 0) {
+            ctx.fillStyle = '#FF6B35';
+            ctx.beginPath();
+            ctx.moveTo(-8, this.lander.size / 2);
+            ctx.lineTo(0, this.lander.size / 2 + 15 + Math.random() * 5);
+            ctx.lineTo(8, this.lander.size / 2);
+            ctx.closePath();
+            ctx.fill();
+        }
+        
+        ctx.restore();
+        
+        // Display info
+        ctx.fillStyle = 'white';
+        ctx.font = '16px monospace';
+        ctx.fillText(`Altitude: ${this.altitude.toFixed(0)} m`, 20, canvas.height - 80);
+        ctx.fillText(`Vertical Speed: ${this.lander.vy.toFixed(2)} m/s`, 20, canvas.height - 60);
+        ctx.fillText(`Horizontal Speed: ${this.lander.vx.toFixed(2)} m/s`, 20, canvas.height - 40);
+        ctx.fillText(`Phase: ${this.phase.toUpperCase()}`, 20, canvas.height - 20);
     }
 }
 
-// Start game
-function startGame() {
-    score = 0;
-    lives = 3;
-    difficulty = 1;
-    asteroids = [];
-    stars = [];
-    particles = [];
-    player.x = canvas.width / 2;
-    player.y = canvas.height - 100;
-    player.vx = 0;
-    player.vy = 0;
+// Mission: Exoplanet Discovery
+class ExoplanetMission {
+    constructor() {
+        this.star = {
+            x: 300,
+            y: canvas.height / 2,
+            radius: 80,
+            brightness: 100
+        };
+        
+        this.planet = {
+            angle: 0,
+            orbitRadius: 200,
+            radius: 20,
+            transitDepth: 2,
+            orbiting: true
+        };
+        
+        this.lightCurve = [];
+        this.maxDataPoints = 200;
+        this.transitsDetected = 0;
+        this.inTransit = false;
+        this.dataQuality = 100;
+        this.time = 0;
+    }
     
-    document.getElementById('score').textContent = score;
-    document.getElementById('lives').textContent = '❤️❤️❤️';
-    document.getElementById('nasaFact').textContent = nasaFacts[Math.floor(Math.random() * nasaFacts.length)];
+    update() {
+        // Planet orbit
+        if (this.planet.orbiting) {
+            this.planet.angle += 0.02;
+            if (this.planet.angle > Math.PI * 2) this.planet.angle = 0;
+        }
+        
+        // Calculate planet position
+        const planetX = this.star.x + Math.cos(this.planet.angle) * this.planet.orbitRadius;
+        const planetY = this.star.y + Math.sin(this.planet.angle) * this.planet.orbitRadius;
+        
+        // Detect transit
+        const wasInTransit = this.inTransit;
+        this.inTransit = Math.abs(planetY - this.star.y) < this.planet.radius && 
+                        planetX > this.star.x - this.star.radius && 
+                        planetX < this.star.x + this.star.radius;
+        
+        if (!wasInTransit && this.inTransit) {
+            this.transitsDetected++;
+            score += 250;
+            updateScore();
+            
+            if (this.transitsDetected === 2 && !quizAnswered) {
+                showQuiz('exoplanet');
+            }
+        }
+        
+        // Calculate brightness
+        let brightness = this.star.brightness;
+        if (this.inTransit) {
+            brightness -= this.planet.transitDepth;
+        }
+        brightness += (Math.random() - 0.5) * 0.5; // Noise
+        
+        // Add to light curve
+        this.lightCurve.push(brightness);
+        if (this.lightCurve.length > this.maxDataPoints) {
+            this.lightCurve.shift();
+        }
+        
+        // Update stats
+        document.getElementById('customStatLabel').textContent = 'Data Quality';
+        document.getElementById('customStat').textContent = Math.round(this.dataQuality) + '%';
+        updateProgress((this.transitsDetected / 5) * 100);
+        
+        this.time++;
+    }
     
-    gameRunning = true;
-    gamePaused = false;
-    overlay.classList.add('hidden');
-    gameLoop();
+    draw() {
+        // Clear
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw stars
+        drawBackgroundStars();
+        
+        // Draw star
+        const gradient = ctx.createRadialGradient(this.star.x, this.star.y, 0,
+                                                  this.star.x, this.star.y, this.star.radius);
+        gradient.addColorStop(0, '#FFFF00');
+        gradient.addColorStop(0.5, '#FFA500');
+        gradient.addColorStop(1, 'rgba(255, 165, 0, 0)');
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(this.star.x, this.star.y, this.star.radius, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Draw orbit
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        ctx.arc(this.star.x, this.star.y, this.planet.orbitRadius, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        
+        // Draw planet
+        const planetX = this.star.x + Math.cos(this.planet.angle) * this.planet.orbitRadius;
+        const planetY = this.star.y + Math.sin(this.planet.angle) * this.planet.orbitRadius;
+        
+        ctx.fillStyle = this.inTransit ? '#FF0000' : '#4A90E2';
+        ctx.beginPath();
+        ctx.arc(planetX, planetY, this.planet.radius, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Draw light curve graph
+        const graphX = 650;
+        const graphY = 100;
+        const graphWidth = 500;
+        const graphHeight = 500;
+        
+        // Graph background
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+        ctx.fillRect(graphX, graphY, graphWidth, graphHeight);
+        
+        // Graph border
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(graphX, graphY, graphWidth, graphHeight);
+        
+        // Graph title
+        ctx.fillStyle = 'white';
+        ctx.font = 'bold 18px monospace';
+        ctx.fillText('Light Curve Analysis', graphX + 10, graphY - 10);
+        
+        // Plot light curve
+        if (this.lightCurve.length > 1) {
+            ctx.strokeStyle = '#00FF00';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            for (let i = 0; i < this.lightCurve.length; i++) {
+                const x = graphX + (i / this.maxDataPoints) * graphWidth;
+                const brightness = this.lightCurve[i];
+                const y = graphY + graphHeight - ((brightness - 95) / 10) * graphHeight;
+                
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+        }
+        
+        // Graph labels
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.font = '14px monospace';
+        ctx.fillText('Time →', graphX + graphWidth / 2 - 30, graphY + graphHeight + 25);
+        ctx.save();
+        ctx.translate(graphX - 40, graphY + graphHeight / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText('Brightness →', -50, 0);
+        ctx.restore();
+        
+        // Display info
+        ctx.fillStyle = 'white';
+        ctx.font = '16px monospace';
+        ctx.fillText(`Transits Detected: ${this.transitsDetected}`, 20, canvas.height - 60);
+        ctx.fillText(`Status: ${this.inTransit ? 'TRANSIT!' : 'Monitoring'}`, 20, canvas.height - 40);
+        ctx.fillText(`Brightness: ${this.lightCurve[this.lightCurve.length - 1]?.toFixed(2) || 100}%`, 20, canvas.height - 20);
+    }
 }
 
-// Keyboard controls
+// Background stars
+let backgroundStars = [];
+function initBackgroundStars() {
+    backgroundStars = [];
+    for (let i = 0; i < 150; i++) {
+        backgroundStars.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 2,
+            opacity: Math.random()
+        });
+    }
+}
+
+function drawBackgroundStars() {
+    backgroundStars.forEach(star => {
+        ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
+        ctx.fillRect(star.x, star.y, star.size, star.size);
+    });
+}
+
+// Keyboard handling
 const keys = {};
 document.addEventListener('keydown', (e) => {
     keys[e.key] = true;
-    
-    // Pause game
-    if (e.key === ' ' && gameRunning) {
-        e.preventDefault();
-        gamePaused = !gamePaused;
+    if (e.key === 'p' || e.key === 'P') {
+        gameRunning = !gameRunning;
+        if (gameRunning) gameLoop();
     }
 });
-
 document.addEventListener('keyup', (e) => {
     keys[e.key] = false;
 });
 
-// Update player movement
-setInterval(() => {
-    if (gameRunning && !gamePaused) {
-        player.vx = 0;
-        player.vy = 0;
-        
-        if (keys['ArrowLeft'] || keys['a'] || keys['A']) player.vx = -player.speed;
-        if (keys['ArrowRight'] || keys['d'] || keys['D']) player.vx = player.speed;
-        if (keys['ArrowUp'] || keys['w'] || keys['W']) player.vy = -player.speed;
-        if (keys['ArrowDown'] || keys['s'] || keys['S']) player.vy = player.speed;
-    }
-}, 16);
+// Game loop
+let currentGame = null;
+function gameLoop() {
+    if (!gameRunning || !currentGame) return;
+    
+    currentGame.update();
+    currentGame.draw();
+    
+    requestAnimationFrame(gameLoop);
+}
 
-// Start button
-startButton.addEventListener('click', startGame);
+// Start mission
+function startMission(type) {
+    currentMission = type;
+    score = 0;
+    progress = 0;
+    quizAnswered = false;
+    gameRunning = true;
+    
+    document.getElementById('missionSelect').classList.add('hidden');
+    document.getElementById('gameContainer').classList.remove('hidden');
+    
+    // Initialize background stars
+    initBackgroundStars();
+    
+    // Update educational content
+    updateEducationalContent();
+    
+    // Setup mission-specific content
+    if (type === 'orbital') {
+        currentGame = new OrbitalMission();
+        document.getElementById('infoTitle').textContent = '🛰️ Orbital Mechanics Mission';
+        document.getElementById('infoText').textContent = 'Achieve a stable orbit around Earth. Use arrow keys to fire thrusters. Green circle shows target orbit altitude. Master gravitational physics!';
+        document.getElementById('controlsList').innerHTML = `
+            <div>↑ Prograde burn (speed up)</div>
+            <div>↓ Retrograde burn (slow down)</div>
+            <div>← → Normal/Antinormal (adjust plane)</div>
+            <div>P: Pause</div>
+        `;
+    } else if (type === 'mars') {
+        currentGame = new MarsLandingMission();
+        document.getElementById('infoTitle').textContent = '🚀 Mars Landing Mission';
+        document.getElementById('infoText').textContent = 'Execute Entry, Descent, and Landing (EDL) on Mars. Press SPACE to deploy parachute after atmospheric entry. Use retro rockets for final landing in green zone!';
+        document.getElementById('controlsList').innerHTML = `
+            <div>SPACE: Deploy parachute</div>
+            <div>↑ Fire retro rockets</div>
+            <div>← → Adjust horizontal position</div>
+            <div>Land slowly in green zone!</div>
+        `;
+    } else if (type === 'exoplanet') {
+        currentGame = new ExoplanetMission();
+        document.getElementById('infoTitle').textContent = '🔭 Exoplanet Discovery Mission';
+        document.getElementById('infoText').textContent = 'Monitor star brightness to detect exoplanet transits. Watch the light curve graph for periodic dips in brightness as planet passes in front of star. Detect 5 transits!';
+        document.getElementById('controlsList').innerHTML = `
+            <div>📊 Watch the light curve</div>
+            <div>🔍 Look for brightness dips</div>
+            <div>⭐ Detect transit patterns</div>
+            <div>Automatic observation mode</div>
+        `;
+    }
+    
+    document.getElementById('status').textContent = 'Active';
+    document.getElementById('status').className = 'text-2xl font-bold text-blue-400';
+    updateScore();
+    updateProgress(0);
+    
+    gameLoop();
+}
+
+// Back to mission select
+function backToMissionSelect() {
+    gameRunning = false;
+    currentGame = null;
+    currentMission = null;
+    document.getElementById('gameContainer').classList.add('hidden');
+    document.getElementById('missionSelect').classList.remove('hidden');
+    document.getElementById('quizPanel').classList.add('hidden');
+}
 
 // Initialize
 initBackgroundStars();
-overlay.classList.remove('hidden');
 </script>
 {% endblock %}
